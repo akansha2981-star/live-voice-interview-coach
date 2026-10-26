@@ -1,0 +1,4 @@
+CREATE FUNCTION public.interview_slot_availability() RETURNS TABLE(id uuid, starts_at timestamptz, ends_at timestamptz, capacity integer, remaining integer) LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ SELECT s.id,s.starts_at,s.ends_at,s.capacity,greatest(0,s.capacity - (SELECT count(*)::integer FROM public.interview_bookings b WHERE b.slot_id = s.id AND b.status <> 'cancelled')) FROM public.interview_slots s WHERE auth.uid() IS NOT NULL AND s.published AND s.ends_at > now() ORDER BY s.starts_at $$;
+REVOKE ALL ON FUNCTION public.interview_slot_availability() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.interview_slot_availability() TO authenticated;
+CREATE POLICY "Booked slot owner read" ON public.interview_slots FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.interview_bookings b WHERE b.slot_id = interview_slots.id AND b.user_id = auth.uid()));

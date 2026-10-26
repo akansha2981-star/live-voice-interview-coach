@@ -308,6 +308,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      interview_slot_availability: {
+        Args: never
+        Returns: {
+          capacity: number
+          ends_at: string
+          id: string
+          remaining: number
+          starts_at: string
+        }[]
+      }
       start_interview: { Args: never; Returns: string }
     }
     Enums: {
