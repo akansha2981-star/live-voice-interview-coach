@@ -578,6 +578,14 @@ export type Database = {
         Args: { _status: string; _user_id: string }
         Returns: undefined
       }
+      admin_set_role: {
+        Args: {
+          _email: string
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: undefined
+      }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
       can_operate: { Args: { _user_id: string }; Returns: boolean }
       can_support: { Args: { _user_id: string }; Returns: boolean }
