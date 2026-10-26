@@ -3,7 +3,6 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { FileUp, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { parseResume } from "@/lib/interview.functions";
@@ -140,8 +139,7 @@ function ProfilePage() {
         <h2 className="text-xl font-semibold">Resume</h2>
         <p className="mt-1 text-sm text-muted-foreground">Upload a PDF or DOCX. We'll pre-fill empty fields for you to review.</p>
         <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-sm hover:bg-muted">
-          {uploading ? <Loader2 className="size-4 animate-spin" /> : <FileUp className="size-4" />}
-          {uploading ? "Reading your resume…" : p.resume_path ? "Replace resume" : "Choose resume file"}
+                    {uploading ? "Reading your resume…" : p.resume_path ? "Replace resume" : "Choose resume file"}
           <input
             type="file"
             accept=".pdf,.docx,application/pdf"

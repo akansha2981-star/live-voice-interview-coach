@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Camera, CheckCircle2, Loader2, Mic } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { isProfileReady } from "@/lib/interview-prompt";
@@ -116,7 +115,7 @@ function CheckPage() {
           {!stream && (
             <div className="absolute inset-0 grid place-items-center">
               <Button onClick={enable} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                <Camera className="size-4" /> Turn on camera & mic
+                Turn on camera & mic
               </Button>
             </div>
           )}
@@ -127,7 +126,7 @@ function CheckPage() {
         {mediaError && <p className="mt-3 text-sm text-destructive">{mediaError}</p>}
         {stream && (
           <div className="mt-4 flex items-center gap-3">
-            <Mic className="size-4 text-muted-foreground" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Mic</span>
             <Progress value={level} className="flex-1" />
             <span className="w-28 text-xs text-muted-foreground">{level > 15 ? "We can hear you" : "Say something…"}</span>
           </div>
@@ -143,7 +142,7 @@ function CheckPage() {
           "About 15 minutes of uninterrupted time",
         ].map((t) => (
           <p key={t} className="flex items-start gap-2 text-sm">
-            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" /> {t}
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-success" /> {t}
           </p>
         ))}
         <label className="mt-2 flex items-start gap-3 rounded-lg bg-muted p-3 text-sm">
@@ -155,7 +154,7 @@ function CheckPage() {
         </label>
         <p className="text-sm text-muted-foreground">Credits available: {me.credits}</p>
         <Button size="lg" disabled={!stream || !consent || starting || me.credits < 1} onClick={begin}>
-          {starting && <Loader2 className="size-4 animate-spin" />} Enter interview room
+          {starting ? "Opening… " : ""}Enter interview room
         </Button>
       </div>
     </div>

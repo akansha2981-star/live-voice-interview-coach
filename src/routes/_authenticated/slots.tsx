@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Check, Ticket } from "lucide-react";
 import { meQuery } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 
@@ -36,8 +35,7 @@ function Slots() {
           <p className="mt-1 text-muted-foreground">Each live interview uses one slot.</p>
         </div>
         <div className="flex items-center gap-3 rounded-2xl border bg-card px-5 py-3">
-          <Ticket className="size-5 text-accent" />
-          <span className="text-sm text-muted-foreground">Available</span>
+                    <span className="text-sm text-muted-foreground">Available</span>
           <span className="font-display text-3xl font-semibold">{me.credits}</span>
         </div>
       </div>
@@ -56,7 +54,7 @@ function Slots() {
             <ul className="mt-4 grid gap-2 text-sm">
               {p.perks.map((x) => (
                 <li key={x} className="flex items-center gap-2">
-                  <Check className="size-4 text-success" /> {x}
+                  <span className="size-1.5 rounded-full bg-success" /> {x}
                 </li>
               ))}
             </ul>
