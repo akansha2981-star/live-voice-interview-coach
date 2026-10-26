@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Download, FileText, Loader2, RotateCw } from "lucide-react";
 import { interviewQuery } from "@/lib/queries";
 import { generateReport, type InterviewReport } from "@/lib/interview.functions";
 import { INTERVIEW_CATEGORIES } from "@/lib/interview-prompt";
@@ -84,7 +83,7 @@ function ReportPage() {
       <Notice title="We couldn't finish your report">
         <p>{genError ?? interview.error}</p>
         <Button className="mt-4" onClick={run}>
-          <RotateCw className="size-4" /> Try again
+          Try again
         </Button>
       </Notice>
     );
@@ -125,10 +124,10 @@ function ReportPage() {
               className="bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={() => downloadReportPdf(report, { name: "Candidate", date, type })}
             >
-              <Download className="size-4" /> Download PDF report
+              Download PDF report
             </Button>
             <Button variant="secondary" onClick={downloadTranscript}>
-              <FileText className="size-4" /> Download transcript
+              Download transcript
             </Button>
           </div>
         </div>

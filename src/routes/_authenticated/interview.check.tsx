@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Camera, CheckCircle2, Loader2, Mic } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { isProfileReady } from "@/lib/interview-prompt";
@@ -116,7 +115,7 @@ function CheckPage() {
           {!stream && (
             <div className="absolute inset-0 grid place-items-center">
               <Button onClick={enable} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                <Camera className="size-4" /> Turn on camera & mic
+                Turn on camera & mic
               </Button>
             </div>
           )}
@@ -127,7 +126,7 @@ function CheckPage() {
         {mediaError && <p className="mt-3 text-sm text-destructive">{mediaError}</p>}
         {stream && (
           <div className="mt-4 flex items-center gap-3">
-            <Mic className="size-4 text-muted-foreground" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Mic</span>
             <Progress value={level} className="flex-1" />
             <span className="w-28 text-xs text-muted-foreground">{level > 15 ? "We can hear you" : "Say something…"}</span>
           </div>
