@@ -142,7 +142,7 @@ function CheckPage() {
           "About 15 minutes of uninterrupted time",
         ].map((t) => (
           <p key={t} className="flex items-start gap-2 text-sm">
-            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" /> {t}
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-success" /> {t}
           </p>
         ))}
         <label className="mt-2 flex items-start gap-3 rounded-lg bg-muted p-3 text-sm">
@@ -154,7 +154,7 @@ function CheckPage() {
         </label>
         <p className="text-sm text-muted-foreground">Credits available: {me.credits}</p>
         <Button size="lg" disabled={!stream || !consent || starting || me.credits < 1} onClick={begin}>
-          {starting && <Loader2 className="size-4 animate-spin" />} Enter interview room
+          {starting ? "Opening… " : ""}Enter interview room
         </Button>
       </div>
     </div>

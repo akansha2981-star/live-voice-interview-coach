@@ -91,7 +91,7 @@ function ReportPage() {
   if (!interview.report) {
     return (
       <Notice title="Analysing your interview…">
-        <Loader2 className="mx-auto mt-4 size-8 animate-spin text-accent" />
+        <div className="mx-auto mt-4 size-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
         <p className="mt-4">This usually takes about a minute. You can leave this page and come back.</p>
       </Notice>
     );
