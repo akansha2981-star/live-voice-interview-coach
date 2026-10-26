@@ -14,4 +14,6 @@
 - Interview credits are a ledger (`credit_ledger`); spending happens only in the `start_interview()` SQL function so it stays atomic.
 - `interviews` is read-only to clients; all writes (transcript, report) go through server functions in `src/lib/interview.functions.ts` using the admin client after an ownership check.
 - Webcam analysis runs only in the browser (`src/lib/vision.ts`); only aggregated metrics are stored, never video.
+- Slot availability and booking use database functions with row locks; equipment checks are recorded through authenticated server functions before the atomic start_interview credit spend.
+- The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
 - tsconfig relaxes noPropertyAccessFromIndexSignature/noUncheckedIndexedAccess/exactOptionalPropertyTypes/noImplicitReturns to keep UI code readable.

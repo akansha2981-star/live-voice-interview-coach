@@ -49,3 +49,18 @@ export const interviewQuery = (id: string) =>
       return data;
     },
   });
+
+export const bookingQuery = queryOptions({
+  queryKey: ["bookings"],
+  queryFn: async () => {
+    const id = await uid();
+    const [{ data: slots, error: slotError }, { data: bookings, error: bookingError }] = await Promise.all([
+      supabase.rpc("interview_slot_availability"),
+      supabase.from("interview_bookings").select("*, interview_slots(*)").eq("user_id", id).order("created_at", { ascending: false }),
+    ]);
+    if (slotError) throw slotError;
+    if (bookingError) throw bookingError;
+    return { slots: slots ?? [], bookings: bookings ?? [] };
+  },
+  refetchInterval: 30000,
+});
