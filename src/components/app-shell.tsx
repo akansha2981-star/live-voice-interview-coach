@@ -5,16 +5,20 @@ import { meQuery } from "@/lib/queries";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 
-type NavItem = { to: "/dashboard" | "/slots" | "/interview/check" | "/profile" | "/admin"; label: string; short: string; mark: string; tone: string };
+type NavItem = { to: "/dashboard" | "/slots" | "/interview/check" | "/profile" | "/admin" | "/resources" | "/support"; label: string; short: string; mark: string; tone: string };
 const GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Workspace", items: [{ to: "/dashboard", label: "Overview", short: "Home", mark: "OV", tone: "bg-primary text-primary-foreground" }] },
   { title: "My interviews", items: [
     { to: "/slots", label: "Book interview", short: "Book", mark: "BK", tone: "bg-sky text-primary-foreground" },
     { to: "/interview/check", label: "Equipment check", short: "Check", mark: "EQ", tone: "bg-success text-primary-foreground" },
   ] },
-  { title: "Account", items: [{ to: "/profile", label: "My profile", short: "Profile", mark: "PR", tone: "bg-accent text-accent-foreground" }] },
+  { title: "Learning", items: [{ to: "/resources", label: "SOP & Resources", short: "Library", mark: "SR", tone: "bg-ink text-ink-foreground" }] },
+  { title: "Account", items: [
+    { to: "/profile", label: "My profile", short: "Profile", mark: "PR", tone: "bg-accent text-accent-foreground" },
+    { to: "/support", label: "Help & Support", short: "Help", mark: "HS", tone: "bg-destructive text-destructive-foreground" },
+  ] },
 ];
-const MOBILE = GROUPS.flatMap((g) => g.items);
+const MOBILE = GROUPS.flatMap((g) => g.items).filter((n) => n.to !== "/resources" && n.to !== "/interview/check");
 
 function NavLink({ n }: { n: NavItem }) {
   const base = "group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-all duration-200";
@@ -29,7 +33,7 @@ export function AppShell() {
   async function signOut() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); navigate({ to: "/", replace: true }); }
   const name = me?.profile?.full_name || "Student";
   const initials = name.split(/\s+/).map((s) => s[0]).slice(0, 2).join("").toUpperCase();
-  const groups = me?.isAdmin ? [...GROUPS, { title: "Administration", items: [{ to: "/admin", label: "Students & slots", short: "Admin", mark: "AD", tone: "bg-ink text-ink-foreground" } as NavItem] }] : GROUPS;
+  const groups = me?.isAdmin ? [...GROUPS, { title: "Administration", items: [{ to: "/admin", label: "Admin portal", short: "Admin", mark: "AD", tone: "bg-ink text-ink-foreground" } as NavItem] }] : GROUPS;
   return <div className="min-h-screen bg-background">
     <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
