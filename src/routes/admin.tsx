@@ -25,11 +25,6 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-export function useStaff() {
-  const { staff } = Route.useRouteContext();
-  return { ...staff!, ...staffAccess(staff?.roles ?? []) };
-}
-
 const NAV: { to: string; label: string }[] = [
   { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/purchases", label: "Course Purchases" },
   { to: "/admin/interviews", label: "Interview Manager" }, { to: "/admin/slots", label: "Slot Manager" }, { to: "/admin/credits", label: "Interview Credits" },
