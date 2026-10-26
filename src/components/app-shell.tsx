@@ -94,7 +94,7 @@ export function AppShell() {
           </button>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-28 md:px-8 md:py-8 md:pb-8">
-          <div key={typeof window !== "undefined" ? undefined : "ssr"} className="animate-fade"><Outlet /></div>
+          <div className="animate-fade"><Outlet /></div>
         </main>
       </div>
 
