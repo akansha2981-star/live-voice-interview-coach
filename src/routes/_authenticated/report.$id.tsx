@@ -10,6 +10,10 @@ import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ReportObservations } from "@/components/report-observations";
+import { questionTiming } from "@/lib/performance";
+import type { TranscriptTurn } from "@/lib/interview-metrics";
+import { meQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/report/$id")({
   head: () => ({
@@ -30,6 +34,7 @@ type Turn = { role: string; text: string; start_ms: number };
 
 function ReportPage() {
   const { id } = Route.useParams();
+  const { data: me } = useQuery(meQuery);
   const queryClient = useQueryClient();
   const generate = useServerFn(generateReport);
   const triggered = useRef(false);
@@ -104,6 +109,7 @@ function ReportPage() {
   const speech = interview.speech_metrics as Record<string, number> | null;
   const type = INTERVIEW_CATEGORIES[interview.category ?? ""] ?? "Interview";
   const date = new Date(interview.started_at).toLocaleDateString();
+  const timing = questionTiming(transcript.map((t) => ({ ...t, end_ms: typeof (t as unknown as TranscriptTurn).end_ms === "number" ? (t as unknown as TranscriptTurn).end_ms : t.start_ms })) as TranscriptTurn[]);
 
   return (
     <div className="grid gap-8">
@@ -121,7 +127,7 @@ function ReportPage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Button
               className="bg-accent text-accent-foreground hover:bg-accent/90"
-              onClick={() => downloadReportPdf(report, { name: "Candidate", date, type })}
+              onClick={() => downloadReportPdf(report, { name: me?.profile?.full_name ?? "Candidate", date, type, transcript, vision, speech })}
             >
               Download PDF report
             </Button>
@@ -145,6 +151,9 @@ function ReportPage() {
         ))}
       </section>
 
+      {report.assessment && <section className="border-y bg-card px-5 py-5"><h2 className="text-xl font-bold">Evidence-based ability score</h2><p className="mt-2 text-sm text-muted-foreground">Answer quality 30% · Reasoning 20% · Communication 20% · Delivery 10% · Etiquette 10% · Listening 10%. Camera coaching is excluded; unavailable categories are not scored as zero.</p><div className="mt-4 grid gap-4 sm:grid-cols-2">{[{ title: "Speech delivery", item: report.assessment.delivery }, { title: "Listening & responsiveness", item: report.assessment.listening }].map(({ title, item }) => <div key={title}><h3 className="font-semibold">{title} · {item.score == null ? "Unavailable" : `${item.score}/100`}</h3><p className="mt-1 text-sm text-muted-foreground">{item.evidence}</p></div>)}</div></section>}
+      <ReportObservations report={report} vision={vision} speech={speech} />
+
       <section className="grid gap-4 md:grid-cols-2">
         <ListCard title="Strengths" items={report.strengths} />
         <ListCard title="Areas to improve" items={report.improvement_areas} />
@@ -153,7 +162,7 @@ function ReportPage() {
       <section className="rounded-2xl border bg-card p-6">
         <h2 className="text-xl font-semibold">Delivery & presentation</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {speech && <Metric label="Speaking pace" value={`${speech.words_per_minute ?? 0} wpm`} />}
+          {speech && <Metric label="Speaking pace" value={speech.words_per_minute ? `${speech.words_per_minute} wpm` : "Unavailable"} />}
           {speech && <Metric label="Filler words" value={`${speech.filler_per_100_words ?? 0} / 100 words`} />}
           {vision && <Metric label="Face visible" value={`${vision.face_visible_pct}%`} />}
           {vision && <Metric label="Approx. eye contact" value={`${vision.approx_eye_contact_pct}%`} />}
@@ -184,6 +193,8 @@ function ReportPage() {
                 <span className="mr-3 font-display text-xl">{q.score}</span>
               </AccordionTrigger>
               <AccordionContent className="grid gap-3 text-sm">
+                {q.relevance_score !== undefined && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[["Relevance", q.relevance_score], ["Accuracy", q.accuracy_score], ["Reasoning", q.reasoning_score], ["Communication", q.communication_score]].map(([label, score]) => <div key={label} className="border-b pb-2"><p className="text-xs text-muted-foreground">{label}</p><p className="font-bold">{score == null ? "Unavailable" : `${score}/100`}</p></div>)}</div>}
+                {timing[i] && <p className="text-xs text-muted-foreground">Answer duration: {timing[i].duration_s == null ? "Unavailable" : `${timing[i].duration_s}s`} · Response gap: {timing[i].response_latency_s == null ? "Unavailable" : `${timing[i].response_latency_s}s`} · Caption timing estimates</p>}
                 <p>
                   <span className="font-semibold">Your answer: </span>
                   {q.answer_summary}
@@ -200,7 +211,11 @@ function ReportPage() {
                 <div className="rounded-lg bg-muted p-3">
                   <p className="mb-1 font-semibold">A stronger answer</p>
                   <p>{q.improved_answer}</p>
+                  {q.sample_explanation && <p className="mt-2 text-muted-foreground">{q.sample_explanation}</p>}
                 </div>
+                {q.missing_points?.length ? <p><strong>Missing points: </strong>{q.missing_points.join("; ")}</p> : null}
+                {q.unsupported_statements?.length ? <p><strong>Unsupported claims: </strong>{q.unsupported_statements.join("; ")}</p> : null}
+                {q.practice && <p><strong>Practice: </strong>{q.practice}</p>}
               </AccordionContent>
             </AccordionItem>
           ))}
@@ -209,6 +224,7 @@ function ReportPage() {
 
       <section className="rounded-2xl border bg-card p-6">
         <h2 className="text-xl font-semibold">Your improvement plan</h2>
+        {report.assessment?.limitations?.length ? <p className="mt-2 text-xs text-muted-foreground">{report.assessment.limitations.join(" ")}</p> : null}
         <ol className="mt-4 grid gap-4">
           {report.improvement_plan.map((s, i) => (
             <li key={i} className="flex gap-4">

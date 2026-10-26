@@ -1,4 +1,6 @@
 import type { InterviewReport } from "./interview.functions";
+import { reportObservations, type MetricObservation } from "./report-metrics";
+import type { VisionSummary } from "./vision";
 
 const LABELS: Record<string, string> = {
   communication: "Communication & spoken English",
@@ -19,7 +21,7 @@ function ascii(s: string) {
     .replace(/[^\x20-\x7E\n]/g, "");
 }
 
-export async function downloadReportPdf(report: InterviewReport, meta: { name: string; date: string; type: string }) {
+export async function downloadReportPdf(report: InterviewReport, meta: { name: string; date: string; type: string; transcript?: Array<{ role: string; text: string; start_ms: number }>; vision?: VisionSummary | null; speech?: Record<string, unknown> | null }) {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -74,6 +76,7 @@ export async function downloadReportPdf(report: InterviewReport, meta: { name: s
   text(report.summary, 10);
   gap(12);
   text("Scores", 13, bold);
+  text("Overall rubric: answer quality 30%, reasoning 20%, communication 20%, speech delivery 10%, etiquette 10%, listening 10%. Missing categories are excluded and weights renormalised. Camera observations never determine ability score.", 9, font, grey);
   gap(2);
   for (const [k, v] of Object.entries(report.scores)) {
     text(`${LABELS[k] ?? k}: ${v.score}/100`, 10, bold);
@@ -98,6 +101,10 @@ export async function downloadReportPdf(report: InterviewReport, meta: { name: s
     if (q.quote) text(`At ${Math.floor(q.timestamp_s / 60)}:${String(q.timestamp_s % 60).padStart(2, "0")} - "${q.quote}"`, 9, font, grey, 10);
     text(`Evaluation: ${q.evaluation}`, 9, font, ink, 10);
     text(`Stronger answer: ${q.improved_answer}`, 9, font, grey, 10);
+    if (q.sample_explanation) text(`Why it helps: ${q.sample_explanation}`, 9, font, grey, 10);
+    if (q.missing_points?.length) text(`Missing points: ${q.missing_points.join("; ")}`, 9, font, ink, 10);
+    if (q.unsupported_statements?.length) text(`Unsupported claims: ${q.unsupported_statements.join("; ")}`, 9, font, ink, 10);
+    if (q.practice) text(`Practice: ${q.practice}`, 9, font, ink, 10);
   });
   gap(12);
   text("Your improvement plan", 13, bold);
@@ -105,6 +112,15 @@ export async function downloadReportPdf(report: InterviewReport, meta: { name: s
     text(`${i + 1}. ${s.step} (${s.timeframe})`, 10, bold, ink, 4);
     text(s.detail, 9, font, grey, 16);
   });
+  gap(12);
+  text("20 performance observations", 13, bold);
+  const observations: MetricObservation[] = reportObservations(report, meta.vision ?? null, meta.speech ?? null);
+  observations.forEach((m, i) => { text(`${i + 1}. ${m.label}: ${m.value}`, 10, bold); text(`${m.quality}. ${m.detail}`, 9, font, grey, 10); gap(4); });
+  if (meta.transcript?.length) {
+    gap(12); text("Complete transcript", 13, bold);
+    meta.transcript.forEach((t) => { const seconds = Math.round(t.start_ms / 1000); text(`[${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}] ${t.role === "user" ? "Candidate" : "Aria"}: ${t.text}`, 9); gap(5); });
+  }
+  report.assessment?.limitations.forEach((s) => text(`Limitation: ${s}`, 9, font, grey));
   gap(12);
   text(
     "Webcam-based observations are approximate and describe observable presentation only. They do not assess honesty, personality, intelligence or emotions.",

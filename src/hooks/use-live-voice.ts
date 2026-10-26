@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { observeMicrophone } from "@/lib/audio-analysis";
+import type { AudioSample } from "@/lib/performance";
 
 export type LiveEvent = {
   type: string;
@@ -32,6 +34,7 @@ export function useLiveVoice(
   options: {
     url?: string;
     onEvent?: (event: LiveEvent) => void | Promise<void>;
+    onAudioSample?: (sample: AudioSample) => void;
   } = {},
 ) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -73,6 +76,7 @@ export function useLiveVoice(
       url: endpoint.href,
       audio,
       extra,
+      onAudioSample(sample) { if (mounted.current) latest.current.onAudioSample?.(sample); },
       onEvent(event) {
         if (!mounted.current || controller.current !== voice) return;
         if (event.type === "app.connected") {
@@ -125,6 +129,7 @@ type LiveOptions = {
   audio: HTMLAudioElement;
   extra: Record<string, unknown>;
   onEvent: (event: LiveEvent) => void;
+  onAudioSample?: (sample: AudioSample) => void;
 };
 
 function createLiveVoice(options: LiveOptions) {
@@ -142,6 +147,7 @@ function createLiveVoice(options: LiveOptions) {
   let answerReceived = false;
   let finalized = false;
   let muted = false;
+  let stopAnalysis: (() => void) | undefined;
 
   function starting() {
     return state === "starting";
@@ -152,6 +158,8 @@ function createLiveVoice(options: LiveOptions) {
   }
 
   function stopAudio() {
+    stopAnalysis?.();
+    stopAnalysis = undefined;
     microphone?.getTracks().forEach((track) => track.stop());
     if (playback && options.audio.srcObject === playback) {
       options.audio.pause();
@@ -312,6 +320,9 @@ function createLiveVoice(options: LiveOptions) {
         return;
       }
       const connection = new RTCPeerConnection();
+      if (options.onAudioSample) {
+        try { stopAnalysis = observeMicrophone(stream, options.onAudioSample, () => muted); } catch { /* Optional analysis must not block voice. */ }
+      }
       peer = connection;
       for (const track of stream.getAudioTracks()) {
         track.enabled = !muted;
