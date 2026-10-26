@@ -24,3 +24,5 @@
 - tsconfig relaxes noPropertyAccessFromIndexSignature/noUncheckedIndexedAccess/exactOptionalPropertyTypes/noImplicitReturns to keep UI code readable.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function with a minimum sample size, never raw rows.
+- The admin portal is the separate top-level `/admin` route tree (own login + shell, `ssr: false`); staff permissions are enforced by RLS helper functions (`is_staff`, `can_operate`, `can_support`, `has_role`) and every sensitive admin write goes through audited SECURITY DEFINER functions.
+- Private files (resources PDFs, support attachments, resumes) are served only via short-lived signed URLs; resource PDF downloads go through the authenticated `downloadResource` server function so every download is logged.

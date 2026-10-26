@@ -11,12 +11,27 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedResourcesRouteImport } from './routes/_authenticated/resources'
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
+import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
+import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
+import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
+import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
+import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminResourcesRouteImport } from './routes/admin.resources'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminSlotsRouteImport } from './routes/admin.slots'
+import { Route as AdminSupportRouteImport } from './routes/admin.support'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenticated/interview.$id'
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
 import { Route as AuthenticatedReportIdRouteImport } from './routes/_authenticated/report.$id'
@@ -30,6 +45,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -39,11 +59,6 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -55,10 +70,85 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedResourcesRoute = AuthenticatedResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSlotsRoute = AuthenticatedSlotsRouteImport.update({
   id: '/slots',
   path: '/slots',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCreditsRoute = AdminCreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDocumentsRoute = AdminDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDownloadsRoute = AdminDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInterviewsRoute = AdminInterviewsRouteImport.update({
+  id: '/interviews',
+  path: '/interviews',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPurchasesRoute = AdminPurchasesRouteImport.update({
+  id: '/purchases',
+  path: '/purchases',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminResourcesRoute = AdminResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSlotsRoute = AdminSlotsRouteImport.update({
+  id: '/slots',
+  path: '/slots',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedInterviewIdRoute =
   AuthenticatedInterviewIdRouteImport.update({
@@ -80,12 +170,27 @@ const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/support': typeof AuthenticatedSupportRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
@@ -94,10 +199,24 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/support': typeof AuthenticatedSupportRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
@@ -106,12 +225,27 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
+  '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/': typeof AdminIndexRoute
   '/_authenticated/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/_authenticated/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
@@ -120,12 +254,27 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/reset-password'
-    | '/admin'
     | '/dashboard'
     | '/profile'
+    | '/resources'
     | '/slots'
+    | '/support'
+    | '/admin/audit'
+    | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
+    | '/admin/interviews'
+    | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
+    | '/admin/slots'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin/'
     | '/interview/$id'
     | '/interview/check'
     | '/report/$id'
@@ -134,10 +283,24 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/admin'
     | '/dashboard'
     | '/profile'
+    | '/resources'
     | '/slots'
+    | '/support'
+    | '/admin/audit'
+    | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
+    | '/admin/interviews'
+    | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
+    | '/admin/slots'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin'
     | '/interview/$id'
     | '/interview/check'
     | '/report/$id'
@@ -145,12 +308,27 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
+    | '/_authenticated/resources'
     | '/_authenticated/slots'
+    | '/_authenticated/support'
+    | '/admin/audit'
+    | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
+    | '/admin/interviews'
+    | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
+    | '/admin/slots'
+    | '/admin/support'
+    | '/admin/users'
+    | '/admin/'
     | '/_authenticated/interview/$id'
     | '/_authenticated/interview/check'
     | '/_authenticated/report/$id'
@@ -159,6 +337,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
@@ -179,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -192,13 +378,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -214,12 +393,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/resources': {
+      id: '/_authenticated/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AuthenticatedResourcesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/slots': {
       id: '/_authenticated/slots'
       path: '/slots'
       fullPath: '/slots'
       preLoaderRoute: typeof AuthenticatedSlotsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/support': {
+      id: '/_authenticated/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AuthenticatedSupportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/credits': {
+      id: '/admin/credits'
+      path: '/credits'
+      fullPath: '/admin/credits'
+      preLoaderRoute: typeof AdminCreditsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/documents': {
+      id: '/admin/documents'
+      path: '/documents'
+      fullPath: '/admin/documents'
+      preLoaderRoute: typeof AdminDocumentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/downloads': {
+      id: '/admin/downloads'
+      path: '/downloads'
+      fullPath: '/admin/downloads'
+      preLoaderRoute: typeof AdminDownloadsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/interviews': {
+      id: '/admin/interviews'
+      path: '/interviews'
+      fullPath: '/admin/interviews'
+      preLoaderRoute: typeof AdminInterviewsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/purchases': {
+      id: '/admin/purchases'
+      path: '/purchases'
+      fullPath: '/admin/purchases'
+      preLoaderRoute: typeof AdminPurchasesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/resources': {
+      id: '/admin/resources'
+      path: '/resources'
+      fullPath: '/admin/resources'
+      preLoaderRoute: typeof AdminResourcesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/slots': {
+      id: '/admin/slots'
+      path: '/slots'
+      fullPath: '/admin/slots'
+      preLoaderRoute: typeof AdminSlotsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_authenticated/interview/$id': {
       id: '/_authenticated/interview/$id'
@@ -246,20 +530,22 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedResourcesRoute: typeof AuthenticatedResourcesRoute
   AuthenticatedSlotsRoute: typeof AuthenticatedSlotsRoute
+  AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedInterviewIdRoute: typeof AuthenticatedInterviewIdRoute
   AuthenticatedInterviewCheckRoute: typeof AuthenticatedInterviewCheckRoute
   AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedResourcesRoute: AuthenticatedResourcesRoute,
   AuthenticatedSlotsRoute: AuthenticatedSlotsRoute,
+  AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedInterviewIdRoute: AuthenticatedInterviewIdRoute,
   AuthenticatedInterviewCheckRoute: AuthenticatedInterviewCheckRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
@@ -268,9 +554,44 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminCreditsRoute: typeof AdminCreditsRoute
+  AdminDocumentsRoute: typeof AdminDocumentsRoute
+  AdminDownloadsRoute: typeof AdminDownloadsRoute
+  AdminInterviewsRoute: typeof AdminInterviewsRoute
+  AdminPurchasesRoute: typeof AdminPurchasesRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminResourcesRoute: typeof AdminResourcesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSlotsRoute: typeof AdminSlotsRoute
+  AdminSupportRoute: typeof AdminSupportRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
+  AdminCreditsRoute: AdminCreditsRoute,
+  AdminDocumentsRoute: AdminDocumentsRoute,
+  AdminDownloadsRoute: AdminDownloadsRoute,
+  AdminInterviewsRoute: AdminInterviewsRoute,
+  AdminPurchasesRoute: AdminPurchasesRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminResourcesRoute: AdminResourcesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSlotsRoute: AdminSlotsRoute,
+  AdminSupportRoute: AdminSupportRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
