@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/my-slots")({
 function MySlots() {
   const { data } = useSuspenseQuery(bookingQuery);
   const past = data.bookings.filter((b) => b.status !== "booked" || (b.interview_slots && slotPhase(b.interview_slots.starts_at, b.interview_slots.ends_at, Date.now()) === "expired"));
-  const label: Record<string, string> = { booked: "Missed", started: "Completed", completed: "Completed", cancelled: "Cancelled" };
+  const label: Record<string, string> = { booked: "Missed", no_show: "Missed", started: "Completed", completed: "Completed", cancelled: "Cancelled" };
   return <div className="grid gap-6">
     <section className="animate-reveal section-card flex flex-wrap items-end justify-between gap-4 p-6"><div><p className="text-xs font-semibold uppercase tracking-wider text-primary">My interviews</p><h1 className="mt-1 text-3xl font-bold">My slots</h1><p className="mt-1 text-sm text-muted-foreground">Your camera, microphone and connection are checked right before each interview starts.</p></div><Button asChild><Link to="/slots">Book a new slot</Link></Button></section>
     <BookedInterviews />

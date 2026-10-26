@@ -33,7 +33,7 @@ function Dashboard() {
           <div className="min-w-0"><div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground"><span>{new Date().toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" })}</span>{upcoming > 0 && <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">{upcoming} upcoming</span>}</div>
           <h1 className="mt-1 text-3xl font-bold md:text-4xl">{(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, <span className="text-primary">{me.profile?.full_name?.split(" ")[0] || "Student"}</span></h1>
           <p className="mt-1 text-sm text-muted-foreground">{scored.length ? `Your average score is ${avg}/100 across ${scored.length} interviews — keep practising.` : "Book your first mock interview to start tracking progress."}</p>
-          <div className="mt-4 flex flex-wrap gap-2"><Button asChild><Link to="/slots">Book an interview</Link></Button><Button asChild variant="outline"><Link to="/interview/check">Equipment check</Link></Button></div></div>
+          <div className="mt-4 flex flex-wrap gap-2"><Button asChild><Link to="/slots">Book an interview</Link></Button><Button asChild variant="outline"><Link to="/my-slots">My slots</Link></Button></div></div>
         </div>
       </div>
     </section>
