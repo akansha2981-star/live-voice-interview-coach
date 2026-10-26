@@ -199,7 +199,7 @@ function InterviewRoom() {
   const goodCount = checks.filter((c) => c.ok).length;
 
   return (
-    <Dialog open><DialogContent aria-describedby={undefined} onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} className="inset-0 left-0 top-0 h-dvh w-screen max-w-none translate-x-0 translate-y-0 overflow-y-auto rounded-none border-0 p-4 sm:rounded-none md:p-8 [&>button]:hidden"><DialogTitle className="sr-only">MBA Compass live interview</DialogTitle><div className="mx-auto grid w-full max-w-7xl gap-5">
+    <Dialog open><DialogContent aria-describedby={undefined} onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} className="inset-0 left-0 top-0 h-dvh w-screen max-w-none content-start translate-x-0 translate-y-0 overflow-y-auto rounded-none border-0 p-4 sm:rounded-none md:p-8 [&>button]:hidden"><DialogTitle className="sr-only">MBA Compass live interview</DialogTitle><div className="mx-auto grid w-full max-w-7xl gap-5">
       {/* Top status bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-5 py-3 text-foreground">
         <div className="flex items-center gap-3">
