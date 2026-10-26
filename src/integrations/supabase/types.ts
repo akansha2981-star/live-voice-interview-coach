@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      answer_reviews: {
+        Row: {
+          id: string
+          interview_id: string
+          question_index: number
+          reviewed_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          interview_id: string
+          question_index: number
+          reviewed_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          interview_id?: string
+          question_index?: number
+          reviewed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answer_reviews_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_ledger: {
         Row: {
           created_at: string
@@ -316,6 +348,18 @@ export type Database = {
           id: string
           remaining: number
           starts_at: string
+        }[]
+      }
+      score_benchmark: {
+        Args: { _category: string }
+        Returns: {
+          avg_communication: number
+          avg_general: number
+          avg_overall: number
+          avg_practical: number
+          avg_resume: number
+          sample_size: number
+          scope: string
         }[]
       }
       start_interview: { Args: never; Returns: string }
