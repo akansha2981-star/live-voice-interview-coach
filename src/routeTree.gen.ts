@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMySlotsRouteImport } from './routes/_authenticated/my-slots'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -21,6 +22,7 @@ import { Route as AuthenticatedResourcesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
@@ -62,6 +64,12 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -95,6 +103,11 @@ const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnnouncementsRoute = AdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -186,12 +199,14 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-slots': typeof AuthenticatedMySlotsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -214,12 +229,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-slots': typeof AuthenticatedMySlotsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -245,12 +262,14 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-slots': typeof AuthenticatedMySlotsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -276,12 +295,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/announcements'
     | '/dashboard'
     | '/my-slots'
     | '/profile'
     | '/resources'
     | '/slots'
     | '/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -304,12 +325,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/announcements'
     | '/dashboard'
     | '/my-slots'
     | '/profile'
     | '/resources'
     | '/slots'
     | '/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -334,12 +357,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/announcements'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-slots'
     | '/_authenticated/profile'
     | '/_authenticated/resources'
     | '/_authenticated/slots'
     | '/_authenticated/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -404,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -451,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/announcements': {
+      id: '/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AdminAnnouncementsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/audit': {
@@ -569,6 +608,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedMySlotsRoute: typeof AuthenticatedMySlotsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -582,6 +622,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedMySlotsRoute: AuthenticatedMySlotsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
@@ -598,6 +639,7 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface AdminRouteChildren {
+  AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCreditsRoute: typeof AdminCreditsRoute
   AdminDocumentsRoute: typeof AdminDocumentsRoute
@@ -614,6 +656,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminCreditsRoute: AdminCreditsRoute,
   AdminDocumentsRoute: AdminDocumentsRoute,

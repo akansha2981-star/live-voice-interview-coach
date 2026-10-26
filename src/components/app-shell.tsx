@@ -5,24 +5,30 @@ import { meQuery } from "@/lib/queries";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 
-type NavItem = { to: "/dashboard" | "/slots" | "/interview/check" | "/profile" | "/admin" | "/resources" | "/support"; label: string; short: string; mark: string; tone: string };
+import { PREP_SECTIONS } from "@/lib/prep";
+
+type NavItem = { to: "/dashboard" | "/slots" | "/my-slots" | "/announcements" | "/prep/$section" | "/profile" | "/admin" | "/support"; params?: { section: string }; label: string; short: string; mark: string; tone: string };
 const GROUPS: { title: string; items: NavItem[] }[] = [
-  { title: "Workspace", items: [{ to: "/dashboard", label: "Overview", short: "Home", mark: "OV", tone: "bg-primary text-primary-foreground" }] },
+  { title: "Workspace", items: [
+    { to: "/dashboard", label: "Overview", short: "Home", mark: "OV", tone: "bg-primary text-primary-foreground" },
+    { to: "/announcements", label: "Important announcements", short: "News", mark: "IA", tone: "bg-destructive text-destructive-foreground" },
+  ] },
   { title: "My interviews", items: [
     { to: "/slots", label: "Book interview", short: "Book", mark: "BK", tone: "bg-sky text-primary-foreground" },
-    { to: "/interview/check", label: "Equipment check", short: "Check", mark: "EQ", tone: "bg-success text-primary-foreground" },
+    { to: "/my-slots", label: "My slots", short: "Slots", mark: "MS", tone: "bg-success text-primary-foreground" },
   ] },
-  { title: "Learning", items: [{ to: "/resources", label: "SOP & Resources", short: "Library", mark: "SR", tone: "bg-ink text-ink-foreground" }] },
+  { title: "My prep material", items: PREP_SECTIONS.map((p) => ({ to: "/prep/$section" as const, params: { section: p.slug }, label: p.label, short: "Prep", mark: p.mark, tone: "bg-ink text-ink-foreground" })) },
   { title: "Account", items: [
     { to: "/profile", label: "My profile", short: "Profile", mark: "PR", tone: "bg-accent text-accent-foreground" },
-    { to: "/support", label: "Help & Support", short: "Help", mark: "HS", tone: "bg-destructive text-destructive-foreground" },
+    { to: "/support", label: "Help & Support", short: "Help", mark: "HS", tone: "bg-secondary text-primary" },
   ] },
 ];
-const MOBILE = GROUPS.flatMap((g) => g.items).filter((n) => n.to !== "/resources" && n.to !== "/interview/check");
+const MOBILE: NavItem[] = [GROUPS[0].items[0], GROUPS[1].items[1], { ...GROUPS[2].items[0], short: "Prep" }, GROUPS[0].items[1], GROUPS[3].items[0]];
+const navKey = (n: NavItem) => n.to + (n.params?.section ?? "");
 
 function NavLink({ n }: { n: NavItem }) {
   const base = "group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-all duration-200";
-  return <Link to={n.to} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} bg-secondary font-semibold text-primary shadow-[inset_3px_0_0_var(--primary)]` }}>
+  return <Link to={n.to} params={n.params as never} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} bg-secondary font-semibold text-primary shadow-[inset_3px_0_0_var(--primary)]` }}>
     <span className={`grid size-7 shrink-0 place-items-center rounded-md text-[10px] font-bold tracking-wide ${n.tone}`}>{n.mark}</span>
     <span className="truncate">{n.label}</span>
   </Link>;
@@ -51,7 +57,7 @@ export function AppShell() {
       <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col gap-3 overflow-y-auto border-r bg-card/60 p-3 md:flex">
         {groups.map((g, gi) => <div key={g.title} style={{ "--i": gi } as React.CSSProperties} className="animate-reveal rounded-xl border bg-card p-2 shadow-[0_1px_2px_oklch(0.22_0.04_262/0.04)]">
           <p className="px-2.5 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{g.title}</p>
-          <nav className="grid gap-0.5">{g.items.map((n) => <NavLink key={n.to} n={n} />)}</nav>
+          <nav className="grid gap-0.5">{g.items.map((n) => <NavLink key={navKey(n)} n={n} />)}</nav>
         </div>)}
         <div className="animate-reveal relative mt-auto overflow-hidden rounded-xl bg-gradient-to-br from-primary to-ink p-4 text-primary-foreground" style={{ "--i": 4 } as React.CSSProperties}>
           <span aria-hidden className="absolute -right-6 -top-6 size-20 rounded-full bg-primary-foreground/10" />
@@ -63,6 +69,6 @@ export function AppShell() {
       </aside>
       <main className="mx-auto min-w-0 max-w-7xl flex-1 px-4 py-6 pb-28 md:px-8 md:pb-8"><div className="animate-fade"><Outlet /></div></main>
     </div>
-    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-card/95 pb-safe backdrop-blur-md md:hidden">{MOBILE.map((n) => <Link key={n.to} to={n.to} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-muted-foreground" activeProps={{ className: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold text-primary" }}>{({ isActive }) => <><span className={`grid size-7 place-items-center rounded-md text-[9px] font-bold ${isActive ? n.tone : "bg-secondary text-muted-foreground"}`}>{n.mark}</span>{n.short}</>}</Link>)}</nav>
+    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t bg-card/95 pb-safe backdrop-blur-md md:hidden">{MOBILE.map((n) => <Link key={navKey(n)} to={n.to} params={n.params as never} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-muted-foreground" activeProps={{ className: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold text-primary" }}>{({ isActive }) => <><span className={`grid size-7 place-items-center rounded-md text-[9px] font-bold ${isActive ? n.tone : "bg-secondary text-muted-foreground"}`}>{n.mark}</span>{n.short}</>}</Link>)}</nav>
   </div>;
 }
