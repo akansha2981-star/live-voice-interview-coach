@@ -1,4 +1,7 @@
 # Dashboard and interview workflow
+- [ ] Advanced brief: measured audio, visual observations, question timing and configurable calm alerts
+- [ ] Twenty-metric report, evidence-based rubric, complete PDF/transcript and seven-day practice plan
+- [ ] Rule tests and desktop/mobile interview verification
 - [x] Advanced interview tracking and isolated full-transcript scrolling (100-turn simulated browser checks; live participant verification remains below)
 - [x] Compact clickable slot filters and viewport-bounded single-column list
 - [x] Five-minute slot availability and bounded scrollable booking list
