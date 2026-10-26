@@ -43,7 +43,7 @@ function IntroPanel() {
     return () => clearInterval(t);
   }, []);
   return (
-    <aside className="hidden min-h-dvh flex-col justify-center border-l bg-secondary px-10 py-8 lg:flex xl:px-16">
+    <aside className="hidden min-h-dvh flex-col justify-center px-10 py-8 lg:flex xl:px-16">
       <div className="mx-auto w-full max-w-md">
       <p className="text-sm font-semibold text-primary">MBA Compass · AI Interview Suite</p>
       <p className="mt-8 text-xs font-semibold text-muted-foreground">Your next chapter starts here</p>
@@ -111,7 +111,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
   }
 
   return (
-    <div className="auth-layout min-h-dvh bg-card">
+    <div className="auth-shell auth-layout min-h-dvh">
       <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex items-center justify-center px-6 py-6 sm:px-12">
         <div className="w-full max-w-md animate-rise">
