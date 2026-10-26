@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useMutation, useQueryClient, useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -64,7 +64,7 @@ export function DashboardInsights() {
         {bench.isError ? <p className="text-sm text-destructive">Could not load comparison data.</p> : !enough ? <p className="text-sm text-muted-foreground">Not enough comparison data. At least {MIN_COMPARISON_SAMPLE} completed interviews from other students are needed (currently {b?.sample_size ?? 0}).</p> : <div className="grid gap-2 text-sm">
           <p className="text-xs text-muted-foreground">Anonymous averages from {b!.sample_size} interviews{b!.scope === "category" ? " of the same interview type" : " across all interview types"}. No other student's identity, answers or reports are shown.</p>
           <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-6 gap-y-2"><span className="font-semibold">Area</span><span className="font-semibold">You</span><span className="font-semibold">Average</span><span className="font-semibold">Difference</span>
-            {[["Overall", latest.overall_score, b!.avg_overall], ["Resume-based", cats.resume, b!.avg_resume], ["Practical", cats.practical, b!.avg_practical], ["General knowledge", cats.general_knowledge, b!.avg_general], ["Communication", report.scores.communication.score, b!.avg_communication]].map(([l, y, a]) => <><span key={`${l}`}>{l as string}</span><span className="tabular-nums">{y ?? "—"}</span><span className="tabular-nums">{a == null ? "—" : Math.round(Number(a))}</span><span className="tabular-nums">{y == null || a == null ? "—" : signed(Math.round(Number(y) - Number(a)))}</span></>)}
+            {[["Overall", latest.overall_score, b!.avg_overall], ["Resume-based", cats.resume, b!.avg_resume], ["Practical", cats.practical, b!.avg_practical], ["General knowledge", cats.general_knowledge, b!.avg_general], ["Communication", report.scores.communication.score, b!.avg_communication]].map(([l, y, a]) => <Fragment key={l as string}><span>{l as string}</span><span className="tabular-nums">{y ?? "—"}</span><span className="tabular-nums">{a == null ? "—" : Math.round(Number(a))}</span><span className="tabular-nums">{y == null || a == null ? "—" : signed(Math.round(Number(y) - Number(a)))}</span></Fragment>)}
           </div></div>}
       </AccordionContent></AccordionItem>
       <AccordionItem value="plan" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">What you should improve next</AccordionTrigger><AccordionContent>
