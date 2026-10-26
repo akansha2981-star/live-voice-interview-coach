@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { MIC_PHRASE, preflightReady, slotPhase, speechMatches } from "../lib/booking";
 describe("booked interview checks", () => {
-  const passed = { downloadMbps: 3, latencyMs: 200, faceVisible: true, micConfirmed: true, consent: true };
+  const passed = { downloadMbps: 3, latencyMs: 200, faceVisible: true, cameraWorking: true, micWorking: true, micConfirmed: true, consent: true };
+  it("requires a working camera track separately from face detection", () => { expect(preflightReady({ ...passed, cameraWorking: false })).toBe(false); });
+  it("requires a working microphone track separately from phrase confirmation", () => { expect(preflightReady({ ...passed, micWorking: false })).toBe(false); });
   it("requires good internet before entry", () => { expect(preflightReady({ ...passed, downloadMbps: 0.5 })).toBe(false); expect(preflightReady(passed)).toBe(true); });
   it("requires a visible face", () => { expect(preflightReady({ ...passed, faceVisible: false })).toBe(false); });
   it("requires spoken microphone verification", () => { expect(preflightReady({ ...passed, micConfirmed: false })).toBe(false); expect(speechMatches(MIC_PHRASE)).toBe(true); expect(speechMatches("hello")).toBe(false); });

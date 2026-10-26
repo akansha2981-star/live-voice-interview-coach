@@ -31,7 +31,7 @@ export const myInterviewsQuery = queryOptions({
     const id = await uid();
     const { data, error } = await supabase
       .from("interviews")
-      .select("id, status, category, difficulty, started_at, duration_s, overall_score")
+      .select("id, status, category, difficulty, started_at, duration_s, overall_score, vision_summary")
       .eq("user_id", id)
       .order("created_at", { ascending: false })
       .limit(50);

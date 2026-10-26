@@ -1,6 +1,6 @@
 # Dashboard and interview workflow
 - [ ] Mandatory working camera, visible face and microphone verification before interview
-- [ ] Real Buy More Slots payments with automatic credit fulfilment — requires payment setup confirmation and prices
+- [ ] Real Buy More Slots payments with automatic credit fulfilment — user deferred payment setup; price ₹100/interview confirmed
 - [ ] Self-service admin slot/date/time and credit management
 - [ ] Dashboard review: interview date/time, score, eye contact and transcript
 - [ ] Khushi account booking and full live interview verification — requires a live participant for camera/mic answers

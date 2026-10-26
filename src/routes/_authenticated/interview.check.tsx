@@ -30,7 +30,7 @@ function CheckPage() {
  const connection = useServerFn(checkConnection); const confirm = useServerFn(confirmPreflight);
  const videoRef = useRef<HTMLVideoElement>(null); const recorderRef = useRef<MediaRecorder | null>(null); const recognitionRef = useRef<SpeechRecognizer | null>(null); const recordingTimer = useRef<ReturnType<typeof setTimeout> | null>(null); const audioRef = useRef<HTMLAudioElement>(null); const chunks = useRef<Blob[]>([]); const peakRef = useRef(0);
  const [stream, setStream] = useState<MediaStream | null>(null);
- const [faceVisible, setFaceVisible] = useState(false); const [level, setLevel] = useState(0); const [tip, setTip] = useState("Turn on your camera to verify your face.");
+ const [faceVisible, setFaceVisible] = useState(false); const [cameraWorking, setCameraWorking] = useState(false); const [micWorking, setMicWorking] = useState(false); const [level, setLevel] = useState(0); const [tip, setTip] = useState("Turn on your camera to verify your face.");
  const [network, setNetwork] = useState<{ downloadMbps: number; latencyMs: number } | null>(null); const [testing, setTesting] = useState(false);
  const [consent, setConsent] = useState(false); const [starting, setStarting] = useState(false); const [mediaError, setMediaError] = useState<string | null>(null);
  const [recording, setRecording] = useState(false); const [micConfirmed, setMicConfirmed] = useState(false); const [recordingUrl, setRecordingUrl] = useState<string | null>(null); const [played, setPlayed] = useState(false); const [speech, setSpeech] = useState(""); const [now, setNow] = useState(Date.now());
@@ -48,13 +48,14 @@ function CheckPage() {
    } catch (e) { toast.error(e instanceof Error ? e.message : "Connection check failed."); } finally { setTesting(false); }
  }
  async function enable() {
-   try { const s = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: true }); setStream(s); setMediaError(null); } catch { setMediaError("Allow camera and microphone access, then try again."); }
+   try { const s = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: true }); setStream(s); setMicConfirmed(false); setCameraWorking(false); setMicWorking(false); setMediaError(null); } catch { setMediaError("Allow camera and microphone access, then try again."); }
  }
  useEffect(() => {
    if (!stream) return;
    const video = videoRef.current; let analyzer: Awaited<ReturnType<typeof createVisionAnalyzer>> | null = null; let cancelled = false; let timer: ReturnType<typeof setInterval> | undefined;
    const audio = new AudioContext(); const meter = audio.createAnalyser(); audio.createMediaStreamSource(stream).connect(meter); const buf = new Uint8Array(meter.fftSize); let raf = 0;
-   function loop() { meter.getByteTimeDomainData(buf); let peak = 0; for (const v of buf) peak = Math.max(peak, Math.abs(v-128)); peakRef.current = Math.max(peakRef.current,peak); setLevel(Math.min(100,peak/64*100)); raf = requestAnimationFrame(loop); } loop();
+   void audio.resume().catch(() => {});
+   function loop() { const cameraOk = stream?.getVideoTracks().some((t) => t.readyState === "live" && t.enabled && !t.muted) && (video?.readyState ?? 0) >= 2; const micOk = stream?.getAudioTracks().some((t) => t.readyState === "live" && t.enabled && !t.muted); setCameraWorking(Boolean(cameraOk)); setMicWorking(Boolean(micOk)); if (!cameraOk) setFaceVisible(false); if (!micOk) setMicConfirmed(false); meter.getByteTimeDomainData(buf); let peak = 0; for (const v of buf) peak = Math.max(peak, Math.abs(v-128)); peakRef.current = Math.max(peakRef.current,peak); setLevel(Math.min(100,peak/64*100)); raf = requestAnimationFrame(loop); } loop();
    if (video) { video.srcObject = stream; void video.play().then(() => createVisionAnalyzer(video)).then((a) => { if (cancelled) return a.close(); analyzer = a; timer = setInterval(() => { const f = a.analyze(performance.now()); setFaceVisible(Boolean(f?.faceVisible)); setTip(liveTip(f) ?? "Face verified. You are well framed."); }, 500); }).catch(() => { setFaceVisible(false); setTip("Face verification unavailable. Try a supported browser or another device."); }); }
    return () => { cancelled = true; cancelAnimationFrame(raf); clearInterval(timer); analyzer?.close(); void audio.close(); stream.getTracks().forEach((t) => t.stop()); };
  }, [stream]);
@@ -64,13 +65,13 @@ function CheckPage() {
    if (!window.MediaRecorder) return toast.error("Audio verification is unavailable in this browser.");
    const rec = new MediaRecorder(new MediaStream(stream.getAudioTracks())); recorderRef.current = rec;
    rec.ondataavailable = (e) => { if (e.data.size) chunks.current.push(e.data); };
-   rec.onstop = () => { setRecording(false); recognitionRef.current?.stop(); if (peakRef.current < 5) return toast.error("No speech detected. Check your microphone and try again."); setRecordingUrl(URL.createObjectURL(new Blob(chunks.current, { type: rec.mimeType }))); };
+   rec.onstop = () => { setRecording(false); recognitionRef.current?.stop(); if (peakRef.current < 5 || !chunks.current.some((c) => c.size > 0)) { setMicConfirmed(false); return toast.error("No speech detected. Check your microphone and try again."); } setRecordingUrl(URL.createObjectURL(new Blob(chunks.current, { type: rec.mimeType }))); };
    const browser = window as typeof window & { SpeechRecognition?: new () => SpeechRecognizer; webkitSpeechRecognition?: new () => SpeechRecognizer };
    const Recognizer = browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
    if (Recognizer) { const r = new Recognizer(); recognitionRef.current = r; r.lang = "en-IN"; r.continuous = true; r.interimResults = true; r.onresult = (e) => { let text = ""; for (let i=0; i<e.results.length; i++) text += e.results[i][0].transcript + " "; setSpeech(text.trim()); if (speechMatches(text)) setMicConfirmed(true); }; r.onerror = () => {}; r.onend = () => {}; try { r.start(); } catch {} }
    rec.start(); setRecording(true); recordingTimer.current = setTimeout(() => { if (rec.state === "recording") rec.stop(); }, 9000);
  }
- const values = { downloadMbps: network?.downloadMbps ?? 0, latencyMs: network?.latencyMs ?? 9999, faceVisible, micConfirmed, consent };
+ const values = { downloadMbps: network?.downloadMbps ?? 0, latencyMs: network?.latencyMs ?? 9999, faceVisible, cameraWorking, micWorking, micConfirmed: micConfirmed && !recording, consent };
  async function begin() {
    if (!booking || phase !== "ready" || !preflightReady(values)) return;
    setStarting(true);

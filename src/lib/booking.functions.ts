@@ -9,7 +9,7 @@ export const checkConnection = createServerFn({ method: "POST" })
 
 export const confirmPreflight = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ bookingId: z.string().uuid(), downloadMbps: z.number().finite(), latencyMs: z.number().finite(), faceVisible: z.boolean(), micConfirmed: z.boolean(), consent: z.boolean() }).parse(input))
+  .inputValidator((input: unknown) => z.object({ bookingId: z.string().uuid(), downloadMbps: z.number().finite(), latencyMs: z.number().finite(), faceVisible: z.boolean(), cameraWorking: z.boolean(), micWorking: z.boolean(), micConfirmed: z.boolean(), consent: z.boolean() }).parse(input))
   .handler(async ({ data, context }) => {
     if (!preflightReady(data)) throw new Error("Complete all equipment checks first.");
     const { data: booking, error } = await context.supabase.from("interview_bookings").select("*, interview_slots(starts_at, ends_at)").eq("id", data.bookingId).eq("user_id", context.userId).eq("status", "booked").maybeSingle();
