@@ -24,3 +24,8 @@
 - [x] Distraction-free interview pop-up with visible questions and live signals
 - [x] Rule tests, signed-in booking/read-back, connection check and mobile layout verification
 - [ ] Real camera/microphone and audible interview verification — requires a live participant with camera and microphone
+# Sidebar sections
+- [x] My Slots page; equipment check removed from menu (runs automatically before each interview)
+- [x] My Prep Material: Sample SOPs, GDPI Dockets, Domain Dossiers, Masterclasses & Workshops, GK Hub (admin managed)
+- [x] Important Announcements feed (admin posts text/image/link; students like and comment)
+- [ ] Admin posting end-to-end check — needs an admin sign-in in the preview
