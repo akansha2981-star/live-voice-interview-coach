@@ -7,6 +7,7 @@ import { meQuery } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PublishSlots } from "@/components/publish-slots";
+import { ManageSlots } from "@/components/manage-slots";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -27,6 +28,7 @@ function AdminPage() {
   const { data: me } = useSuspenseQuery(meQuery);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [creditAmount, setCreditAmount] = useState(1);
   const { data: students = [] } = useQuery({
     queryKey: ["admin", "students"],
     enabled: me.isAdmin,
@@ -69,12 +71,14 @@ function AdminPage() {
   return (
     <div className="grid gap-6">
       <PublishSlots userId={me.id} />
+      <ManageSlots />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-semibold">Students</h1>
           <p className="text-muted-foreground">Grant interview credits and review reports.</p>
         </div>
         <Input placeholder="Search name or email" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
+        <label className="grid gap-1 text-xs">Credits to add / remove<Input type="number" min={1} max={1000} value={creditAmount} onChange={(e) => setCreditAmount(Number(e.target.value))} /></label>
       </div>
       <div className="overflow-x-auto rounded-2xl border bg-card">
         <table className="w-full text-sm">
@@ -113,11 +117,11 @@ function AdminPage() {
                 </td>
                 <td className="p-4">
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" disabled={s.credits < 1} onClick={() => grant(s.id, -1)}>
-                      −1
+                    <Button size="sm" variant="outline" disabled={s.credits < creditAmount || !Number.isInteger(creditAmount) || creditAmount < 1 || creditAmount > 1000} onClick={() => grant(s.id, -creditAmount)}>
+                      Remove {creditAmount}
                     </Button>
-                    <Button size="sm" onClick={() => grant(s.id, 1)}>
-                      +1 credit
+                    <Button size="sm" disabled={!Number.isInteger(creditAmount) || creditAmount < 1 || creditAmount > 1000} onClick={() => grant(s.id, creditAmount)}>
+                      Add {creditAmount}
                     </Button>
                   </div>
                 </td>
