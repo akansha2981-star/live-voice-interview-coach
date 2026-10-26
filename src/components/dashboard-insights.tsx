@@ -9,9 +9,11 @@ import { MIN_COMPARISON_SAMPLE, SECTIONS, compareLatest, fmtTime, journey, pctSt
 import type { VisionSummary } from "@/lib/vision";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { GrowBar } from "@/components/motion";
+import { AnimatedNumber, GrowBar } from "@/components/motion";
+import type React from "react";
 
 const Tag = ({ kind }: { kind: "measured" | "ai" }) => <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${kind === "measured" ? "bg-secondary text-primary" : "bg-accent/30 text-foreground"}`}>{kind === "measured" ? "Measured" : "AI feedback"}</span>;
+const Heading = ({ n, title, sub, tag }: { n: string; title: string; sub?: string; tag?: "measured" | "ai" }) => <div className="flex flex-wrap items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">{n}</span><div className="min-w-0"><h2 className="text-lg font-bold leading-tight">{title}</h2>{sub && <p className="mt-0.5 text-sm text-muted-foreground">{sub}</p>}</div></div>{tag && <Tag kind={tag} />}</div>;
 const signed = (n: number | null) => n == null ? "—" : `${n > 0 ? "+" : ""}${n}`;
 const date = (d: string) => new Date(d).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
 
@@ -27,7 +29,7 @@ export function DashboardInsights() {
   const items = reviewItems(chrono);
   const { pending, done } = splitReviews(items, reviewedSet);
 
-  if (!latest) return <section className="rounded-lg border bg-card p-6 text-center"><h2 className="text-xl font-bold">Your insights will appear here</h2><p className="mt-2 text-sm text-muted-foreground">Complete your first interview to see scores, answer reviews and your improvement plan.</p><Button asChild className="mt-4"><Link to="/slots">Book an interview</Link></Button></section>;
+  if (!latest) return <section className="animate-reveal section-card p-8 text-center"><h2 className="text-xl font-bold">Your insights will appear here</h2><p className="mt-2 text-sm text-muted-foreground">Complete your first interview to see scores, answer reviews and your improvement plan.</p><Button asChild className="mt-4"><Link to="/slots">Book an interview</Link></Button></section>;
 
   const report = latest.report!;
   const cats = report.category_scores ?? { resume: null, practical: null, general_knowledge: null };
@@ -46,29 +48,28 @@ export function DashboardInsights() {
   ];
 
   return <div className="grid min-w-0 gap-6">
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{top.map((t) => <div key={t.label} className="rounded-lg border bg-card p-4 shadow-soft"><p className="text-xs font-semibold text-muted-foreground">{t.label}</p><p className={`mt-2 font-bold text-primary ${t.small ? "text-base leading-tight" : "text-2xl tabular-nums"}`}>{t.value}</p><p className="mt-1 text-xs text-muted-foreground">{t.note}</p></div>)}</div>
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{top.map((t, i) => <div key={t.label} style={{ "--i": i } as React.CSSProperties} className="animate-reveal card-lift section-card relative overflow-hidden p-4"><span className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary to-sky" /><p className="text-xs font-semibold text-muted-foreground">{t.label}</p><p className={`mt-2 font-bold text-primary ${t.small ? "text-base leading-tight" : "text-3xl tabular-nums"}`}>{typeof t.value === "number" ? <AnimatedNumber value={t.value} /> : t.value}</p><p className="mt-1 text-xs text-muted-foreground">{t.note}</p></div>)}</div>
 
-    <section className="rounded-lg border bg-card p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl font-bold">Interview performance tracker</h2><Tag kind="ai" /></div>
-      <p className="mt-1 text-sm text-muted-foreground">Three sections, three questions each.</p>
-      <div className="mt-4 grid gap-4 md:grid-cols-3">{SECTIONS.map((s) => { const v = cats[s.key]; return <div key={s.key} className={`rounded-md border p-4 ${sw.strongest?.key === s.key ? "border-success" : sw.weakest?.key === s.key ? "border-destructive/60" : ""}`}><div className="flex justify-between text-sm"><span className="font-semibold">{s.label}</span><span className="font-bold tabular-nums">{v ?? "—"}{v != null && "/100"}</span></div><GrowBar value={v ?? 0} tone="bg-primary" className="mt-3" /><p className="mt-2 text-xs text-muted-foreground">{v == null ? "Not scored in this interview" : sw.strongest?.key === s.key ? "Strongest area" : sw.weakest?.key === s.key ? "Weakest area" : "\u00a0"}</p></div>; })}</div>
+    <section style={{ "--i": 6 } as React.CSSProperties} className="animate-reveal section-card p-5">
+      <Heading n="01" title="Interview performance tracker" sub="Three sections, three questions each" tag="ai" />
+      <div className="mt-4 grid gap-4 md:grid-cols-3">{SECTIONS.map((s) => { const v = cats[s.key]; return <div key={s.key} className={`card-lift rounded-lg border p-4 ${sw.strongest?.key === s.key ? "border-success" : sw.weakest?.key === s.key ? "border-destructive/60" : ""}`}><div className="flex justify-between text-sm"><span className="font-semibold">{s.label}</span><span className="font-bold tabular-nums">{v ?? "—"}{v != null && "/100"}</span></div><GrowBar value={v ?? 0} tone="bg-primary" className="mt-3" /><p className="mt-2 text-xs text-muted-foreground">{v == null ? "Not scored in this interview" : sw.strongest?.key === s.key ? "Strongest area" : sw.weakest?.key === s.key ? "Weakest area" : "\u00a0"}</p></div>; })}</div>
     </section>
 
     <ReviewSection pending={pending} done={done} />
 
     <Accordion type="multiple" defaultValue={["moments", "plan"]} className="grid gap-4">
-      <AccordionItem value="moments" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">Moments to improve</AccordionTrigger><AccordionContent><Moments report={report} /></AccordionContent></AccordionItem>
-      <AccordionItem value="presentation" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">Posture and presentation</AccordionTrigger><AccordionContent><Presentation v={latest.vision_summary} sp={latest.speech_metrics} /></AccordionContent></AccordionItem>
-      <AccordionItem value="journey" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">Your interview journey</AccordionTrigger><AccordionContent><Journey chrono={chrono} cmp={cmp} /></AccordionContent></AccordionItem>
-      <AccordionItem value="compare" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">Average user score comparison</AccordionTrigger><AccordionContent>
+      <AccordionItem value="moments" style={{ "--i": 8 } as React.CSSProperties} className="animate-reveal section-card card-lift border-b-0 px-5"><AccordionTrigger className="hover:no-underline"><span className="flex items-center gap-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">03</span><span className="text-lg font-bold">Moments to improve</span></span></AccordionTrigger><AccordionContent><Moments report={report} /></AccordionContent></AccordionItem>
+      <AccordionItem value="presentation" style={{ "--i": 9 } as React.CSSProperties} className="animate-reveal section-card card-lift border-b-0 px-5"><AccordionTrigger className="hover:no-underline"><span className="flex items-center gap-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">04</span><span className="text-lg font-bold">Posture and presentation</span></span></AccordionTrigger><AccordionContent><Presentation v={latest.vision_summary} sp={latest.speech_metrics} /></AccordionContent></AccordionItem>
+      <AccordionItem value="journey" style={{ "--i": 10 } as React.CSSProperties} className="animate-reveal section-card card-lift border-b-0 px-5"><AccordionTrigger className="hover:no-underline"><span className="flex items-center gap-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">05</span><span className="text-lg font-bold">Your interview journey</span></span></AccordionTrigger><AccordionContent><Journey chrono={chrono} cmp={cmp} /></AccordionContent></AccordionItem>
+      <AccordionItem value="compare" style={{ "--i": 11 } as React.CSSProperties} className="animate-reveal section-card card-lift border-b-0 px-5"><AccordionTrigger className="hover:no-underline"><span className="flex items-center gap-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">06</span><span className="text-lg font-bold">Average user score comparison</span></span></AccordionTrigger><AccordionContent>
         {bench.isError ? <p className="text-sm text-destructive">Could not load comparison data.</p> : !enough ? <p className="text-sm text-muted-foreground">Not enough comparison data. At least {MIN_COMPARISON_SAMPLE} completed interviews from other students are needed (currently {b?.sample_size ?? 0}).</p> : <div className="grid gap-2 text-sm">
           <p className="text-xs text-muted-foreground">Anonymous averages from {b!.sample_size} interviews{b!.scope === "category" ? " of the same interview type" : " across all interview types"}. No other student's identity, answers or reports are shown.</p>
           <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-6 gap-y-2"><span className="font-semibold">Area</span><span className="font-semibold">You</span><span className="font-semibold">Average</span><span className="font-semibold">Difference</span>
             {[["Overall", latest.overall_score, b!.avg_overall], ["Resume-based", cats.resume, b!.avg_resume], ["Practical", cats.practical, b!.avg_practical], ["General knowledge", cats.general_knowledge, b!.avg_general], ["Communication", report.scores.communication.score, b!.avg_communication]].map(([l, y, a]) => <Fragment key={l as string}><span>{l as string}</span><span className="tabular-nums">{y ?? "—"}</span><span className="tabular-nums">{a == null ? "—" : Math.round(Number(a))}</span><span className="tabular-nums">{y == null || a == null ? "—" : signed(Math.round(Number(y) - Number(a)))}</span></Fragment>)}
           </div></div>}
       </AccordionContent></AccordionItem>
-      <AccordionItem value="plan" className="rounded-lg border bg-card px-5"><AccordionTrigger className="text-lg font-bold">What you should improve next</AccordionTrigger><AccordionContent>
-        <ol className="grid gap-3">{topPriorities(report).map((p, i) => <li key={i} className="flex gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span><div><p className="font-semibold">{p.area}</p>{p.exercise && <p className="text-sm text-muted-foreground">Exercise: {p.exercise}</p>}</div></li>)}</ol>
+      <AccordionItem value="plan" style={{ "--i": 12 } as React.CSSProperties} className="animate-reveal section-card card-lift border-b-0 px-5"><AccordionTrigger className="hover:no-underline"><span className="flex items-center gap-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-xs font-bold text-primary">07</span><span className="text-lg font-bold">What you should improve next</span></span></AccordionTrigger><AccordionContent>
+        <ol className="grid gap-3">{topPriorities(report).map((p, i) => <li key={i} style={{ "--i": i } as React.CSSProperties} className="animate-reveal flex gap-3 rounded-lg border p-3"><span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span><div><p className="font-semibold">{p.area}</p>{p.exercise && <p className="text-sm text-muted-foreground">Exercise: {p.exercise}</p>}</div></li>)}</ol>
         <p className="mt-3 text-xs text-muted-foreground">Based on your latest report · updates after every interview.</p>
       </AccordionContent></AccordionItem>
     </Accordion>
@@ -91,18 +92,19 @@ function ReviewSection({ pending, done }: { pending: ReturnType<typeof reviewIte
     onError: () => toast.error("Could not save review. Please try again."),
   });
   const q = item?.q;
-  return <section className="rounded-lg border bg-card p-5">
-    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">Review your answers</h2><div className="flex gap-2"><Button size="sm" variant={!showDone ? "secondary" : "ghost"} onClick={() => { setShowDone(false); setIdx(0); }}>Pending ({pending.length})</Button><Button size="sm" variant={showDone ? "secondary" : "ghost"} onClick={() => { setShowDone(true); setIdx(0); }}>Reviewed ({done.length})</Button></div></div>
-    {!item || !q ? <p className="mt-4 text-sm text-muted-foreground">{showDone ? "No reviewed answers yet." : "All caught up — no pending feedback."}</p> : <div className="mt-4 grid gap-4">
+  return <section style={{ "--i": 7 } as React.CSSProperties} className="animate-reveal section-card p-5">
+    <div className="flex flex-wrap items-center justify-between gap-3"><Heading n="02" title="Review your answers" sub={`${pending.length} pending · ${done.length} reviewed`} /><div className="flex gap-2"><Button size="sm" variant={!showDone ? "secondary" : "ghost"} onClick={() => { setShowDone(false); setIdx(0); }}>Pending ({pending.length})</Button><Button size="sm" variant={showDone ? "secondary" : "ghost"} onClick={() => { setShowDone(true); setIdx(0); }}>Reviewed ({done.length})</Button></div></div>
+    {list.length > 0 && <div className="mt-4"><div className="flex justify-between text-xs text-muted-foreground"><span>Item {Math.min(idx, list.length - 1) + 1} of {list.length}</span><span>{Math.round((done.length / Math.max(1, pending.length + done.length)) * 100)}% reviewed</span></div><GrowBar value={(done.length / Math.max(1, pending.length + done.length)) * 100} tone="bg-primary" className="mt-1.5" /></div>}
+    {!item || !q ? <p className="mt-4 rounded-md bg-secondary/60 p-4 text-center text-sm text-muted-foreground">{showDone ? "No reviewed answers yet." : "All caught up — no pending feedback."}</p> : <div key={item.key} className="animate-slide-in mt-4 grid gap-4">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span>{date(item.date)}</span><span>· at {fmtTime(q.timestamp_s)}</span>{q.section && <span>· {SECTIONS.find((s) => s.key === q.section)?.label ?? "Follow-up"}</span>}<span className="ml-auto font-bold text-primary">Score {q.score}/100</span><Tag kind="ai" /></div>
       <div><p className="text-xs font-semibold uppercase text-primary">Question asked</p><p className="mt-1 font-semibold">{q.question}</p></div>
-      <div className="border-l-2 border-primary bg-secondary px-3 py-2"><p className="text-xs font-semibold uppercase text-primary">Your answer</p><p className="mt-1 text-sm">{q.quote || q.answer_summary}</p></div>
+      <div className="rounded-r-lg border-l-2 border-primary bg-secondary px-3 py-2"><p className="text-xs font-semibold uppercase text-primary">Your answer</p><p className="mt-1 text-sm">{q.quote || q.answer_summary}</p></div>
       <div className="grid gap-3 md:grid-cols-2">
-        <div><p className="text-xs font-semibold uppercase text-success">What you did well</p><p className="mt-1 text-sm">{q.went_well || "—"}</p></div>
-        <div><p className="text-xs font-semibold uppercase text-destructive">What went wrong</p><p className="mt-1 text-sm">{q.went_wrong || q.evaluation}</p></div>
+        <div className="rounded-lg border-l-2 border-success bg-success/5 p-3"><p className="text-xs font-semibold uppercase text-success">What you did well</p><p className="mt-1 text-sm">{q.went_well || "—"}</p></div>
+        <div className="rounded-lg border-l-2 border-destructive bg-destructive/5 p-3"><p className="text-xs font-semibold uppercase text-destructive">What went wrong</p><p className="mt-1 text-sm">{q.went_wrong || q.evaluation}</p></div>
       </div>
-      <div><p className="text-xs font-semibold uppercase text-primary">How to improve</p><p className="mt-1 text-sm">{q.recommendation || q.practice}</p></div>
-      <div className="rounded-md border p-3"><p className="text-xs font-semibold uppercase text-primary">Better sample answer</p><p className="mt-1 text-sm">{q.improved_answer}</p></div>
+      {(q.recommendation || q.practice) && <div><p className="text-xs font-semibold uppercase text-primary">How to improve</p><p className="mt-1 text-sm">{q.recommendation || q.practice}</p></div>}
+      <div className="rounded-lg border border-dashed border-primary/40 bg-card p-3"><p className="text-xs font-semibold uppercase text-primary">Better sample answer</p><p className="mt-1 text-sm">{q.improved_answer}</p></div>
       <div className="flex flex-wrap justify-end gap-2">
         {!showDone && <Button disabled={mark.isPending} onClick={() => mark.mutate(item)}>Mark as reviewed</Button>}
         <Button variant="outline" disabled={list.length < 2} onClick={() => setIdx((i) => (i + 1) % list.length)}>Next review</Button>
@@ -114,7 +116,7 @@ function ReviewSection({ pending, done }: { pending: ReturnType<typeof reviewIte
 function Moments({ report }: { report: NonNullable<ScoredInterview["report"]> }) {
   const all = [...(report.measured_moments ?? []).map((m) => ({ ...m, src: "measured" as const })), ...(report.content_moments ?? []).map((m) => ({ ...m, src: "ai" as const }))].sort((a, b) => a.timestamp_s - b.timestamp_s);
   if (!all.length) return <p className="text-sm text-muted-foreground">No moments flagged in your latest interview{report.measured_moments ? "" : " (this report predates moment tracking)"}.</p>;
-  return <ul className="grid gap-3">{all.map((m, i) => <li key={i} className="rounded-md border-l-2 border-accent bg-secondary/50 px-3 py-2"><div className="flex flex-wrap items-center gap-2"><span className="font-bold tabular-nums text-primary">{fmtTime(m.timestamp_s)}</span><span className="text-sm font-semibold">{m.issue}</span><span className="ml-auto"><Tag kind={m.src} /></span></div>{m.question && <p className="mt-1 text-xs text-muted-foreground">Question: {m.question}</p>}<p className="mt-1 text-sm italic">“{m.excerpt}”</p><p className="mt-1 text-sm">{m.correction}</p></li>)}</ul>;
+  return <ul className="grid gap-3">{all.map((m, i) => <li key={i} style={{ "--i": i } as React.CSSProperties} className="animate-reveal rounded-r-lg border-l-2 border-accent bg-secondary/50 px-3 py-2"><div className="flex flex-wrap items-center gap-2"><span className="font-bold tabular-nums text-primary">{fmtTime(m.timestamp_s)}</span><span className="text-sm font-semibold">{m.issue}</span><span className="ml-auto"><Tag kind={m.src} /></span></div>{m.question && <p className="mt-1 text-xs text-muted-foreground">Question: {m.question}</p>}<p className="mt-1 text-sm italic">“{m.excerpt}”</p><p className="mt-1 text-sm">{m.correction}</p></li>)}</ul>;
 }
 
 function Presentation({ v, sp }: { v: VisionSummary | null; sp: Record<string, unknown> | null }) {
