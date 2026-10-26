@@ -1,12 +1,13 @@
 # Dashboard and interview workflow
-- [ ] Mandatory working camera, visible face and microphone verification before interview
+- [x] Mandatory working camera, visible face and microphone verification before interview — rule tests and signed-in blocked-start check passed; physical devices pending below
 - [ ] Real Buy More Slots payments with automatic credit fulfilment — user deferred payment setup; price ₹100/interview confirmed
-- [ ] Self-service admin slot/date/time and credit management
-- [ ] Dashboard review: interview date/time, score, eye contact and transcript
+- [x] Self-service admin slot/date/time and credit management implemented using existing admin RLS
+- [ ] Admin management end-to-end verification — Khushi has a student account, not admin access
+- [x] Dashboard review: interview date/time, score, eye contact and transcript — verified with Khushi's existing history
 - [ ] Khushi account booking and full live interview verification — requires a live participant for camera/mic answers
-- [ ] Advanced brief: measured audio, visual observations, question timing and configurable calm alerts
-- [ ] Twenty-metric report, evidence-based rubric, complete PDF/transcript and seven-day practice plan
-- [ ] Rule tests and desktop/mobile interview verification
+- [x] Advanced brief: measured audio, visual observations, question timing and configurable calm alerts — simulated browser checks, real call pending below
+- [x] Twenty-metric report, evidence-based rubric, complete PDF/transcript and seven-day practice plan — synthetic report/PDF checked
+- [x] Rule tests and desktop/mobile interview verification — simulations only; real devices pending below
 - [x] Advanced interview tracking and isolated full-transcript scrolling (100-turn simulated browser checks; live participant verification remains below)
 - [x] Compact clickable slot filters and viewport-bounded single-column list
 - [x] Five-minute slot availability and bounded scrollable booking list
