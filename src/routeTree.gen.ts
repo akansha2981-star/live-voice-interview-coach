@@ -18,10 +18,17 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
+import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
+import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
 import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
 import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminResourcesRouteImport } from './routes/admin.resources'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSlotsRouteImport } from './routes/admin.slots'
+import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenticated/interview.$id'
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
@@ -71,9 +78,24 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCreditsRoute = AdminCreditsRouteImport.update({
   id: '/credits',
   path: '/credits',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDocumentsRoute = AdminDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDownloadsRoute = AdminDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminInterviewsRoute = AdminInterviewsRouteImport.update({
@@ -86,9 +108,29 @@ const AdminPurchasesRoute = AdminPurchasesRouteImport.update({
   path: '/purchases',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminResourcesRoute = AdminResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSlotsRoute = AdminSlotsRouteImport.update({
   id: '/slots',
   path: '/slots',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -122,10 +164,17 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -139,10 +188,17 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -159,10 +215,17 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
+  '/admin/documents': typeof AdminDocumentsRoute
+  '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/resources': typeof AdminResourcesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -179,10 +242,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/slots'
+    | '/admin/audit'
     | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
     | '/admin/interviews'
     | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
     | '/admin/slots'
+    | '/admin/support'
     | '/admin/users'
     | '/admin/'
     | '/interview/$id'
@@ -196,10 +266,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/slots'
+    | '/admin/audit'
     | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
     | '/admin/interviews'
     | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
     | '/admin/slots'
+    | '/admin/support'
     | '/admin/users'
     | '/admin'
     | '/interview/$id'
@@ -215,10 +292,17 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
     | '/_authenticated/slots'
+    | '/admin/audit'
     | '/admin/credits'
+    | '/admin/documents'
+    | '/admin/downloads'
     | '/admin/interviews'
     | '/admin/purchases'
+    | '/admin/reports'
+    | '/admin/resources'
+    | '/admin/settings'
     | '/admin/slots'
+    | '/admin/support'
     | '/admin/users'
     | '/admin/'
     | '/_authenticated/interview/$id'
@@ -299,11 +383,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/credits': {
       id: '/admin/credits'
       path: '/credits'
       fullPath: '/admin/credits'
       preLoaderRoute: typeof AdminCreditsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/documents': {
+      id: '/admin/documents'
+      path: '/documents'
+      fullPath: '/admin/documents'
+      preLoaderRoute: typeof AdminDocumentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/downloads': {
+      id: '/admin/downloads'
+      path: '/downloads'
+      fullPath: '/admin/downloads'
+      preLoaderRoute: typeof AdminDownloadsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/interviews': {
@@ -320,11 +425,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPurchasesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/resources': {
+      id: '/admin/resources'
+      path: '/resources'
+      fullPath: '/admin/resources'
+      preLoaderRoute: typeof AdminResourcesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/slots': {
       id: '/admin/slots'
       path: '/slots'
       fullPath: '/admin/slots'
       preLoaderRoute: typeof AdminSlotsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/users': {
@@ -380,19 +513,33 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminCreditsRoute: typeof AdminCreditsRoute
+  AdminDocumentsRoute: typeof AdminDocumentsRoute
+  AdminDownloadsRoute: typeof AdminDownloadsRoute
   AdminInterviewsRoute: typeof AdminInterviewsRoute
   AdminPurchasesRoute: typeof AdminPurchasesRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminResourcesRoute: typeof AdminResourcesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlotsRoute: typeof AdminSlotsRoute
+  AdminSupportRoute: typeof AdminSupportRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
   AdminCreditsRoute: AdminCreditsRoute,
+  AdminDocumentsRoute: AdminDocumentsRoute,
+  AdminDownloadsRoute: AdminDownloadsRoute,
   AdminInterviewsRoute: AdminInterviewsRoute,
   AdminPurchasesRoute: AdminPurchasesRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminResourcesRoute: AdminResourcesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSlotsRoute: AdminSlotsRoute,
+  AdminSupportRoute: AdminSupportRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
