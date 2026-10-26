@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, Mic, Ticket, UserRound } from "lucide-react";
+import { ArrowRight, CalendarClock, History, Mic, ShoppingCart, Ticket, UserRound } from "lucide-react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { meQuery, myInterviewsQuery } from "@/lib/queries";
 import { INTERVIEW_CATEGORIES, isProfileReady, profileCompletion } from "@/lib/interview-prompt";
@@ -43,11 +43,45 @@ function Dashboard() {
     .reverse()
     .map((i, idx) => ({ n: `#${idx + 1}`, score: i.overall_score }));
 
+  const past = interviews.filter((i) => i.status !== "in_progress");
+  const upcoming = interviews.filter((i) => i.status === "in_progress");
+  const stats = [
+    { label: "Past interviews", value: past.length, icon: History, tone: "bg-primary text-primary-foreground" },
+    { label: "Upcoming interviews", value: upcoming.length, icon: CalendarClock, tone: "bg-sky text-ink" },
+    { label: "Slots available", value: me.credits, icon: Ticket, tone: "bg-accent text-accent-foreground" },
+  ];
+
   return (
     <div className="grid gap-8">
-      <div>
-        <h1 className="text-4xl font-semibold">Hello{first ? `, ${first}` : ""}.</h1>
+      <div className="animate-rise">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky">Student dashboard</p>
+        <h1 className="mt-1 text-3xl font-semibold md:text-4xl">Hello{first ? `, ${first}` : ""}.</h1>
         <p className="mt-1 text-muted-foreground">Here's where your interview preparation stands.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        {stats.map((s, i) => (
+          <div key={s.label} style={{ animationDelay: `${i * 70}ms` }} className="animate-rise rounded-2xl border bg-card p-4 md:p-5">
+            <span className={`grid size-9 place-items-center rounded-lg ${s.tone}`}>
+              <s.icon className="size-4" />
+            </span>
+            <p className="mt-3 font-display text-3xl font-semibold md:text-4xl">{s.value}</p>
+            <p className="text-xs text-muted-foreground md:text-sm">{s.label}</p>
+          </div>
+        ))}
+        <Link
+          to="/slots"
+          style={{ animationDelay: "210ms" }}
+          className="group animate-rise rounded-2xl bg-gradient-ink p-4 text-ink-foreground md:p-5"
+        >
+          <span className="grid size-9 place-items-center rounded-lg bg-accent text-accent-foreground">
+            <ShoppingCart className="size-4" />
+          </span>
+          <p className="mt-3 text-lg font-semibold">Buy more slots</p>
+          <p className="flex items-center gap-1 text-xs text-ink-muted md:text-sm">
+            View packs <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
+          </p>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -63,7 +97,9 @@ function Dashboard() {
                 <Link to="/profile">Complete your profile first</Link>
               </Button>
             ) : me.credits < 1 ? (
-              <p className="text-sm text-accent">You have no interview credits. Contact MBA Compass to get access.</p>
+              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link to="/slots">No slots left — buy more</Link>
+              </Button>
             ) : (
               <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                 <Link to="/interview/check">
@@ -75,12 +111,6 @@ function Dashboard() {
         </div>
         <div className="grid gap-4">
           <div className="rounded-2xl border bg-card p-5">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Ticket className="size-4" /> Interview credits
-            </div>
-            <p className="mt-1 font-display text-4xl font-semibold">{me.credits}</p>
-          </div>
-          <div className="rounded-2xl border bg-card p-5">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <UserRound className="size-4" /> Profile
@@ -91,6 +121,20 @@ function Dashboard() {
             <Link to="/profile" className="mt-3 inline-block text-sm font-semibold hover:underline">
               {ready ? "Edit profile" : "Finish profile"}
             </Link>
+          </div>
+          <div className="rounded-2xl border bg-card p-5">
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CalendarClock className="size-4" /> Upcoming
+            </p>
+            {upcoming.length === 0 ? (
+              <p className="mt-2 text-sm">No interview waiting. Start one when you're ready.</p>
+            ) : (
+              upcoming.slice(0, 2).map((u) => (
+                <Link key={u.id} to="/interview/$id" params={{ id: u.id }} className="mt-2 block text-sm font-semibold text-sky hover:underline">
+                  {INTERVIEW_CATEGORIES[u.category ?? ""] ?? "Interview"} — resume →
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </div>
