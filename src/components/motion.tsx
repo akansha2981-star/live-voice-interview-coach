@@ -1,30 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 
-/** Counts up from 0 to `value` with an ease-out curve. */
-export function AnimatedNumber({ value, duration = 1100, suffix = "" }: { value: number; duration?: number; suffix?: string }) {
+/** Counts up from 0 to `value` once visible, with an ease-out curve (rolls like a real counter). */
+export function AnimatedNumber({ value, duration = 1400, suffix = "", prefix = "", delay = 0, signed = false }: { value: number; duration?: number; suffix?: string; prefix?: string; delay?: number; signed?: boolean }) {
   const [n, setN] = useState(0);
   const from = useRef(0);
+  const el = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    const start = performance.now();
-    const base = from.current;
-    let raf = 0;
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      const v = Math.round(base + (value - base) * eased);
-      setN(v);
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else from.current = value;
+    let raf = 0; let timer = 0;
+    const run = () => {
+      const start = performance.now();
+      const base = from.current;
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 4);
+        setN(Math.round(base + (value - base) * eased));
+        if (p < 1) raf = requestAnimationFrame(tick);
+        else from.current = value;
+      };
+      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value, duration]);
-  return (
-    <>
-      {n}
-      {suffix}
-    </>
-  );
+    const node = el.current;
+    if (!node || typeof IntersectionObserver === "undefined") { timer = window.setTimeout(run, delay); return () => { clearTimeout(timer); cancelAnimationFrame(raf); }; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); timer = window.setTimeout(run, delay); } }, { threshold: 0.3 });
+    io.observe(node);
+    return () => { io.disconnect(); clearTimeout(timer); cancelAnimationFrame(raf); };
+  }, [value, duration, delay]);
+  return <span ref={el} className="tabular-nums">{prefix}{signed && n > 0 ? "+" : ""}{n}{suffix}</span>;
 }
 
 /** Circular score gauge that sweeps in on mount. */
