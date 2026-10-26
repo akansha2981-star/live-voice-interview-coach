@@ -166,3 +166,43 @@ export function liveTip(f: VisionFrame | null): string | null {
   if (!f.gazeCentered) return "Look toward the camera lens when answering.";
   return null;
 }
+
+export type LiveCheck = { key: "eye" | "posture" | "framing" | "light"; label: string; ok: boolean | null; detail: string };
+
+/** Per-frame status of each observable presentation signal, used for the live coaching panel. */
+export function liveChecks(f: VisionFrame | null): LiveCheck[] {
+  if (!f) {
+    return [
+      { key: "eye", label: "Eye contact", ok: null, detail: "Waiting for camera…" },
+      { key: "posture", label: "Posture", ok: null, detail: "Waiting for camera…" },
+      { key: "framing", label: "Framing", ok: null, detail: "Waiting for camera…" },
+      { key: "light", label: "Lighting", ok: null, detail: "Waiting for camera…" },
+    ];
+  }
+  const face = f.faceVisible;
+  const eyeOk = face && f.gazeCentered;
+  const framed = face && f.centered && !f.tooFar && !f.tooClose;
+  const lightOk = f.brightness < 0 ? null : f.brightness >= 0.22;
+  return [
+    {
+      key: "eye",
+      label: "Eye contact",
+      ok: face ? eyeOk : false,
+      detail: !face ? "Face not visible" : eyeOk ? "Looking at the camera" : Math.abs(f.yaw) > 20 ? "Head turned away" : "Eyes away from lens",
+    },
+    {
+      key: "posture",
+      label: "Posture",
+      ok: f.shouldersLevel === null ? (face ? Math.abs(f.pitch) < 20 : false) : f.shouldersLevel && Math.abs(f.pitch) < 20,
+      detail:
+        f.shouldersLevel === false ? "Shoulders tilted — sit upright" : Math.abs(f.pitch) >= 20 ? "Head tilted — lift your chin" : "Upright and steady",
+    },
+    {
+      key: "framing",
+      label: "Framing",
+      ok: framed,
+      detail: !face ? "Move into frame" : f.tooFar ? "Too far — move closer" : f.tooClose ? "Too close — lean back" : !f.centered ? "Off-centre" : "Well framed",
+    },
+    { key: "light", label: "Lighting", ok: lightOk, detail: lightOk === false ? "Too dim — add front light" : "Good light" },
+  ];
+}
