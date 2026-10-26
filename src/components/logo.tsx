@@ -1,5 +1,5 @@
 import mark from "@/assets/mba-compass-mark.png.asset.json";
-import full from "@/assets/mba-compass-logo.png.asset.json";
+import full from "@/assets/mba-compass-logo-transparent.png";
 
 export function Logo({ inverted = false, compact = false }: { inverted?: boolean; compact?: boolean }) {
   return (
@@ -20,5 +20,5 @@ export function Logo({ inverted = false, compact = false }: { inverted?: boolean
 }
 
 export function FullLogo({ className = "" }: { className?: string }) {
-  return <img src={full.url} alt="MBA Compass" className={className} />;
+  return <img src={full} alt="MBA Compass" className={className} />;
 }
