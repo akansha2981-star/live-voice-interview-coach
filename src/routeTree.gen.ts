@@ -16,7 +16,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedResourcesRouteImport } from './routes/_authenticated/resources'
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
+import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
@@ -68,9 +70,19 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedResourcesRoute = AuthenticatedResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSlotsRoute = AuthenticatedSlotsRouteImport.update({
   id: '/slots',
   path: '/slots',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -163,7 +175,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -187,7 +201,9 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -214,7 +230,9 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
+  '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -241,7 +259,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/profile'
+    | '/resources'
     | '/slots'
+    | '/support'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -265,7 +285,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/profile'
+    | '/resources'
     | '/slots'
+    | '/support'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -291,7 +313,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
+    | '/_authenticated/resources'
     | '/_authenticated/slots'
+    | '/_authenticated/support'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -369,11 +393,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/resources': {
+      id: '/_authenticated/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AuthenticatedResourcesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/slots': {
       id: '/_authenticated/slots'
       path: '/slots'
       fullPath: '/slots'
       preLoaderRoute: typeof AuthenticatedSlotsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/support': {
+      id: '/_authenticated/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AuthenticatedSupportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/admin/': {
@@ -494,7 +532,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedResourcesRoute: typeof AuthenticatedResourcesRoute
   AuthenticatedSlotsRoute: typeof AuthenticatedSlotsRoute
+  AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedInterviewIdRoute: typeof AuthenticatedInterviewIdRoute
   AuthenticatedInterviewCheckRoute: typeof AuthenticatedInterviewCheckRoute
   AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
@@ -503,7 +543,9 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedResourcesRoute: AuthenticatedResourcesRoute,
   AuthenticatedSlotsRoute: AuthenticatedSlotsRoute,
+  AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedInterviewIdRoute: AuthenticatedInterviewIdRoute,
   AuthenticatedInterviewCheckRoute: AuthenticatedInterviewCheckRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
