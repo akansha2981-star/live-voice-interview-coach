@@ -31,7 +31,7 @@ export function InterviewWorkspace(p: Props) {
   </section>;
   return <div className="flex h-full min-h-0 w-full flex-col bg-background">
     <header className="flex shrink-0 items-center justify-between gap-3 border-b bg-card px-4 py-2.5 md:px-6"><div className="min-w-0"><h1 className="truncate text-base font-bold">MBA Compass · Interview room</h1><p className="text-xs text-muted-foreground">Aria · MBA interview · {questions.length} questions so far</p></div><div className="flex shrink-0 items-center gap-2 rounded-full border bg-secondary px-3 py-1 text-xs"><span className={`size-2 rounded-full ${p.live ? "bg-success motion-safe:animate-pulse" : "bg-muted-foreground"}`} /><span>{p.status}</span><span className="font-bold tabular-nums">{p.timer}</span></div></header>
-    <div className="min-h-0 flex-1 overflow-y-auto p-3 lg:grid lg:grid-cols-[minmax(260px,300px)_minmax(0,1fr)_minmax(300px,360px)] lg:gap-4 lg:overflow-hidden lg:p-4">
+    <div className="min-h-0 flex-1 overflow-y-auto p-3 lg:grid lg:grid-rows-[minmax(0,1fr)] lg:grid-cols-[minmax(260px,300px)_minmax(0,1fr)_minmax(300px,360px)] lg:gap-4 lg:overflow-hidden lg:p-4">
       <div className="flex min-h-0 flex-col gap-3 lg:col-start-2 lg:row-start-1">
         <div className="relative h-[42vh] min-h-48 overflow-hidden rounded-lg bg-ink text-ink-foreground lg:h-auto lg:flex-1">
           <video ref={p.videoRef} muted playsInline className="h-full w-full -scale-x-100 object-contain" />
