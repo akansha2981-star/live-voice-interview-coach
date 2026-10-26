@@ -13,8 +13,10 @@ export const Route = createFileRoute("/_authenticated/admin")({
     meta: [
       { title: "Admin — MBA Compass AI Interview" },
       { name: "description", content: "Manage students and interview credits." },
-      { property: "og:title", content: "Admin" },
+      { property: "og:title", content: "Admin workspace — MBA Compass" },
       { property: "og:description", content: "Student and credit management." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(meQuery),

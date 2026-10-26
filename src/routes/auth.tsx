@@ -10,6 +10,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Log in or sign up to access your MBA Compass interview dashboard." },
       { property: "og:title", content: "Student login — MBA Compass AI Interview" },
       { property: "og:description", content: "Secure student portal for MBA Compass AI mock interviews." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,

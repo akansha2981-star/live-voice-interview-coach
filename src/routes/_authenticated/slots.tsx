@@ -11,6 +11,8 @@ export const Route = createFileRoute("/_authenticated/slots")({
       { name: "description", content: "See your available interview slots and request more." },
       { property: "og:title", content: "Interview slots — MBA Compass" },
       { property: "og:description", content: "Buy more AI mock interview slots." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => Promise.all([context.queryClient.ensureQueryData(meQuery), context.queryClient.ensureQueryData(bookingQuery)]),

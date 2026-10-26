@@ -11,8 +11,10 @@ export const Route = createFileRoute("/reset-password")({
     meta: [
       { title: "Set a new password — MBA Compass AI Interview" },
       { name: "description", content: "Choose a new password for your account." },
-      { property: "og:title", content: "Reset password" },
-      { property: "og:description", content: "Choose a new password." },
+      { property: "og:title", content: "Reset password — MBA Compass" },
+      { property: "og:description", content: "Choose a new password for your MBA Compass student account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ResetPassword,

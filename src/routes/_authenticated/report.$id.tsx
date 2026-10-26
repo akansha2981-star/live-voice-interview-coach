@@ -16,8 +16,10 @@ export const Route = createFileRoute("/_authenticated/report/$id")({
     meta: [
       { title: "Interview report — MBA Compass AI Interview" },
       { name: "description", content: "Your AI interview performance report." },
-      { property: "og:title", content: "Interview report" },
+      { property: "og:title", content: "Interview report — MBA Compass" },
       { property: "og:description", content: "Scores, evidence and an improvement plan." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(interviewQuery(params.id)),

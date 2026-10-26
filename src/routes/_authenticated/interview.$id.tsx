@@ -18,8 +18,10 @@ export const Route = createFileRoute("/_authenticated/interview/$id")({
     meta: [
       { title: "Interview room — MBA Compass AI Interview" },
       { name: "description", content: "Your live AI mock interview." },
-      { property: "og:title", content: "Interview room" },
+      { property: "og:title", content: "Live interview room — MBA Compass" },
       { property: "og:description", content: "Live AI mock interview." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(interviewQuery(params.id)),
@@ -210,7 +212,7 @@ function InterviewRoom() {
           </span>
           <span className="font-mono text-sm text-ink-muted">{mm}:{ss}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-ink-muted">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           Interviewer turns {qIndex} · {mm}:{ss}
           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-ink-foreground/15">
             <div className="h-full bg-accent transition-all duration-700" style={{ width: `${(qIndex / EXPECTED_QUESTIONS) * 100}%` }} />
