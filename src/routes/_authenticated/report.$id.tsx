@@ -9,7 +9,6 @@ import { downloadReportPdf, saveBlob, SCORE_LABELS } from "@/lib/report-pdf";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
-import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/_authenticated/report/$id")({
