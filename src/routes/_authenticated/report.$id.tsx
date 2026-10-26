@@ -8,6 +8,7 @@ import { INTERVIEW_CATEGORIES } from "@/lib/interview-prompt";
 import { downloadReportPdf, saveBlob, SCORE_LABELS } from "@/lib/report-pdf";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
+import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
 import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -106,11 +107,8 @@ function ReportPage() {
   return (
     <div className="grid gap-8">
       <div className="grid gap-6 rounded-2xl bg-gradient-ink p-8 text-ink-foreground md:grid-cols-[auto_1fr]">
-        <div className="grid size-36 place-items-center rounded-full border-4 border-accent">
-          <div className="text-center">
-            <p className="font-display text-5xl font-semibold">{report.overall_score}</p>
-            <p className="text-xs text-ink-muted">out of 100</p>
-          </div>
+        <div className="animate-rise text-accent">
+          <ScoreRing value={report.overall_score} size={150} stroke={12} label="out of 100" />
         </div>
         <div>
           <p className="text-sm uppercase tracking-[0.2em] text-accent">{report.readiness_level}</p>
@@ -134,13 +132,13 @@ function ReportPage() {
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Object.entries(report.scores).map(([k, v]) => (
-          <div key={k} className="rounded-2xl border bg-card p-5">
+        {Object.entries(report.scores).map(([k, v], i) => (
+          <div key={k} style={{ animationDelay: `${i * 70}ms` }} className="animate-rise rounded-2xl border bg-card p-5">
             <div className="flex items-baseline justify-between">
               <p className="text-sm font-semibold">{SCORE_LABELS[k] ?? k}</p>
-              <p className="font-display text-2xl font-semibold">{v.score}</p>
+              <p className="font-display text-2xl font-bold"><AnimatedNumber value={v.score} /></p>
             </div>
-            <Progress value={v.score} className="mt-2" />
+            <GrowBar value={v.score} className="mt-2" />
             <p className="mt-3 text-sm text-muted-foreground">{v.evidence}</p>
           </div>
         ))}
