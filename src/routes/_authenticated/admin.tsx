@@ -6,14 +6,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PublishSlots } from "@/components/publish-slots";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Admin — MBA Compass AI Interview" },
       { name: "description", content: "Manage students and interview credits." },
-      { property: "og:title", content: "Admin" },
+      { property: "og:title", content: "Admin workspace — MBA Compass" },
       { property: "og:description", content: "Student and credit management." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(meQuery),
@@ -65,6 +68,7 @@ function AdminPage() {
 
   return (
     <div className="grid gap-6">
+      <PublishSlots userId={me.id} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-semibold">Students</h1>

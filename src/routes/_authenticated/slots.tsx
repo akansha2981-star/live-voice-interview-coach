@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { meQuery } from "@/lib/queries";
+import { bookingQuery, meQuery } from "@/lib/queries";
+import { BookedInterviews, SlotPicker } from "@/components/booking-panel";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/slots")({
@@ -10,9 +11,11 @@ export const Route = createFileRoute("/_authenticated/slots")({
       { name: "description", content: "See your available interview slots and request more." },
       { property: "og:title", content: "Interview slots — MBA Compass" },
       { property: "og:description", content: "Buy more AI mock interview slots." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(meQuery),
+  loader: ({ context }) => Promise.all([context.queryClient.ensureQueryData(meQuery), context.queryClient.ensureQueryData(bookingQuery)]),
   component: Slots,
 });
 
@@ -39,14 +42,17 @@ function Slots() {
           <span className="font-display text-3xl font-semibold">{me.credits}</span>
         </div>
       </div>
+      <SlotPicker />
+      <BookedInterviews />
+      <h2 className="text-xl font-bold">More interview credits</h2>
       <div className="grid gap-4 md:grid-cols-3">
         {PACKS.map((p, i) => (
           <div
             key={p.n}
             style={{ animationDelay: `${i * 80}ms` }}
-            className={`animate-rise rounded-2xl border p-6 ${p.featured ? "bg-gradient-ink text-ink-foreground shadow-soft" : "bg-card"}`}
+            className={`animate-rise rounded-lg border p-6 ${p.featured ? "bg-secondary border-primary/30" : "bg-card"}`}
           >
-            <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${p.featured ? "text-accent" : "text-sky"}`}>{p.name}</p>
+            <p className="text-xs font-semibold uppercase text-primary">{p.name}</p>
             <p className="mt-2 font-display text-5xl font-semibold">
               {p.n}
               <span className="ml-1 text-base font-normal opacity-70">slot{p.n > 1 ? "s" : ""}</span>

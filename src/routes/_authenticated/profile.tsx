@@ -21,6 +21,8 @@ export const Route = createFileRoute("/_authenticated/profile")({
       { name: "description", content: "Tell the interviewer about your background and goals." },
       { property: "og:title", content: "Your profile — MBA Compass AI Interview" },
       { property: "og:description", content: "Professional profile for tailored interviews." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(meQuery),

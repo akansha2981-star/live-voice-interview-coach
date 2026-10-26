@@ -44,6 +44,84 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_bookings: {
+        Row: {
+          checked_at: string | null
+          created_at: string
+          id: string
+          interview_id: string | null
+          preflight: Json | null
+          slot_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          checked_at?: string | null
+          created_at?: string
+          id?: string
+          interview_id?: string | null
+          preflight?: Json | null
+          slot_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          checked_at?: string | null
+          created_at?: string
+          id?: string
+          interview_id?: string | null
+          preflight?: Json | null
+          slot_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_bookings_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interview_bookings_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "interview_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_slots: {
+        Row: {
+          capacity: number
+          created_at: string
+          created_by: string
+          ends_at: string
+          id: string
+          published: boolean
+          starts_at: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          created_by: string
+          ends_at: string
+          id?: string
+          published?: boolean
+          starts_at: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          created_by?: string
+          ends_at?: string
+          id?: string
+          published?: boolean
+          starts_at?: string
+        }
+        Relationships: []
+      }
       interviews: {
         Row: {
           category: string | null
@@ -217,6 +295,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      book_interview_slot: { Args: { _slot_id: string }; Returns: string }
+      cancel_interview_booking: {
+        Args: { _booking_id: string }
+        Returns: undefined
+      }
       credit_balance: { Args: { _user_id: string }; Returns: number }
       has_role: {
         Args: {
@@ -224,6 +307,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      interview_slot_availability: {
+        Args: never
+        Returns: {
+          capacity: number
+          ends_at: string
+          id: string
+          remaining: number
+          starts_at: string
+        }[]
       }
       start_interview: { Args: never; Returns: string }
     }
