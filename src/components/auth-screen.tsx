@@ -127,8 +127,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
             {mode !== "forgot" && (
               <div className="relative grid grid-cols-2 rounded-md bg-muted p-1 text-sm font-bold">
                 <span
-                  className={`absolute inset-y-1 w-[calc(50%-4px)] rounded-md bg-card shadow-sm transition-transform duration-300 ${mode === "signup" ? "translate-x-[calc(100%+0px)]" : ""}`}
-                  style={{ left: 4 }}
+                  className={`absolute inset-y-1 w-[calc(50%-4px)] rounded-md bg-card shadow-sm transition-all duration-300 ${mode === "signup" ? "left-1/2" : "left-1"}`}
                 />
                 {(["signin", "signup"] as const).map((m) => (
                   <Button
