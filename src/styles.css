@@ -88,6 +88,7 @@
   --chart-4: oklch(0.6 0.1 230);
   --chart-5: oklch(0.65 0.16 35);
   --gradient-ink: linear-gradient(150deg, oklch(0.2 0.045 262), oklch(0.29 0.07 258));
+  --gradient-panel: linear-gradient(160deg, oklch(0.995 0.005 235), oklch(0.95 0.028 240));
   --gradient-glow: radial-gradient(60% 60% at 70% 30%, oklch(0.79 0.15 72 / 0.28), transparent 70%);
   --shadow-soft: 0 1px 2px oklch(0.22 0.04 262 / 0.05), 0 12px 32px -12px oklch(0.22 0.04 262 / 0.18);
   --sidebar: oklch(0.97 0.01 85);
@@ -120,6 +121,9 @@
 
 @utility bg-gradient-ink {
   background-image: var(--gradient-glow), var(--gradient-ink);
+}
+@utility bg-gradient-panel {
+  background-image: var(--gradient-panel);
 }
 @utility shadow-soft {
   box-shadow: var(--shadow-soft);

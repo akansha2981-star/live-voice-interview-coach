@@ -43,42 +43,39 @@ function IntroPanel() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="relative hidden overflow-hidden bg-gradient-ink p-10 text-ink-foreground lg:flex lg:flex-col xl:p-14">
-      <div className="pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full border border-ink-foreground/10 animate-orbit">
-        <span className="absolute left-1/2 top-0 size-3 -translate-x-1/2 rounded-full bg-accent" />
-      </div>
-      <div className="pointer-events-none absolute -bottom-40 -left-24 size-96 rounded-full border border-sky/20 animate-orbit [animation-direction:reverse]">
-        <span className="absolute bottom-0 left-1/2 size-2 -translate-x-1/2 rounded-full bg-sky" />
+    <div className="relative hidden overflow-hidden bg-gradient-panel p-10 text-foreground lg:flex lg:flex-col xl:p-14">
+      <div className="pointer-events-none absolute -right-24 -top-24 size-[22rem] rounded-full border border-primary/10 animate-orbit">
+        <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 rounded-full bg-accent" />
       </div>
 
-      <p className="animate-rise text-xs font-bold uppercase tracking-[0.28em] text-accent">MBA Compass · AI Interview Suite</p>
+      <p className="animate-rise text-xs font-bold uppercase tracking-[0.28em] text-primary">MBA Compass · AI Interview Suite</p>
       <h2 className="mt-4 max-w-md animate-rise text-4xl font-bold leading-tight xl:text-5xl" style={{ animationDelay: "80ms" }}>
-        Practise the interview. <span className="text-shimmer">Walk in ready.</span>
+        Practise the interview. <span className="text-primary">Walk in ready.</span>
       </h2>
-      <p className="mt-4 max-w-md animate-rise text-ink-muted" style={{ animationDelay: "160ms" }}>
+      <p className="mt-4 max-w-md animate-rise text-muted-foreground" style={{ animationDelay: "160ms" }}>
         Live spoken mock interviews with an AI panelist, real-time presence coaching and a detailed scorecard after every session.
       </p>
 
-      <div className="relative mt-10 grid max-w-xl grid-cols-[auto_1fr] items-center gap-8 rounded-2xl border border-ink-foreground/15 bg-ink-foreground/5 p-6 backdrop-blur animate-float">
-        <div className="text-accent">
-          <ScoreRing value={82} size={132} label="Overall" />
+      <div className="relative mt-10 grid max-w-xl grid-cols-[auto_1fr] items-center gap-8 rounded-2xl border bg-card p-6 shadow-soft animate-float">
+        <div className="text-primary">
+          <ScoreRing value={82} size={132} label="Overall" tone="primary" />
         </div>
         <div className="grid gap-3">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-ink-muted">Sample scorecard</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Sample scorecard</p>
           {HIGHLIGHTS.map((h, i) => (
             <div key={h.k} className="animate-rise" style={{ animationDelay: `${300 + i * 120}ms` }}>
               <div className="flex justify-between text-sm">
-                <span>{h.k}</span>
-                <span className="font-bold">{h.v}</span>
+                <span className="font-medium">{h.k}</span>
+                <span className="font-bold text-primary">{h.v}</span>
               </div>
-              <GrowBar value={h.v} tone={i % 2 ? "bg-sky" : "bg-accent"} className="mt-1 bg-ink-foreground/15" />
+              <GrowBar value={h.v} tone={i % 2 ? "bg-sky" : "bg-primary"} className="mt-1" />
             </div>
           ))}
         </div>
       </div>
 
       <div className="relative mt-8 h-24 max-w-xl">
-        <div key={qi} className="absolute inset-0 animate-rise rounded-2xl border-l-4 border-accent bg-ink-foreground/5 p-5">
+        <div key={qi} className="absolute inset-0 animate-rise rounded-2xl border-l-4 border-primary bg-card p-5 shadow-soft">
           <p className="text-lg leading-snug">{QUOTES[qi].q}</p>
           <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky">{QUOTES[qi].t}</p>
         </div>
@@ -90,11 +87,11 @@ function IntroPanel() {
           { v: 34, s: "%", l: "Avg. score uplift" },
           { v: 15, s: " min", l: "Per session" },
         ].map((x) => (
-          <div key={x.l} className="border-t border-ink-foreground/15 pt-3">
-            <p className="text-3xl font-bold text-accent">
+          <div key={x.l} className="border-t border-border pt-3">
+            <p className="text-3xl font-bold text-primary">
               <AnimatedNumber value={x.v} suffix={x.s} duration={1600} />
             </p>
-            <p className="text-xs text-ink-muted">{x.l}</p>
+            <p className="text-xs text-muted-foreground">{x.l}</p>
           </div>
         ))}
       </div>
