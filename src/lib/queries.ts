@@ -54,13 +54,23 @@ export const bookingQuery = queryOptions({
   queryKey: ["bookings"],
   queryFn: async () => {
     const id = await uid();
-    const [{ data: slots, error: slotError }, { data: bookings, error: bookingError }] = await Promise.all([
-      supabase.rpc("interview_slot_availability"),
+    const [slots, { data: bookings, error: bookingError }] = await Promise.all([
+      allAvailableSlots(),
       supabase.from("interview_bookings").select("*, interview_slots(*)").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
-    if (slotError) throw slotError;
     if (bookingError) throw bookingError;
     return { slots: slots ?? [], bookings: bookings ?? [] };
   },
   refetchInterval: 30000,
 });
+
+async function allAvailableSlots() {
+  const pageSize = 500;
+  const slots: import("@/integrations/supabase/types").Database["public"]["Functions"]["interview_slot_availability"]["Returns"] = [];
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await supabase.rpc("interview_slot_availability").order("starts_at").order("id").range(offset, offset + pageSize - 1);
+    if (error) throw error;
+    slots.push(...(data ?? []));
+    if (!data || data.length < pageSize) return slots;
+  }
+}
