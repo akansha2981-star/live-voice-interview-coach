@@ -1,15 +1,14 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, LogOut, Mic, ShieldCheck, Ticket, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { Logo } from "@/components/logo";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/interview/check", label: "Interview", icon: Mic },
-  { to: "/slots", label: "Slots", icon: Ticket },
-  { to: "/profile", label: "Profile", icon: UserRound },
+  { to: "/dashboard", label: "Dashboard", short: "Home" },
+  { to: "/interview/check", label: "Interview", short: "Interview" },
+  { to: "/slots", label: "Slots", short: "Slots" },
+  { to: "/profile", label: "Profile", short: "Profile" },
 ] as const;
 
 export function AppShell() {
@@ -42,7 +41,7 @@ export function AppShell() {
         </div>
         <nav className="grid gap-1 px-3">
           <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-muted">Menu</p>
-          {NAV.map((n) => (
+          {NAV.map((n, i) => (
             <Link
               key={n.to}
               to={n.to}
@@ -52,7 +51,7 @@ export function AppShell() {
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold bg-accent text-accent-foreground shadow-soft",
               }}
             >
-              <n.icon className="size-4 shrink-0" /> {n.label}
+              <span className="w-5 text-[11px] font-bold opacity-60">{String(i + 1).padStart(2, "0")}</span> {n.label}
             </Link>
           ))}
           {me?.isAdmin && (
@@ -61,7 +60,7 @@ export function AppShell() {
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-ink-foreground/10 hover:text-ink-foreground"
               activeProps={{ className: "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold bg-accent text-accent-foreground" }}
             >
-              <ShieldCheck className="size-4 shrink-0" /> Admin
+              <span className="w-5 text-[11px] font-bold opacity-60">05</span> Admin
             </Link>
           )}
         </nav>
@@ -78,8 +77,8 @@ export function AppShell() {
             <p className="truncate text-sm font-semibold">{me?.profile?.full_name || "Student"}</p>
             <p className="truncate text-xs text-ink-muted">{me?.profile?.email}</p>
           </div>
-          <button onClick={signOut} aria-label="Sign out" className="rounded-md p-2 text-ink-muted hover:bg-ink-foreground/10 hover:text-ink-foreground">
-            <LogOut className="size-4" />
+          <button onClick={signOut} className="rounded-md px-2 py-1.5 text-xs font-bold text-ink-muted hover:bg-ink-foreground/10 hover:text-ink-foreground">
+            Sign out
           </button>
         </div>
       </aside>
@@ -90,12 +89,12 @@ export function AppShell() {
           <div className="pt-3">
             <Logo inverted />
           </div>
-          <button onClick={signOut} aria-label="Sign out" className="mt-3 rounded-md p-2 text-ink-muted">
-            <LogOut className="size-5" />
+          <button onClick={signOut} className="mt-3 rounded-md border border-ink-foreground/20 px-3 py-1.5 text-xs font-bold text-ink-muted">
+            Sign out
           </button>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-28 md:px-8 md:py-8 md:pb-8">
-          <Outlet />
+          <div key={typeof window !== "undefined" ? undefined : "ssr"} className="animate-fade"><Outlet /></div>
         </main>
       </div>
 
@@ -105,11 +104,11 @@ export function AppShell() {
           <Link
             key={n.to}
             to={n.to}
-            className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
-            activeProps={{ className: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold text-primary" }}
+            className="group flex flex-col items-center gap-1.5 py-3 text-xs font-semibold text-muted-foreground"
+            activeProps={{ className: "group active flex flex-col items-center gap-1.5 py-3 text-xs font-bold text-primary" }}
           >
-            <n.icon className="size-5" />
-            {n.label}
+            <span className="h-1 w-6 rounded-full bg-transparent transition-colors group-[.active]:bg-accent" />
+            {n.short}
           </Link>
         ))}
       </nav>
