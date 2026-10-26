@@ -11,6 +11,7 @@ import { createVisionAnalyzer, liveChecks, liveTip, summarizeVision, type Vision
 import { countFillers, wordsPerMinute } from "@/lib/interview-prompt";
 import { Button } from "@/components/ui/button";
 import { ScoreRing } from "@/components/motion";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/interview/$id")({
   head: () => ({
@@ -196,9 +197,9 @@ function InterviewRoom() {
   const goodCount = checks.filter((c) => c.ok).length;
 
   return (
-    <div className="grid gap-5">
+    <Dialog open><DialogContent aria-describedby={undefined} onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} className="inset-0 left-0 top-0 h-dvh w-screen max-w-none translate-x-0 translate-y-0 overflow-y-auto rounded-none border-0 p-4 sm:rounded-none md:p-8 [&>button]:hidden"><DialogTitle className="sr-only">MBA Compass live interview</DialogTitle><div className="mx-auto grid w-full max-w-7xl gap-5">
       {/* Top status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-ink px-5 py-3 text-ink-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-5 py-3 text-foreground">
         <div className="flex items-center gap-3">
           <span className="relative grid size-3 place-items-center">
             {live && <span className="absolute size-3 rounded-full bg-destructive animate-ring-pulse" />}
@@ -210,7 +211,7 @@ function InterviewRoom() {
           <span className="font-mono text-sm text-ink-muted">{mm}:{ss}</span>
         </div>
         <div className="flex items-center gap-2 text-xs text-ink-muted">
-          Question {Math.max(qIndex, live ? 1 : 0)} of ~{EXPECTED_QUESTIONS}
+          Interviewer turns {qIndex} · {mm}:{ss}
           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-ink-foreground/15">
             <div className="h-full bg-accent transition-all duration-700" style={{ width: `${(qIndex / EXPECTED_QUESTIONS) * 100}%` }} />
           </div>
@@ -305,7 +306,7 @@ function InterviewRoom() {
 
           {/* Current question */}
           <div className="rounded-2xl border bg-card p-5">
-            <div className="flex items-center justify-between"><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky">Current question</p><p className="text-xs font-bold text-muted-foreground">Q{Math.max(qIndex, live ? 1 : 0)} / {EXPECTED_QUESTIONS}</p></div>
+            <div className="flex items-center justify-between"><p className="text-xs font-bold uppercase text-primary">Current question · Live interviewer captions</p></div>
             <p key={assistantTurns.length} className="mt-2 animate-rise text-lg font-medium leading-snug">
               {currentQuestion || (live ? "Aria is about to begin…" : "Press Begin interview when you're ready.")}
             </p>
@@ -313,6 +314,7 @@ function InterviewRoom() {
 
           <audio ref={call.audioRef} autoPlay className="hidden" />
           <div className="flex flex-wrap items-center gap-3">
+            {!call.hasConnected && call.status !== "connecting" && <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>Back to dashboard</Button>}
             {!live && call.status !== "connecting" && !saving && (
               <Button size="lg" onClick={begin} className="bg-accent text-accent-foreground hover:bg-accent/90">
                 {call.hasConnected ? "Reconnect" : "Begin interview"}
@@ -407,6 +409,6 @@ function InterviewRoom() {
           </div>
         </div>
       </div>
-    </div>
+    </div></DialogContent></Dialog>
   );
 }
