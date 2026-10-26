@@ -64,6 +64,13 @@
       "when": 1793046824522,
       "tag": "0008_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793047672112,
+      "tag": "0009_prep_material_and_announcements",
+      "breakpoints": true
     }
   ]
 }

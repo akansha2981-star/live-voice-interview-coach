@@ -28,7 +28,7 @@ export function BookedInterviews() {
       const phase = slotPhase(s.starts_at, s.ends_at, Date.now());
       return <div key={b.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
         <div><p className="font-semibold">MBA mock interview</p><p className="text-sm text-muted-foreground">{new Date(s.starts_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })} – {new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p><p className="mt-1 text-xs font-semibold text-primary">{phase === "ready" ? "Your interview is open" : phase === "upcoming" ? "Scheduled" : "Slot ended"}</p></div>
-        <div className="flex gap-2"><Button variant="ghost" disabled={busy === b.id} onClick={() => cancel(b.id)}>Cancel booking</Button>{phase === "ready" ? <Button asChild><Link to="/interview/check" search={{ booking: b.id }}>Check equipment</Link></Button> : <Button disabled>{phase === "upcoming" ? "Not open yet" : "Expired"}</Button>}</div>
+        <div className="flex gap-2"><Button variant="ghost" disabled={busy === b.id} onClick={() => cancel(b.id)}>Cancel booking</Button>{phase === "ready" ? <Button asChild><Link to="/interview/check" search={{ booking: b.id }}>Start interview</Link></Button> : <Button disabled>{phase === "upcoming" ? "Not open yet" : "Expired"}</Button>}</div>
       </div>;
     })}</div>
   </section>;

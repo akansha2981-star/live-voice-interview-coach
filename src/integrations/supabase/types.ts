@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_comments: {
+        Row: {
+          announcement_id: string
+          author_name: string
+          body: string
+          created_at: string
+          from_staff: boolean
+          id: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          author_name?: string
+          body: string
+          created_at?: string
+          from_staff?: boolean
+          id?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          author_name?: string
+          body?: string
+          created_at?: string
+          from_staff?: boolean
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_comments_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      announcement_likes: {
+        Row: {
+          announcement_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_likes_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      announcements: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_path: string | null
+          link_url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          link_url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          link_url?: string | null
+        }
+        Relationships: []
+      }
       answer_reviews: {
         Row: {
           id: string
@@ -419,10 +513,12 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          event_at: string | null
           id: string
           instructions: string | null
           pdf_path: string | null
           published: boolean
+          registration_url: string | null
           sort_order: number
           title: string
           updated_at: string
@@ -434,10 +530,12 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          event_at?: string | null
           id?: string
           instructions?: string | null
           pdf_path?: string | null
           published?: boolean
+          registration_url?: string | null
           sort_order?: number
           title: string
           updated_at?: string
@@ -449,10 +547,12 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          event_at?: string | null
           id?: string
           instructions?: string | null
           pdf_path?: string | null
           published?: boolean
+          registration_url?: string | null
           sort_order?: number
           title?: string
           updated_at?: string

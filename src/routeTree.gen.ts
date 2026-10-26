@@ -14,12 +14,15 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMySlotsRouteImport } from './routes/_authenticated/my-slots'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedResourcesRouteImport } from './routes/_authenticated/resources'
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
@@ -34,6 +37,7 @@ import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenticated/interview.$id'
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
+import { Route as AuthenticatedPrepSectionRouteImport } from './routes/_authenticated/prep.$section'
 import { Route as AuthenticatedReportIdRouteImport } from './routes/_authenticated/report.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -60,9 +64,20 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAnnouncementsRoute =
+  AuthenticatedAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMySlotsRoute = AuthenticatedMySlotsRouteImport.update({
+  id: '/my-slots',
+  path: '/my-slots',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
@@ -88,6 +103,11 @@ const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnnouncementsRoute = AdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -162,6 +182,12 @@ const AuthenticatedInterviewCheckRoute =
     path: '/interview/check',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPrepSectionRoute =
+  AuthenticatedPrepSectionRouteImport.update({
+    id: '/prep/$section',
+    path: '/prep/$section',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
   id: '/report/$id',
   path: '/report/$id',
@@ -173,11 +199,14 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-slots': typeof AuthenticatedMySlotsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -193,17 +222,21 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
+  '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/announcements': typeof AuthenticatedAnnouncementsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/my-slots': typeof AuthenticatedMySlotsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/slots': typeof AuthenticatedSlotsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -219,6 +252,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
+  '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
 }
 export interface FileRoutesById {
@@ -228,11 +262,14 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/my-slots': typeof AuthenticatedMySlotsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
@@ -248,6 +285,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/_authenticated/interview/check': typeof AuthenticatedInterviewCheckRoute
+  '/_authenticated/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
 }
 export interface FileRouteTypes {
@@ -257,11 +295,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/announcements'
     | '/dashboard'
+    | '/my-slots'
     | '/profile'
     | '/resources'
     | '/slots'
     | '/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -277,17 +318,21 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/interview/$id'
     | '/interview/check'
+    | '/prep/$section'
     | '/report/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/announcements'
     | '/dashboard'
+    | '/my-slots'
     | '/profile'
     | '/resources'
     | '/slots'
     | '/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -303,6 +348,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/interview/$id'
     | '/interview/check'
+    | '/prep/$section'
     | '/report/$id'
   id:
     | '__root__'
@@ -311,11 +357,14 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/announcements'
     | '/_authenticated/dashboard'
+    | '/_authenticated/my-slots'
     | '/_authenticated/profile'
     | '/_authenticated/resources'
     | '/_authenticated/slots'
     | '/_authenticated/support'
+    | '/admin/announcements'
     | '/admin/audit'
     | '/admin/credits'
     | '/admin/documents'
@@ -331,6 +380,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/_authenticated/interview/$id'
     | '/_authenticated/interview/check'
+    | '/_authenticated/prep/$section'
     | '/_authenticated/report/$id'
   fileRoutesById: FileRoutesById
 }
@@ -379,11 +429,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/announcements': {
+      id: '/_authenticated/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-slots': {
+      id: '/_authenticated/my-slots'
+      path: '/my-slots'
+      fullPath: '/my-slots'
+      preLoaderRoute: typeof AuthenticatedMySlotsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -419,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/announcements': {
+      id: '/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AdminAnnouncementsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/audit': {
@@ -519,6 +590,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInterviewCheckRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/prep/$section': {
+      id: '/_authenticated/prep/$section'
+      path: '/prep/$section'
+      fullPath: '/prep/$section'
+      preLoaderRoute: typeof AuthenticatedPrepSectionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/report/$id': {
       id: '/_authenticated/report/$id'
       path: '/report/$id'
@@ -530,24 +608,30 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMySlotsRoute: typeof AuthenticatedMySlotsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedResourcesRoute: typeof AuthenticatedResourcesRoute
   AuthenticatedSlotsRoute: typeof AuthenticatedSlotsRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedInterviewIdRoute: typeof AuthenticatedInterviewIdRoute
   AuthenticatedInterviewCheckRoute: typeof AuthenticatedInterviewCheckRoute
+  AuthenticatedPrepSectionRoute: typeof AuthenticatedPrepSectionRoute
   AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMySlotsRoute: AuthenticatedMySlotsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedResourcesRoute: AuthenticatedResourcesRoute,
   AuthenticatedSlotsRoute: AuthenticatedSlotsRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedInterviewIdRoute: AuthenticatedInterviewIdRoute,
   AuthenticatedInterviewCheckRoute: AuthenticatedInterviewCheckRoute,
+  AuthenticatedPrepSectionRoute: AuthenticatedPrepSectionRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
 }
 
@@ -555,6 +639,7 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface AdminRouteChildren {
+  AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCreditsRoute: typeof AdminCreditsRoute
   AdminDocumentsRoute: typeof AdminDocumentsRoute
@@ -571,6 +656,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminCreditsRoute: AdminCreditsRoute,
   AdminDocumentsRoute: AdminDocumentsRoute,
