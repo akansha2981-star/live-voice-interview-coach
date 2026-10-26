@@ -46,6 +46,78 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json
+          id: string
+          target_user: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user?: string | null
+        }
+        Relationships: []
+      }
+      course_purchases: {
+        Row: {
+          amount: number | null
+          course_name: string
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          id: string
+          interview_credits: number
+          order_id: string | null
+          payment_status: string | null
+          purchased_at: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          course_name: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          id?: string
+          interview_credits?: number
+          order_id?: string | null
+          payment_status?: string | null
+          purchased_at?: string
+          source?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          course_name?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          id?: string
+          interview_credits?: number
+          order_id?: string | null
+          payment_status?: string | null
+          purchased_at?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       credit_ledger: {
         Row: {
           created_at: string
@@ -211,6 +283,7 @@ export type Database = {
       profiles: {
         Row: {
           accessibility: string | null
+          account_status: string
           achievements: string | null
           career_objectives: string | null
           concerns: string | null
@@ -242,6 +315,7 @@ export type Database = {
         }
         Insert: {
           accessibility?: string | null
+          account_status?: string
           achievements?: string | null
           career_objectives?: string | null
           concerns?: string | null
@@ -273,6 +347,7 @@ export type Database = {
         }
         Update: {
           accessibility?: string | null
+          account_status?: string
           achievements?: string | null
           career_objectives?: string | null
           concerns?: string | null
@@ -304,6 +379,169 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_downloads: {
+        Row: {
+          downloaded_at: string
+          id: string
+          resource_id: string
+          resource_title: string
+          user_id: string
+        }
+        Insert: {
+          downloaded_at?: string
+          id?: string
+          resource_id: string
+          resource_title: string
+          user_id: string
+        }
+        Update: {
+          downloaded_at?: string
+          id?: string
+          resource_id?: string
+          resource_title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_downloads_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          attachments: Json
+          banner_path: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          instructions: string | null
+          pdf_path: string | null
+          published: boolean
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json
+          banner_path?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          instructions?: string | null
+          pdf_path?: string | null
+          published?: boolean
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json
+          banner_path?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          instructions?: string | null
+          pdf_path?: string | null
+          published?: boolean
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string
+          id: string
+          priority: string
+          resolved_at: string | null
+          status: string
+          subject: string
+          ticket_no: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: string
+          created_at?: string
+          id?: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          ticket_no?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          ticket_no?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          attachments: Json
+          author_id: string
+          body: string
+          created_at: string
+          from_staff: boolean
+          id: string
+          internal: boolean
+          ticket_id: string
+        }
+        Insert: {
+          attachments?: Json
+          author_id: string
+          body: string
+          created_at?: string
+          from_staff?: boolean
+          id?: string
+          internal?: boolean
+          ticket_id: string
+        }
+        Update: {
+          attachments?: Json
+          author_id?: string
+          body?: string
+          created_at?: string
+          from_staff?: boolean
+          id?: string
+          internal?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -327,7 +565,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_credits: {
+        Args: { _delta: number; _reason: string; _user_id: string }
+        Returns: number
+      }
+      admin_cancel_booking: {
+        Args: { _booking_id: string; _status: string }
+        Returns: undefined
+      }
+      admin_metrics: { Args: { _from: string; _to: string }; Returns: Json }
+      admin_set_account_status: {
+        Args: { _status: string; _user_id: string }
+        Returns: undefined
+      }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
+      can_operate: { Args: { _user_id: string }; Returns: boolean }
+      can_support: { Args: { _user_id: string }; Returns: boolean }
       cancel_interview_booking: {
         Args: { _booking_id: string }
         Returns: undefined
@@ -350,6 +603,12 @@ export type Database = {
           starts_at: string
         }[]
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
+      log_audit: {
+        Args: { _action: string; _details: Json; _target: string }
+        Returns: undefined
+      }
+      reopen_ticket: { Args: { _ticket_id: string }; Returns: undefined }
       score_benchmark: {
         Args: { _category: string }
         Returns: {
