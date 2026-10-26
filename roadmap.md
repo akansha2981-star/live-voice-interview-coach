@@ -1,4 +1,5 @@
 # Dashboard and interview workflow
+- [x] Five-minute slot availability and bounded scrollable booking list
 - [x] Formal white-and-blue dashboard and shared navigation
 - [x] Admin-published slots, student booking and dashboard appointments
 - [x] Internet, face and spoken microphone checks before entry

@@ -6,4 +6,10 @@ describe("booked interview checks", () => {
   it("requires a visible face", () => { expect(preflightReady({ ...passed, faceVisible: false })).toBe(false); });
   it("requires spoken microphone verification", () => { expect(preflightReady({ ...passed, micConfirmed: false })).toBe(false); expect(speechMatches(MIC_PHRASE)).toBe(true); expect(speechMatches("hello")).toBe(false); });
   it("only opens during the booked date and time", () => { const s = "2026-10-27T10:00:00Z", e = "2026-10-27T10:30:00Z"; expect(slotPhase(s,e,Date.parse("2026-10-27T09:59:00Z"))).toBe("upcoming"); expect(slotPhase(s,e,Date.parse(s))).toBe("ready"); expect(slotPhase(s,e,Date.parse(e))).toBe("expired"); });
+  it("supports the requested five-minute booking windows", () => {
+    const start = "2026-10-27T10:00:00Z", end = "2026-10-27T10:05:00Z";
+    expect(slotPhase(start, end, Date.parse("2026-10-27T10:04:59Z"))).toBe("ready");
+    expect(slotPhase(start, end, Date.parse(end))).toBe("expired");
+    expect(slotPhase(end, "2026-10-27T10:10:00Z", Date.parse(end))).toBe("ready");
+  });
 });
