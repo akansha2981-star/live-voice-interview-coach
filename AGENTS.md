@@ -17,4 +17,5 @@
 - Slot availability and booking use database functions with row locks; equipment checks are recorded through authenticated server functions before the atomic start_interview credit spend.
 - Fetch slot availability in ordered pages so dense schedules are not truncated by the Data API row limit.
 - The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
+- Interview presentation lives in a browser-safe workspace; transcript following changes only its own scroll container so caption updates never move the room.
 - tsconfig relaxes noPropertyAccessFromIndexSignature/noUncheckedIndexedAccess/exactOptionalPropertyTypes/noImplicitReturns to keep UI code readable.

@@ -1,4 +1,5 @@
 # Dashboard and interview workflow
+- [ ] Advanced interview tracking and isolated full-transcript scrolling
 - [x] Compact clickable slot filters and viewport-bounded single-column list
 - [x] Five-minute slot availability and bounded scrollable booking list
 - [x] Formal white-and-blue dashboard and shared navigation
