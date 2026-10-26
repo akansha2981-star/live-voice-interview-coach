@@ -1,5 +1,5 @@
 # Dashboard and interview workflow
-- [ ] Advanced interview tracking and isolated full-transcript scrolling
+- [x] Advanced interview tracking and isolated full-transcript scrolling (100-turn simulated browser checks; live participant verification remains below)
 - [x] Compact clickable slot filters and viewport-bounded single-column list
 - [x] Five-minute slot availability and bounded scrollable booking list
 - [x] Formal white-and-blue dashboard and shared navigation
