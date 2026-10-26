@@ -4,10 +4,61 @@ import { supabase } from "@/integrations/supabase/client";
 import { meQuery } from "@/lib/queries";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-const NAV = [{ to: "/dashboard", label: "Overview", short: "Home" }, { to: "/slots", label: "Book interview", short: "Bookings" }, { to: "/interview/check", label: "Equipment check", short: "Check" }, { to: "/profile", label: "My profile", short: "Profile" }] as const;
+
+type NavItem = { to: "/dashboard" | "/slots" | "/interview/check" | "/profile" | "/admin"; label: string; short: string; mark: string; tone: string };
+const GROUPS: { title: string; items: NavItem[] }[] = [
+  { title: "Workspace", items: [{ to: "/dashboard", label: "Overview", short: "Home", mark: "OV", tone: "bg-primary text-primary-foreground" }] },
+  { title: "My interviews", items: [
+    { to: "/slots", label: "Book interview", short: "Book", mark: "BK", tone: "bg-sky text-primary-foreground" },
+    { to: "/interview/check", label: "Equipment check", short: "Check", mark: "EQ", tone: "bg-success text-primary-foreground" },
+  ] },
+  { title: "Account", items: [{ to: "/profile", label: "My profile", short: "Profile", mark: "PR", tone: "bg-accent text-accent-foreground" }] },
+];
+const MOBILE = GROUPS.flatMap((g) => g.items);
+
+function NavLink({ n }: { n: NavItem }) {
+  const base = "group flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-all duration-200";
+  return <Link to={n.to} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} bg-secondary font-semibold text-primary shadow-[inset_3px_0_0_var(--primary)]` }}>
+    <span className={`grid size-7 shrink-0 place-items-center rounded-md text-[10px] font-bold tracking-wide ${n.tone}`}>{n.mark}</span>
+    <span className="truncate">{n.label}</span>
+  </Link>;
+}
+
 export function AppShell() {
- const { data: me } = useQuery(meQuery); const qc = useQueryClient(); const navigate = useNavigate();
- async function signOut() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); navigate({ to: "/", replace: true }); }
- const initials = (me?.profile?.full_name || "Student").split(/\s+/).map((s) => s[0]).slice(0,2).join("").toUpperCase();
- return <div className="min-h-screen bg-background"><header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b bg-card px-4 md:px-6"><Link to="/dashboard"><Logo /></Link><div className="flex items-center gap-3"><span className="hidden text-sm text-muted-foreground sm:inline">Welcome, {me?.profile?.full_name?.split(" ")[0] || "Student"}</span><span className="grid size-8 place-items-center rounded-full bg-secondary text-xs font-bold text-primary">{initials}</span><Button onClick={signOut} variant="ghost" size="sm">Sign out</Button></div></header><div className="flex"><aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-56 shrink-0 flex-col border-r bg-card px-3 py-5 md:flex"><p className="mb-3 px-3 text-xs font-semibold text-muted-foreground">INTERVIEW WORKSPACE</p><nav className="grid gap-2">{NAV.map((n) => <Link key={n.to} to={n.to} className="rounded-md px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-secondary" activeProps={{ className: "rounded-md border border-primary/15 bg-secondary px-3 py-3 text-sm font-semibold text-primary" }}>{n.label}</Link>)}{me?.isAdmin && <Link to="/admin" className="rounded-md px-3 py-3 text-sm text-muted-foreground" activeProps={{ className: "rounded-md bg-secondary px-3 py-3 text-sm font-semibold text-primary" }}>Admin · Students & slots</Link>}</nav><div className="mt-auto border-t px-3 pt-5"><p className="text-xs text-muted-foreground">Interview credits</p><p className="mt-1 text-3xl font-bold text-primary">{me?.credits ?? "—"}</p><Button asChild variant="ghost" size="sm" className="mt-2"><Link to="/slots">Buy more credits</Link></Button></div></aside><main className="mx-auto min-w-0 flex-1 max-w-7xl px-4 py-6 pb-28 md:px-8 md:pb-8"><div className="animate-fade"><Outlet /></div></main></div><nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-card pb-safe md:hidden">{NAV.map((n) => <Link key={n.to} to={n.to} className="py-4 text-center text-xs font-semibold text-muted-foreground" activeProps={{ className: "border-t-2 border-primary bg-secondary py-4 text-center text-xs font-bold text-primary" }}>{n.short}</Link>)}</nav></div>;
+  const { data: me } = useQuery(meQuery); const qc = useQueryClient(); const navigate = useNavigate();
+  async function signOut() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); navigate({ to: "/", replace: true }); }
+  const name = me?.profile?.full_name || "Student";
+  const initials = name.split(/\s+/).map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+  const groups = me?.isAdmin ? [...GROUPS, { title: "Administration", items: [{ to: "/admin", label: "Students & slots", short: "Admin", mark: "AD", tone: "bg-ink text-ink-foreground" } as NavItem] }] : GROUPS;
+  return <div className="min-h-screen bg-background">
+    <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur-md">
+      <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
+        <Link to="/dashboard" className="flex min-w-0 items-center gap-3"><Logo /><span className="hidden border-l pl-3 text-xs leading-tight text-muted-foreground lg:block"><span className="block font-semibold text-foreground">AI Interview</span>Performance workspace</span></Link>
+        <div className="flex shrink-0 items-center gap-2 md:gap-3">
+          <Link to="/slots" className="hidden items-center gap-2 rounded-full border bg-secondary px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:border-primary/40 sm:flex"><span className="size-1.5 rounded-full bg-success motion-safe:animate-pulse" />{me?.credits ?? "—"} credits</Link>
+          <Button asChild size="sm" className="hidden md:inline-flex"><Link to="/slots">Book interview</Link></Button>
+          <div className="mx-1 hidden h-8 w-px bg-border md:block" />
+          <div className="flex items-center gap-2"><span className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-primary to-sky text-xs font-bold text-primary-foreground shadow-soft">{initials}</span><span className="hidden text-xs leading-tight sm:block"><span className="block text-muted-foreground">Welcome</span><span className="font-semibold">{name.split(" ")[0]}</span></span></div>
+          <Button onClick={signOut} variant="ghost" size="sm">Logout</Button>
+        </div>
+      </div>
+    </header>
+    <div className="flex">
+      <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col gap-3 overflow-y-auto border-r bg-card/60 p-3 md:flex">
+        {groups.map((g, gi) => <div key={g.title} style={{ "--i": gi } as React.CSSProperties} className="animate-reveal rounded-xl border bg-card p-2 shadow-[0_1px_2px_oklch(0.22_0.04_262/0.04)]">
+          <p className="px-2.5 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{g.title}</p>
+          <nav className="grid gap-0.5">{g.items.map((n) => <NavLink key={n.to} n={n} />)}</nav>
+        </div>)}
+        <div className="animate-reveal relative mt-auto overflow-hidden rounded-xl bg-gradient-to-br from-primary to-ink p-4 text-primary-foreground" style={{ "--i": 4 } as React.CSSProperties}>
+          <span aria-hidden className="absolute -right-6 -top-6 size-20 rounded-full bg-primary-foreground/10" />
+          <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">Interview credits</p>
+          <p className="mt-1 text-3xl font-bold">{me?.credits ?? "—"}</p>
+          <p className="text-xs opacity-80">₹100 per interview</p>
+          <Button asChild size="sm" variant="secondary" className="mt-3 w-full"><Link to="/slots">Buy more credits</Link></Button>
+        </div>
+      </aside>
+      <main className="mx-auto min-w-0 max-w-7xl flex-1 px-4 py-6 pb-28 md:px-8 md:pb-8"><div className="animate-fade"><Outlet /></div></main>
+    </div>
+    <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-card/95 pb-safe backdrop-blur-md md:hidden">{MOBILE.map((n) => <Link key={n.to} to={n.to} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-muted-foreground" activeProps={{ className: "flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold text-primary" }}>{({ isActive }) => <><span className={`grid size-7 place-items-center rounded-md text-[9px] font-bold ${isActive ? n.tone : "bg-secondary text-muted-foreground"}`}>{n.mark}</span>{n.short}</>}</Link>)}</nav>
+  </div>;
 }
