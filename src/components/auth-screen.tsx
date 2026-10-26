@@ -43,14 +43,17 @@ function IntroPanel() {
     return () => clearInterval(t);
   }, []);
   return (
-    <aside className="hidden h-[460px] w-full max-w-md flex-col justify-center border-l border-primary/20 bg-secondary px-8 py-7 lg:flex">
-      <p className="text-xs font-semibold text-primary">MBA Compass · Interview practice</p>
-      <h2 className="mt-3 text-3xl font-bold leading-tight">A little practice.<br /><span className="text-primary">A stronger first impression.</span></h2>
-      <div className="mt-7 grid grid-cols-[auto_1fr] items-center gap-5">
+    <aside className="hidden min-h-dvh flex-col justify-center border-l bg-secondary px-10 py-8 lg:flex xl:px-16">
+      <div className="mx-auto w-full max-w-md">
+      <p className="text-sm font-semibold text-primary">MBA Compass · AI Interview Suite</p>
+      <p className="mt-8 text-xs font-semibold text-muted-foreground">Your next chapter starts here</p>
+      <h2 className="mt-3 text-4xl font-bold leading-tight">MBA interview practice.<br /><span className="text-primary">Make your answers count.</span></h2>
+      <div className="mt-8 grid grid-cols-[auto_1fr] items-center gap-6 border-y py-6">
         <ScoreRing value={82} size={96} label="Overall" tone="primary" />
         <div className="grid gap-3"><p className="text-xs text-muted-foreground">Sample performance</p>{HIGHLIGHTS.slice(0,3).map((h) => <div key={h.k}><div className="flex justify-between gap-3 text-xs"><span>{h.k}</span><span className="font-semibold text-primary">{h.v}</span></div><GrowBar value={h.v} tone="bg-primary" className="mt-1" /></div>)}</div>
       </div>
-      <div className="mt-7 h-24 border-t pt-4"><div key={qi} className="animate-rise"><p className="text-sm leading-relaxed">{QUOTES[qi].q}</p><p className="mt-2 text-xs text-muted-foreground">{QUOTES[qi].t}</p></div></div>
+      <div className="mt-6 h-24"><div key={qi} className="animate-rise"><p className="text-lg leading-relaxed">{QUOTES[qi].q}</p><p className="mt-2 text-xs text-muted-foreground">{QUOTES[qi].t}</p></div></div>
+      </div>
     </aside>
   );
 }
@@ -108,22 +111,20 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
   }
 
   return (
-    <div className="auth-layout flex min-h-dvh items-center justify-center bg-card px-5 py-5 sm:px-10">
-      <div className="flex w-full max-w-5xl items-center justify-center gap-16">
-      <div className="flex w-full max-w-sm shrink-0 items-center justify-center">
+    <div className="auth-layout min-h-dvh bg-card">
+      <div className="grid min-h-dvh lg:grid-cols-2">
+      <div className="flex items-center justify-center px-6 py-6 sm:px-12">
         <div className="w-full max-w-md animate-rise">
-          <div className="flex flex-col items-center text-center">
-            <FullLogo className="h-20 w-32 object-contain" />
-            <p className="mt-2 text-[11px] font-semibold text-muted-foreground">
-              Student portal · Secure access
-            </p>
-            <h1 className="mt-3 text-2xl font-bold">
+          <div>
+            <div className="flex items-center gap-3"><FullLogo className="h-14 w-16 object-contain" /><div><p className="font-bold">MBA Compass</p><p className="text-xs text-muted-foreground">Student interview portal</p></div></div>
+            <h1 className="mt-5 text-3xl font-bold">
               {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your student account" : "Reset your password"}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">Use the email registered with MBA Compass.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Sign in to your student dashboard.</p>
           </div>
 
           <div className="mt-5">
+            {mode !== "forgot" && <><div className="grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => oauth("google")}>Continue with Google</Button><Button variant="outline" onClick={() => oauth("lovable")}>With Lovable</Button></div><div className="my-4 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or use email<span className="h-px flex-1 bg-border" /></div></>}
             {mode !== "forgot" && (
               <div className="relative grid grid-cols-2 rounded-md bg-muted p-1 text-sm font-bold">
                 <span
@@ -147,12 +148,12 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
               {mode === "signup" && (
                 <div className="grid gap-1.5">
                   <Label htmlFor="name">Full name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                  <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
               )}
               <div className="grid gap-1.5">
                 <Label htmlFor="email">Email address</Label>
-                <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               {mode !== "forgot" && (
                 <div className="grid gap-1.5">
@@ -167,6 +168,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
                   <Input
                     id="password"
                     type="password"
+                    placeholder="Enter your password"
                     minLength={8}
                     autoComplete={mode === "signup" ? "new-password" : "current-password"}
                     value={password}
@@ -185,23 +187,8 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
               )}
             </form>
 
-            {mode !== "forgot" && (
-              <>
-                <div className="my-3 flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="h-px flex-1 bg-border" /> or continue with <span className="h-px flex-1 bg-border" />
-                </div>
-                <div className="grid gap-2">
-                  <Button variant="outline" onClick={() => oauth("google")}>
-                    Continue with Google
-                  </Button>
-                  <Button variant="outline" type="button" onClick={() => oauth("lovable")}>
-                    Continue with Lovable
-                  </Button>
-                </div>
-              </>
-            )}
           </div>
-          <p className="mt-4 text-center text-xs text-muted-foreground">Your data is private to you and MBA Compass.</p>
+          <p className="mt-5 border-t pt-4 text-xs text-muted-foreground">Your data is private to you and MBA Compass.</p>
         </div>
       </div>
       <IntroPanel />
