@@ -74,3 +74,39 @@ async function allAvailableSlots() {
     if (!data || data.length < pageSize) return slots;
   }
 }
+
+/** Completed reports (no transcripts) for the dashboard insights. */
+export const myReportsQuery = queryOptions({
+  queryKey: ["interviews", "reports"],
+  queryFn: async () => {
+    const id = await uid();
+    const { data, error } = await supabase
+      .from("interviews")
+      .select("id, started_at, category, overall_score, report, vision_summary, speech_metrics")
+      .eq("user_id", id)
+      .eq("status", "completed")
+      .order("started_at", { ascending: true })
+      .limit(50);
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const myReviewsQuery = queryOptions({
+  queryKey: ["answer_reviews"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("answer_reviews").select("interview_id, question_index, reviewed_at");
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const benchmarkQuery = (category: string | null) =>
+  queryOptions({
+    queryKey: ["benchmark", category],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("score_benchmark", { _category: category ?? "" });
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+  });

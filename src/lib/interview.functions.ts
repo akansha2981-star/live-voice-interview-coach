@@ -151,9 +151,11 @@ ${transcript}`,
       report.readiness_level = report.overall_score >= 80 ? "Interview ready" : report.overall_score >= 65 ? "Nearly ready" : report.overall_score >= 45 ? "Developing" : "Not yet ready";
       for (const s of Object.values(report.scores)) s.score = clamp(s.score);
       for (const q of report.questions) q.score = clamp(q.score);
+      const { categoryScores, measuredMoments } = await import("./dashboard-insights");
+      const stored: import("./interview-report").InterviewReport = { ...report, category_scores: categoryScores(report.questions), measured_moments: measuredMoments(claimed.transcript as never) };
       await supabaseAdmin
         .from("interviews")
-        .update({ report: report as never, overall_score: report.overall_score, status: "completed" })
+        .update({ report: stored as never, overall_score: report.overall_score, status: "completed" })
         .eq("id", data.id);
       return { started: true };
     } catch (error) {
