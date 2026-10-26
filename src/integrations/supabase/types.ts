@@ -365,7 +365,12 @@ export type Database = {
       start_interview: { Args: never; Returns: string }
     }
     Enums: {
-      app_role: "admin" | "student"
+      app_role:
+        | "admin"
+        | "student"
+        | "operations_admin"
+        | "support_agent"
+        | "analyst"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -493,7 +498,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "student"],
+      app_role: [
+        "admin",
+        "student",
+        "operations_admin",
+        "support_agent",
+        "analyst",
+      ],
     },
   },
 } as const
