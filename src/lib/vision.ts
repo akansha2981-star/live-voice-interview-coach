@@ -10,6 +10,9 @@ export type VisionFrame = {
   tooClose: boolean;
   shouldersLevel: boolean | null;
   brightness: number;
+  blinkCount?: number;
+  blinkRate?: number | null;
+  handsVisible?: number | null;
 };
 
 export type VisionSummary = {
@@ -22,6 +25,9 @@ export type VisionSummary = {
   low_light_pct: number;
   avg_abs_yaw_deg: number;
   timeline: Array<{ t_s: number; face: number; eye: number; framed: number }>;
+  blink_rate_per_min?: number | null;
+  hands_visible_pct?: number | null;
+  head_movement_deg?: number | null;
 };
 
 const WASM = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm";
@@ -54,6 +60,7 @@ export async function createVisionAnalyzer(video: HTMLVideoElement) {
   canvas.height = 24;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   let frameCount = 0;
+  let blinkCount = 0, eyesClosed = false, trackedFrom = 0, lastBrightness = -1;
 
   function brightness() {
     if (!ctx) return 0.5;
@@ -78,9 +85,18 @@ export async function createVisionAnalyzer(video: HTMLVideoElement) {
       tooFar: false,
       tooClose: false,
       shouldersLevel: null,
-      brightness: frameCount++ % 4 === 0 ? brightness() : -1,
+      brightness: frameCount++ % 4 === 0 ? (lastBrightness = brightness()) : lastBrightness,
+      handsVisible: null,
+      blinkRate: null,
     };
     if (lm) {
+      trackedFrom ||= now;
+      const distance = (a: number, b: number) => Math.hypot(lm[a].x - lm[b].x, lm[a].y - lm[b].y);
+      const eyeRatio = ((distance(159, 145) / (distance(33, 133) || 1)) + (distance(386, 374) / (distance(362, 263) || 1))) / 2;
+      if (eyeRatio < 0.18 && !eyesClosed) { eyesClosed = true; blinkCount++; }
+      if (eyeRatio > 0.23) eyesClosed = false;
+      frame.blinkCount = blinkCount;
+      frame.blinkRate = now - trackedFrom >= 60000 ? Math.round(blinkCount * 60000 / (now - trackedFrom)) : null;
       const m = res.facialTransformationMatrixes?.[0]?.data;
       if (m) {
         frame.yaw = (Math.atan2(-m[8], Math.sqrt(m[9] ** 2 + m[10] ** 2)) * 180) / Math.PI;
@@ -103,6 +119,7 @@ export async function createVisionAnalyzer(video: HTMLVideoElement) {
     }
     if (pose) {
       const p = pose.detectForVideo(video, now).landmarks?.[0];
+      if (p) frame.handsVisible = [15, 16].filter((i) => p[i] && (p[i].visibility ?? 0) > 0.6 && p[i].x >= 0 && p[i].x <= 1 && p[i].y >= 0 && p[i].y <= 1).length;
       if (p && p[11] && p[12] && (p[11].visibility ?? 1) > 0.5 && (p[12].visibility ?? 1) > 0.5) {
         frame.shouldersLevel = Math.abs(p[11].y - p[12].y) < 0.05;
       }
@@ -139,7 +156,12 @@ export function summarizeVision(frames: VisionFrame[], startedAt: number): Visio
     });
   }
   const faces = frames.filter((f) => f.faceVisible);
+  const handFrames = frames.filter((f) => f.handsVisible != null);
+  const movements = faces.slice(1).map((f, i) => Math.abs(f.yaw - faces[i].yaw) + Math.abs(f.pitch - faces[i].pitch));
   return {
+    blink_rate_per_min: frames.filter((f) => f.blinkRate != null).at(-1)?.blinkRate ?? null,
+    hands_visible_pct: handFrames.length ? Math.round(handFrames.filter((f) => (f.handsVisible ?? 0) > 0).length / handFrames.length * 100) : null,
+    head_movement_deg: movements.length ? Math.round(movements.reduce((a, b) => a + b, 0) / movements.length * 10) / 10 : null,
     samples: frames.length,
     face_visible_pct: pct(faces.length),
     facing_camera_pct: pct(faces.filter((f) => Math.abs(f.yaw) < 20 && Math.abs(f.pitch) < 20).length),
@@ -193,9 +215,9 @@ export function liveChecks(f: VisionFrame | null): LiveCheck[] {
     {
       key: "posture",
       label: "Posture",
-      ok: f.shouldersLevel === null ? (face ? Math.abs(f.pitch) < 20 : false) : f.shouldersLevel && Math.abs(f.pitch) < 20,
+      ok: !face || f.shouldersLevel === null ? null : f.shouldersLevel && Math.abs(f.pitch) < 20,
       detail:
-        f.shouldersLevel === false ? "Shoulders tilted — sit upright" : Math.abs(f.pitch) >= 20 ? "Head tilted — lift your chin" : "Upright and steady",
+        !face || f.shouldersLevel === null ? "Shoulders not reliably visible" : f.shouldersLevel === false ? "Shoulders tilted — sit upright" : Math.abs(f.pitch) >= 20 ? "Head tilted — lift your chin" : "Upright and steady",
     },
     {
       key: "framing",
