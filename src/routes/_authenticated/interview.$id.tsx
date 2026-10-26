@@ -3,14 +3,14 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, CheckCircle2, Eye, Lightbulb, Loader2, Mic, MicOff, PersonStanding, PhoneOff, Play, ScanFace, Sun } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { interviewQuery } from "@/lib/queries";
 import { finishInterview } from "@/lib/interview.functions";
 import { useLiveVoice, type LiveEvent } from "@/hooks/use-live-voice";
-import { createVisionAnalyzer, liveChecks, liveTip, summarizeVision, type LiveCheck, type VisionFrame } from "@/lib/vision";
+import { createVisionAnalyzer, liveChecks, liveTip, summarizeVision, type VisionFrame } from "@/lib/vision";
 import { countFillers, wordsPerMinute } from "@/lib/interview-prompt";
 import { Button } from "@/components/ui/button";
+import { ScoreRing } from "@/components/motion";
 
 export const Route = createFileRoute("/_authenticated/interview/$id")({
   head: () => ({
@@ -30,7 +30,6 @@ const MAX_MS = 25 * 60 * 1000;
 const EXPECTED_QUESTIONS = 8;
 const LOOK_AWAY_MS = 2000;
 
-const CHECK_ICON: Record<LiveCheck["key"], typeof Eye> = { eye: Eye, posture: PersonStanding, framing: ScanFace, light: Sun };
 
 function InterviewRoom() {
   const { id } = Route.useParams();
@@ -236,20 +235,53 @@ function InterviewRoom() {
             <div className="pointer-events-none absolute left-1/2 top-[12%] h-[70%] w-[38%] -translate-x-1/2 rounded-[45%] border-2 border-dashed border-ink-foreground/25" />
 
             <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-ink-foreground">
-              <Eye className={`size-3.5 ${lookingAway ? "text-destructive" : "text-success"}`} /> Eye contact {eyePct}%
+              <span className={`size-2 rounded-full ${lookingAway ? "bg-destructive animate-pulse" : "bg-success"}`} /> Eye contact {eyePct}%
             </div>
 
+            {!live && call.status !== "connecting" && turns.length === 0 && !saving && (
+              <div className="absolute inset-0 grid animate-fade place-items-center bg-ink/70 p-6 text-ink-foreground backdrop-blur-sm">
+                <div className="max-w-md text-center">
+                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-accent">Before you begin</p>
+                  <ol className="mt-4 grid gap-2 text-left text-sm">
+                    {[
+                      "Sit upright with your face inside the dotted oval.",
+                      "Look at the camera lens when you answer.",
+                      "Aria speaks first — answer naturally, you may interrupt.",
+                      "Press End interview when Aria closes to get your report.",
+                    ].map((t, i) => (
+                      <li key={t} className="flex animate-rise gap-3" style={{ animationDelay: `${i * 120}ms` }}>
+                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-bold text-accent-foreground">{i + 1}</span>
+                        {t}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            )}
+            {call.status === "connecting" && (
+              <div className="absolute inset-0 grid animate-fade place-items-center bg-ink/60 text-ink-foreground">
+                <div className="text-center">
+                  <div className="relative mx-auto grid size-24 place-items-center">
+                    <span className="absolute inset-0 rounded-full bg-accent/60 animate-ring-pulse" />
+                    <span className="absolute inset-0 rounded-full bg-accent/60 animate-ring-pulse [animation-delay:600ms]" />
+                    <span className="relative grid size-20 place-items-center rounded-full bg-accent text-3xl font-bold text-accent-foreground">A</span>
+                  </div>
+                  <p className="mt-4 font-bold">Connecting you to Aria…</p>
+                </div>
+              </div>
+            )}
             {lookingAway && !camError && (
               <div className="absolute inset-x-0 top-1/2 mx-auto flex w-fit -translate-y-1/2 animate-rise items-center gap-2 rounded-xl bg-destructive px-4 py-2.5 text-sm font-bold text-destructive-foreground shadow-soft">
-                <AlertTriangle className="size-4 animate-pulse" /> You're not looking at the camera
+                <span className="animate-pulse">Look at the camera</span> <span className="font-normal opacity-90">— eye contact lost</span>
               </div>
             )}
 
             {/* Interviewer bubble */}
             <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-2xl bg-ink/85 p-2.5 pr-4 text-ink-foreground backdrop-blur">
-              <div className="relative grid size-11 place-items-center">
+              <div className="relative grid size-12 place-items-center">
                 {speaker === "assistant" && <span className="absolute inset-0 rounded-full bg-accent animate-ring-pulse" />}
-                <span className="relative grid size-11 place-items-center rounded-full bg-accent font-display text-lg font-bold text-accent-foreground">
+                {speaker === "assistant" && <span className="absolute inset-0 rounded-full bg-accent animate-ring-pulse [animation-delay:600ms]" />}
+                <span className="relative grid size-12 place-items-center rounded-full bg-accent font-display text-xl font-bold text-accent-foreground">
                   A
                 </span>
               </div>
@@ -273,7 +305,7 @@ function InterviewRoom() {
 
           {/* Current question */}
           <div className="rounded-2xl border bg-card p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky">Current question</p>
+            <div className="flex items-center justify-between"><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky">Current question</p><p className="text-xs font-bold text-muted-foreground">Q{Math.max(qIndex, live ? 1 : 0)} / {EXPECTED_QUESTIONS}</p></div>
             <p key={assistantTurns.length} className="mt-2 animate-rise text-lg font-medium leading-snug">
               {currentQuestion || (live ? "Aria is about to begin…" : "Press Begin interview when you're ready.")}
             </p>
@@ -283,17 +315,17 @@ function InterviewRoom() {
           <div className="flex flex-wrap items-center gap-3">
             {!live && call.status !== "connecting" && !saving && (
               <Button size="lg" onClick={begin} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                <Play className="size-4" /> {call.hasConnected ? "Reconnect" : "Begin interview"}
+                {call.hasConnected ? "Reconnect" : "Begin interview"}
               </Button>
             )}
             {call.status === "connecting" && (
               <Button size="lg" disabled>
-                <Loader2 className="size-4 animate-spin" /> Connecting to Aria…
+                <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> Connecting to Aria…
               </Button>
             )}
             {live && (
               <Button variant="secondary" size="lg" onClick={() => call.setMuted(!call.muted)}>
-                {call.muted ? <MicOff className="size-4" /> : <Mic className="size-4" />} {call.muted ? "Unmute" : "Mute"}
+                {call.muted ? "Unmute microphone" : "Mute microphone"}
               </Button>
             )}
             {call.playbackBlocked && (
@@ -303,7 +335,7 @@ function InterviewRoom() {
             )}
             {(call.hasConnected || turns.length > 0) && (
               <Button variant="destructive" size="lg" onClick={endInterview} disabled={saving}>
-                {saving ? <Loader2 className="size-4 animate-spin" /> : <PhoneOff className="size-4" />} End interview
+                {saving ? "Saving your interview…" : "End interview"}
               </Button>
             )}
           </div>
@@ -314,12 +346,16 @@ function InterviewRoom() {
           {/* Live presentation coach */}
           <div className="rounded-2xl border bg-card p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Live presentation</h2>
-              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold">{goodCount}/4 good</span>
+              <h2 className="text-lg font-bold">Live presence</h2>
+              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-bold">{goodCount}/4 good</span>
+            </div>
+            <div className="mb-4 flex items-center justify-around rounded-xl bg-gradient-ink py-4 text-ink-foreground">
+              <div className="text-accent"><ScoreRing value={Math.round((goodCount / 4) * 100)} size={92} stroke={8} label="Presence" /></div>
+              <div className={lookingAway ? "text-destructive" : "text-sky"}><ScoreRing value={eyePct} size={92} stroke={8} label="Eye" /></div>
+              <div className="text-success"><ScoreRing value={Math.round((qIndex / EXPECTED_QUESTIONS) * 100)} size={92} stroke={8} label="Progress" /></div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {checks.map((c) => {
-                const Icon = CHECK_ICON[c.key];
                 const tone =
                   c.ok === null
                     ? "border-border bg-muted text-muted-foreground"
@@ -329,17 +365,22 @@ function InterviewRoom() {
                 return (
                   <div key={c.key} className={`rounded-xl border p-3 transition-colors duration-300 ${tone}`}>
                     <div className="flex items-center justify-between">
-                      <Icon className={`size-4 ${c.ok ? "text-success" : c.ok === false ? "text-destructive" : ""}`} />
-                      {c.ok ? <CheckCircle2 className="size-4 text-success" /> : c.ok === false ? <AlertTriangle className="size-4 text-destructive" /> : null}
+                      <p className="text-sm font-bold">{c.label}</p>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          c.ok ? "bg-success text-primary-foreground" : c.ok === false ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-muted"
+                        }`}
+                      >
+                        {c.ok ? "Good" : c.ok === false ? "Fix" : "—"}
+                      </span>
                     </div>
-                    <p className="mt-2 text-sm font-semibold">{c.label}</p>
                     <p className="text-xs text-muted-foreground">{c.detail}</p>
                   </div>
                 );
               })}
             </div>
             <div className={`mt-3 flex items-start gap-2 rounded-xl p-3 text-sm transition-colors ${tip ? "bg-accent/20" : "bg-success/10"}`}>
-              <Lightbulb className={`mt-0.5 size-4 shrink-0 ${tip ? "text-accent" : "text-success"}`} />
+              <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Coach</span>
               <span key={tip ?? "ok"} className="animate-rise">{tip ?? "Great presence — keep it up."}</span>
             </div>
           </div>
