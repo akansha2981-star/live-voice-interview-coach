@@ -1,4 +1,5 @@
 # Admin portal
+- [ ] Add Finance & Costing dashboard: expense ledger, product/model usage, date reports, exports and manual balance with estimated/billed separation; awaiting plan approval
 - [x] Link created OpenAI connection and check model listing — Khushi's OpenAI linked; GET models returned HTTP 200; actual generation/realtime access still needs testing
 - [x] Document future Lovable workspace transfer without rebuilding features — WORKSPACE-TRANSFER.md records connection, credential, data and acceptance checks; no workspace move performed
 - [ ] Stage direct-API interview comparison without changing the student default — depends on compatible model access and voice adapter
