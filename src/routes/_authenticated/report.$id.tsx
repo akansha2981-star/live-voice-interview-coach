@@ -5,13 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { interviewQuery } from "@/lib/queries";
 import { generateReport, type InterviewReport } from "@/lib/interview.functions";
 import { INTERVIEW_CATEGORIES } from "@/lib/interview-prompt";
-import { downloadReportPdf, saveBlob, SCORE_LABELS } from "@/lib/report-pdf";
+import { downloadReportPdf, saveBlob } from "@/lib/report-pdf";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
-import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ReportObservations } from "@/components/report-observations";
-import { questionTiming } from "@/lib/performance";
+import { InterviewReportWorkspace } from "@/components/interview-report-workspace";
+import { toast } from "sonner";
 import type { TranscriptTurn } from "@/lib/interview-metrics";
 import { meQuery } from "@/lib/queries";
 
@@ -38,6 +36,7 @@ function ReportPage() {
   const queryClient = useQueryClient();
   const generate = useServerFn(generateReport);
   const triggered = useRef(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
   const { data: interview } = useQuery({
     ...interviewQuery(id),
@@ -106,156 +105,17 @@ function ReportPage() {
 
   const report = interview.report as unknown as InterviewReport;
   const vision = interview.vision_summary as unknown as VisionSummary | null;
-  const speech = interview.speech_metrics as Record<string, number> | null;
+  const speech = interview.speech_metrics as Record<string, unknown> | null;
   const type = INTERVIEW_CATEGORIES[interview.category ?? ""] ?? "Interview";
   const date = new Date(interview.started_at).toLocaleDateString();
-  const timing = questionTiming(transcript.map((t) => ({ ...t, end_ms: typeof (t as unknown as TranscriptTurn).end_ms === "number" ? (t as unknown as TranscriptTurn).end_ms : t.start_ms })) as TranscriptTurn[]);
-
-  return (
-    <div className="grid gap-8">
-      <div className="grid gap-6 rounded-2xl bg-gradient-ink p-8 text-ink-foreground md:grid-cols-[auto_1fr]">
-        <div className="animate-rise text-accent">
-          <ScoreRing value={report.overall_score} size={150} stroke={12} label="out of 100" />
-        </div>
-        <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-accent">{report.readiness_level}</p>
-          <h1 className="mt-1 text-3xl font-semibold">{type}</h1>
-          <p className="text-sm text-ink-muted">
-            {date} · {interview.difficulty} · {Math.round((interview.duration_s ?? 0) / 60)} min
-          </p>
-          <p className="mt-4 max-w-2xl text-ink-foreground/90">{report.summary}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-              onClick={() => downloadReportPdf(report, { name: me?.profile?.full_name ?? "Candidate", date, type, transcript, vision, speech })}
-            >
-              Download PDF report
-            </Button>
-            <Button variant="secondary" onClick={downloadTranscript}>
-              Download transcript
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Object.entries(report.scores).map(([k, v], i) => (
-          <div key={k} style={{ animationDelay: `${i * 70}ms` }} className="animate-rise rounded-2xl border bg-card p-5">
-            <div className="flex items-baseline justify-between">
-              <p className="text-sm font-semibold">{SCORE_LABELS[k] ?? k}</p>
-              <p className="font-display text-2xl font-bold"><AnimatedNumber value={v.score} /></p>
-            </div>
-            <GrowBar value={v.score} className="mt-2" />
-            <p className="mt-3 text-sm text-muted-foreground">{v.evidence}</p>
-          </div>
-        ))}
-      </section>
-
-      {report.assessment && <section className="border-y bg-card px-5 py-5"><h2 className="text-xl font-bold">Evidence-based ability score</h2><p className="mt-2 text-sm text-muted-foreground">Answer quality 30% · Reasoning 20% · Communication 20% · Delivery 10% · Etiquette 10% · Listening 10%. Camera coaching is excluded; unavailable categories are not scored as zero.</p><div className="mt-4 grid gap-4 sm:grid-cols-2">{[{ title: "Speech delivery", item: report.assessment.delivery }, { title: "Listening & responsiveness", item: report.assessment.listening }].map(({ title, item }) => <div key={title}><h3 className="font-semibold">{title} · {item.score == null ? "Unavailable" : `${item.score}/100`}</h3><p className="mt-1 text-sm text-muted-foreground">{item.evidence}</p></div>)}</div></section>}
-      <ReportObservations report={report} vision={vision} speech={speech} />
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <ListCard title="Strengths" items={report.strengths} />
-        <ListCard title="Areas to improve" items={report.improvement_areas} />
-      </section>
-
-      <section className="rounded-2xl border bg-card p-6">
-        <h2 className="text-xl font-semibold">Delivery & presentation</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {speech && <Metric label="Speaking pace" value={speech.words_per_minute ? `${speech.words_per_minute} wpm` : "Unavailable"} />}
-          {speech && <Metric label="Filler words" value={`${speech.filler_per_100_words ?? 0} / 100 words`} />}
-          {vision && <Metric label="Face visible" value={`${vision.face_visible_pct}%`} />}
-          {vision && <Metric label="Approx. eye contact" value={`${vision.approx_eye_contact_pct}%`} />}
-          {vision && <Metric label="Well framed" value={`${vision.well_framed_pct}%`} />}
-          {vision?.shoulders_level_pct != null && <Metric label="Upright posture" value={`${vision.shoulders_level_pct}%`} />}
-          {vision && <Metric label="Low light" value={`${vision.low_light_pct}%`} />}
-          {speech && <Metric label="Avg. answer length" value={`${speech.avg_answer_words ?? 0} words`} />}
-        </div>
-        <ul className="mt-4 list-disc space-y-1 pl-5 text-sm">
-          {report.presentation_notes.map((n) => (
-            <li key={n}>{n}</li>
-          ))}
-        </ul>
-        <p className="mt-4 text-xs text-muted-foreground">
-          Webcam observations are approximate and describe observable presentation only — never honesty, personality or emotions.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-xl font-semibold">Question by question</h2>
-        <Accordion type="multiple" className="rounded-2xl border bg-card px-4">
-          {report.questions.map((q, i) => (
-            <AccordionItem key={i} value={String(i)}>
-              <AccordionTrigger className="text-left">
-                <span className="flex-1">
-                  Q{i + 1}. {q.question}
-                </span>
-                <span className="mr-3 font-display text-xl">{q.score}</span>
-              </AccordionTrigger>
-              <AccordionContent className="grid gap-3 text-sm">
-                {q.relevance_score !== undefined && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[["Relevance", q.relevance_score], ["Accuracy", q.accuracy_score], ["Reasoning", q.reasoning_score], ["Communication", q.communication_score]].map(([label, score]) => <div key={label} className="border-b pb-2"><p className="text-xs text-muted-foreground">{label}</p><p className="font-bold">{score == null ? "Unavailable" : `${score}/100`}</p></div>)}</div>}
-                {timing[i] && <p className="text-xs text-muted-foreground">Answer duration: {timing[i].duration_s == null ? "Unavailable" : `${timing[i].duration_s}s`} · Response gap: {timing[i].response_latency_s == null ? "Unavailable" : `${timing[i].response_latency_s}s`} · Caption timing estimates</p>}
-                <p>
-                  <span className="font-semibold">Your answer: </span>
-                  {q.answer_summary}
-                </p>
-                {q.quote && (
-                  <blockquote className="border-l-2 border-accent pl-3 text-muted-foreground">
-                    <span className="mr-2 font-mono text-xs">{fmt(q.timestamp_s)}</span>“{q.quote}”
-                  </blockquote>
-                )}
-                <p>
-                  <span className="font-semibold">Evaluation: </span>
-                  {q.evaluation}
-                </p>
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="mb-1 font-semibold">A stronger answer</p>
-                  <p>{q.improved_answer}</p>
-                  {q.sample_explanation && <p className="mt-2 text-muted-foreground">{q.sample_explanation}</p>}
-                </div>
-                {q.missing_points?.length ? <p><strong>Missing points: </strong>{q.missing_points.join("; ")}</p> : null}
-                {q.unsupported_statements?.length ? <p><strong>Unsupported claims: </strong>{q.unsupported_statements.join("; ")}</p> : null}
-                {q.practice && <p><strong>Practice: </strong>{q.practice}</p>}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </section>
-
-      <section className="rounded-2xl border bg-card p-6">
-        <h2 className="text-xl font-semibold">Your improvement plan</h2>
-        {report.assessment?.limitations?.length ? <p className="mt-2 text-xs text-muted-foreground">{report.assessment.limitations.join(" ")}</p> : null}
-        <ol className="mt-4 grid gap-4">
-          {report.improvement_plan.map((s, i) => (
-            <li key={i} className="flex gap-4">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-foreground">
-                {i + 1}
-              </span>
-              <div>
-                <p className="font-semibold">
-                  {s.step} <span className="text-xs font-normal text-muted-foreground">· {s.timeframe}</span>
-                </p>
-                <p className="text-sm text-muted-foreground">{s.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-xl font-semibold">Transcript</h2>
-        <div className="max-h-[480px] space-y-3 overflow-y-auto rounded-2xl border bg-card p-4">
-          {transcript.map((t, i) => (
-            <p key={i} className="text-sm">
-              <span className="mr-2 font-mono text-xs text-muted-foreground">{fmt(t.start_ms / 1000)}</span>
-              <span className="font-semibold">{t.role === "user" ? "You" : "Aria"}: </span>
-              {t.text}
-            </p>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+  const turns: TranscriptTurn[] = transcript.map((t) => ({ role: t.role === "user" ? "user" : "assistant", text: t.text, start_ms: t.start_ms, end_ms: typeof (t as Partial<TranscriptTurn>).end_ms === "number" ? Number((t as Partial<TranscriptTurn>).end_ms) : t.start_ms }));
+  async function exportPdf() {
+    setPdfBusy(true);
+    try { await downloadReportPdf(report, { name: me?.profile?.full_name ?? "Candidate", date, type, transcript, vision, speech }); }
+    catch { toast.error("Could not prepare your PDF. Please try again."); }
+    finally { setPdfBusy(false); }
+  }
+  return <InterviewReportWorkspace report={report} transcript={turns} vision={vision} speech={speech} id={id} name={me?.profile?.full_name ?? "Candidate"} type={type} category={interview.category} date={interview.started_at} duration={interview.duration_s} onPdf={() => void exportPdf()} onTranscript={downloadTranscript} pdfBusy={pdfBusy} />;
 }
 
 function fmt(s: number) {
@@ -265,7 +125,7 @@ function fmt(s: number) {
 
 function Notice({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-lg rounded-2xl border bg-card p-8 text-center text-sm text-muted-foreground">
+    <div className="mx-auto max-w-lg rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">
       <h1 className="mb-2 text-2xl font-semibold text-foreground">{title}</h1>
       {children}
       <div className="mt-6">
@@ -273,28 +133,6 @@ function Notice({ title, children }: { title: string; children?: React.ReactNode
           Back to dashboard
         </Link>
       </div>
-    </div>
-  );
-}
-
-function ListCard({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-2xl border bg-card p-6">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
-        {items.map((s) => (
-          <li key={s}>{s}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl bg-muted p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="font-display text-xl font-semibold">{value}</p>
     </div>
   );
 }
