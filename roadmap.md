@@ -1,5 +1,6 @@
 # Admin portal
-- [ ] Link created OpenAI connection and verify model access — blocked: project owner lacks connection access; connection owner must grant Can use under Sharing
+- [x] Link created OpenAI connection and check model listing — Khushi's OpenAI linked; GET models returned HTTP 200; actual generation/realtime access still needs testing
+- [x] Document future Lovable workspace transfer without rebuilding features — WORKSPACE-TRANSFER.md records connection, credential, data and acceptance checks; no workspace move performed
 - [ ] Stage direct-API interview comparison without changing the student default — depends on compatible model access and voice adapter
 - [ ] Compare full interviews, transcripts, tracking and reports — requires connected OpenAI and a live participant; baseline AI calls also consume Lovable credits
 - [x] Match admin dashboard to the light student theme and group sidebar sections; authorized admin login, slot navigation and mobile menu verified
