@@ -42,6 +42,7 @@ export const parseResume = createServerFn({ method: "POST" })
       ];
     }
     const result = await generateStructured({
+      attribution: {product:"profile_resume",userId:context.userId,transactionId:data.path,service:"extraction"},
       schema: resumeSchema,
       effort: "low",
       system:
@@ -124,6 +125,7 @@ export const generateReport = createServerFn({ method: "POST" })
       .slice(0, 60000);
     try {
       const report = await generateStructured({
+        attribution: {product:"interview",userId:context.userId,transactionId:data.id,service:"report"},
         schema: reportSchema,
         effort: "medium",
         system: REPORT_INSTRUCTIONS,

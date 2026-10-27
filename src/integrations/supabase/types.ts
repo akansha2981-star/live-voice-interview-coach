@@ -375,6 +375,209 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_balances: {
+        Row: {
+          as_of: string
+          balance: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          notes: string
+          provider: string
+          spending_limit: number | null
+        }
+        Insert: {
+          as_of: string
+          balance: number
+          created_at?: string
+          created_by?: string | null
+          currency: string
+          id?: string
+          notes?: string
+          provider: string
+          spending_limit?: number | null
+        }
+        Update: {
+          as_of?: string
+          balance?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          notes?: string
+          provider?: string
+          spending_limit?: number | null
+        }
+        Relationships: []
+      }
+      finance_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          notes: string
+          occurred_at: string
+          product: string
+          provider: string
+          reference: string
+          source: string
+          voided_at: string | null
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          currency: string
+          id?: string
+          notes?: string
+          occurred_at: string
+          product: string
+          provider: string
+          reference: string
+          source?: string
+          voided_at?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          notes?: string
+          occurred_at?: string
+          product?: string
+          provider?: string
+          reference?: string
+          source?: string
+          voided_at?: string | null
+        }
+        Relationships: []
+      }
+      finance_rates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          effective_at: string
+          id: string
+          model: string
+          per_quantity: number
+          provider: string
+          service: string
+          unit: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency: string
+          effective_at: string
+          id?: string
+          model: string
+          per_quantity: number
+          provider: string
+          service: string
+          unit: string
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          effective_at?: string
+          id?: string
+          model?: string
+          per_quantity?: number
+          provider?: string
+          service?: string
+          unit?: string
+          unit_price?: number
+        }
+        Relationships: []
+      }
+      finance_usage: {
+        Row: {
+          cached_input_tokens: number | null
+          estimates: Json
+          event_key: string
+          expense_id: string | null
+          finalized: boolean
+          id: string
+          input_tokens: number | null
+          model: string
+          occurred_at: string
+          output_tokens: number | null
+          pricing_snapshot: Json
+          product: string
+          provider: string
+          reasoning_tokens: number | null
+          recorded_at: string
+          seconds: number | null
+          service: string
+          status: string
+          transaction_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cached_input_tokens?: number | null
+          estimates?: Json
+          event_key: string
+          expense_id?: string | null
+          finalized?: boolean
+          id?: string
+          input_tokens?: number | null
+          model: string
+          occurred_at?: string
+          output_tokens?: number | null
+          pricing_snapshot?: Json
+          product: string
+          provider: string
+          reasoning_tokens?: number | null
+          recorded_at?: string
+          seconds?: number | null
+          service: string
+          status: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cached_input_tokens?: number | null
+          estimates?: Json
+          event_key?: string
+          expense_id?: string | null
+          finalized?: boolean
+          id?: string
+          input_tokens?: number | null
+          model?: string
+          occurred_at?: string
+          output_tokens?: number | null
+          pricing_snapshot?: Json
+          product?: string
+          provider?: string
+          reasoning_tokens?: number | null
+          recorded_at?: string
+          seconds?: number | null
+          service?: string
+          status?: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_usage_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "finance_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_bookings: {
         Row: {
           actual_interview_at: string | null
@@ -980,12 +1183,15 @@ export type Database = {
       }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
       can_operate: { Args: { _user_id: string }; Returns: boolean }
+      can_read_finance: { Args: { _user_id: string }; Returns: boolean }
       can_support: { Args: { _user_id: string }; Returns: boolean }
       cancel_interview_booking: {
         Args: { _booking_id: string }
         Returns: undefined
       }
       credit_balance: { Args: { _user_id: string }; Returns: number }
+      finance_record_usage: { Args: { _row: Json }; Returns: undefined }
+      finance_save: { Args: { _data: Json; _kind: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

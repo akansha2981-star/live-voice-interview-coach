@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Finance usage is a server-written idempotent ledger attributed to product and transaction; estimates retain effective-rate snapshots, invoice reconciliation excludes covered estimates, and finance writes use audited staff-only database functions so costs never depend on client assertions.
 - Student presentation uses shared StudentPageHeading and student-scoped surface tokens; keep visual redesigns independent of payment, booking and assessment logic.
 - Detailed reports render through a browser-safe report workspace and evidence helpers shared with PDF export; transcript timestamps are turn-level and camera timelines stay aggregated, never inferred frame-level events.
 - Live voice interviews go through `src/lib/live-relay.server.ts` (dispatched at `/api/live` in `src/server.ts`, dev via `live-vite-plugin.ts`); the relay verifies the Supabase token + interview ownership in `interview-session.server.ts` before opening a paid session.

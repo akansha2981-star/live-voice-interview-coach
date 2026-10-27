@@ -43,7 +43,7 @@ export const analyzeResume = createServerFn({ method: "POST" })
         else return await fail("Unsupported file type. Upload a PDF, Word document or image.");
       }
       const { generateStructured } = await import("./ai.server");
-      const report = await generateStructured({ schema: resumeReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }] });
+      const report = await generateStructured({ attribution: {product:"resume",userId:context.userId,transactionId:row.id,service:"analysis"}, schema: resumeReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }] });
       if (!report.is_resume) return await fail(report.invalid_reason || "This file does not look like a resume. Please upload your resume.");
       const { improved_resume, ...rest } = report;
       await supabaseAdmin.from("resume_analyses").update({ status: "completed", report: rest, improved_resume, ats_score: report.ats_score, completed_at: new Date().toISOString() }).eq("id", row.id);
