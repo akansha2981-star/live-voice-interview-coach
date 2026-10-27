@@ -28,14 +28,14 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     { to: "/support", label: "Help & Support", short: "Help", mark: "HS", tone: "bg-secondary text-primary" },
   ] },
 ];
-const MOBILE: NavItem[] = [GROUPS[0].items[0], GROUPS[1].items[1], { ...GROUPS[2].items[0], short: "Prep" }, GROUPS[0].items[1], GROUPS[3].items[0]];
+const MOBILE: NavItem[] = [GROUPS[0].items[0], GROUPS[1].items[1], GROUPS[2].items[0], GROUPS[0].items[1], GROUPS[3].items[0]];
 const navKey = (n: NavItem) => n.to + (n.params?.section ?? "");
 
 function NavLink({ n }: { n: NavItem }) {
   const base = "student-nav-link group flex min-w-0 items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all duration-200";
   return <Link to={n.to} params={n.params as never} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} bg-secondary font-semibold text-primary shadow-[inset_3px_0_0_var(--primary)]` }}>
     <span className={`grid size-7 shrink-0 place-items-center rounded-md bg-secondary text-[10px] font-bold text-primary`}>{n.mark}</span>
-    <span className="truncate">{n.label}</span>
+    <span className="min-w-0 leading-tight">{n.label}</span>
   </Link>;
 }
 

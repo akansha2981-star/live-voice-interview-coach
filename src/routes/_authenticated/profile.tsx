@@ -1,3 +1,4 @@
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -132,12 +133,9 @@ function ProfilePage() {
 
   return (
     <form onSubmit={save} className="mx-auto grid max-w-3xl gap-8">
-      <div>
-        <h1 className="text-4xl font-semibold">Your professional profile</h1>
-        <p className="mt-1 text-muted-foreground">Aria uses this to ask questions that fit you. You decide what's shared.</p>
-      </div>
+      <StudentPageHeading eyebrow="Your background, your ambitions" title="Your professional profile" description="A complete profile helps Aria tailor every interview to you." />
 
-      <section className="rounded-2xl border bg-card p-6">
+      <section className="section-card p-6">
         <h2 className="text-xl font-semibold">Resume</h2>
         <p className="mt-1 text-sm text-muted-foreground">Upload a PDF or DOCX. We'll pre-fill empty fields for you to review.</p>
         <label className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-sm hover:bg-muted">
@@ -158,7 +156,7 @@ function ProfilePage() {
         )}
       </section>
 
-      <section className="grid gap-4 rounded-2xl border bg-card p-6 sm:grid-cols-2">
+      <section className="grid gap-4 section-card p-6 sm:grid-cols-2">
         <h2 className="text-xl font-semibold sm:col-span-2">Interview preferences</h2>
         <div className="grid gap-1.5">
           <Label>Interview type *</Label>
@@ -205,7 +203,7 @@ function ProfilePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 rounded-2xl border bg-card p-6 sm:grid-cols-2">
+      <section className="grid gap-4 section-card p-6 sm:grid-cols-2">
         <h2 className="text-xl font-semibold sm:col-span-2">About you</h2>
         {textFields.map((f) => (
           <div key={f.key} className={`grid gap-1.5 ${f.area ? "sm:col-span-2" : ""}`}>
@@ -233,7 +231,7 @@ function ProfilePage() {
         ))}
       </section>
 
-      <section className="grid gap-4 rounded-2xl border bg-card p-6">
+      <section className="grid gap-4 section-card p-6">
         <h2 className="text-xl font-semibold">What the interviewer may use</h2>
         <label className="flex items-center justify-between gap-4 text-sm">
           Use my resume details for questions
