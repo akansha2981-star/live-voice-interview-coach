@@ -47,3 +47,5 @@
 
 - [x] Redesign Resume Builder + SOP report layout (squashed text column) — summary rows now span full width; SOP upload redesigned and checked at desktop/mobile
 - [x] Dashboard Overview: remove blank space, clearer sections — readiness scale with moving marker, four key-number cards with meters, gradient score chart, countdown "Up next", career tiles; verified signed-in at 1280, 777 and 390 px with no overflow
+- [x] Readiness scale: peer average always shown (no min sample), animated shine/pop markers, PDF + report benchmark text updated; 79 tests pass
+- [ ] Sidebar redesign: left task bar looks empty/basic — make it richer and more engaging
