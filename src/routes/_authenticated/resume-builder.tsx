@@ -104,15 +104,15 @@ function Results({ report, improved, fileName, evidence }: { report: Omit<Resume
   const sorted = [...cats].sort((a, b) => b.score - a.score);
   return <div className="grid gap-6 animate-reveal">
     <section className="section-card overflow-hidden p-0">
-      <div className="bg-gradient-panel grid gap-6 p-6 md:grid-cols-[auto_1fr_auto] md:items-center">
-        <div className="flex gap-5 text-primary"><ScoreRing value={report.overall_score} size={116} label="Resume score" tone="primary" /><ScoreRing value={report.ats_score} size={116} label="ATS score" tone="primary" /></div>
-        <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Detailed resume report</p><h2 className="mt-1 text-2xl font-bold">{report.candidate_name || "Your resume"} · {band(report.overall_score)}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{report.summary}</p></div>
-        <dl className="grid grid-cols-3 gap-3 text-center md:grid-cols-1 md:text-right">
-          <div><dt className="text-xs text-muted-foreground">Issues found</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.issues.length} /></dd></div>
-          <div><dt className="text-xs text-muted-foreground">Lines rewritten</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.line_improvements.length} /></dd></div>
-          <div><dt className="text-xs text-muted-foreground">Length</dt><dd className="text-sm font-semibold">{report.page_estimate} pg · {report.recommended_length}</dd></div>
-        </dl>
+      <div className="bg-gradient-panel flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:p-8">
+        <div className="flex shrink-0 gap-5 text-primary"><ScoreRing value={report.overall_score} size={116} label="Resume score" tone="primary" /><ScoreRing value={report.ats_score} size={116} label="ATS score" tone="primary" /></div>
+        <div className="min-w-0 flex-1"><p className="student-eyebrow">Detailed resume report</p><h2 className="mt-2 text-2xl font-bold md:text-3xl">{report.candidate_name || "Your resume"} <span className="text-primary">· {band(report.overall_score)}</span></h2><p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{report.summary}</p></div>
       </div>
+      <dl className="grid grid-cols-3 gap-px border-t bg-border">
+        <div className="bg-card px-5 py-4"><dt className="text-xs font-semibold uppercase text-muted-foreground">Issues found</dt><dd className="mt-1 text-2xl font-bold text-primary"><AnimatedNumber value={report.issues.length} /></dd></div>
+        <div className="bg-card px-5 py-4"><dt className="text-xs font-semibold uppercase text-muted-foreground">Lines rewritten</dt><dd className="mt-1 text-2xl font-bold text-primary"><AnimatedNumber value={report.line_improvements.length} /></dd></div>
+        <div className="min-w-0 bg-card px-5 py-4"><dt className="text-xs font-semibold uppercase text-muted-foreground">Length</dt><dd className="mt-1 text-sm font-semibold">{report.page_estimate} page · {report.recommended_length}</dd></div>
+      </dl>
       <div className="grid gap-px border-t bg-border sm:grid-cols-2"><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-success">Strongest areas</span><p className="mt-1 font-semibold">{sorted.slice(0, 3).map((c) => CATEGORY_LABELS[c.k]).join(" · ")}</p></div><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-destructive">Fix first</span><p className="mt-1 font-semibold">{sorted.slice(-3).reverse().map((c) => CATEGORY_LABELS[c.k]).join(" · ")}</p></div></div>
     </section>
 
