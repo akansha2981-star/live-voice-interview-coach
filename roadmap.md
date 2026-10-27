@@ -1,4 +1,6 @@
 # Admin portal
+- [ ] Match admin dashboard to the light student theme and group sidebar sections
+- [ ] Fit live interview tracking, advanced observations, question and captions together without tracking scrolling
 - [x] Premium student UI refresh: shared navigation, overview, analytics, booking, prep, career, profile and support sections; signed-in desktop/mobile navigation and transcript access verified
 - [x] Separate /admin login and 13-section portal (dashboard, users, purchases, interviews, slots, credits, resources, downloads, support, documents, reports, settings, audit)
 - [x] Student Help & Support and SOP & Resources pages
