@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { StudentPageHeading } from "@/components/student-page-heading";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -94,7 +95,7 @@ function SopReview() {
       {err && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{err}</p>}
     </section>
 
-    {(busy || processing || selected) && <DocumentAnalysisWorkspace kind="sop" file={busy || processing ? file : null} previewUrl={previewUrl} fileName={processing?.file_name ?? selected?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? (busy ? null : selected?.analysis_progress ?? (selected ? {phase:"complete",sections:selected.report,updatedAt:selected.completed_at} : null))) as unknown as ReviewProgress | null} sourceText={busy || processing ? sourceText ?? processing?.extracted_text : selected?.extracted_text} complete={!busy && !processing && selected?.status === "completed"} />}
+    {(busy || processing) && <DocumentAnalysisWorkspace kind="sop" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? null) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text} />}
     {reviews.length > 0 && <section className="section-card p-6"><h2 className="text-xl font-bold">My SOP reviews</h2>
       <div className="mt-3 divide-y">{reviews.map((r) => { const label = sopStatusLabel(r); return <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
         <div className="min-w-0"><p className="truncate font-semibold">{r.college_name} · {r.file_name}</p><p className="text-xs text-muted-foreground">Submitted {new Date(r.created_at).toLocaleString()}{r.status === "under_review" ? ` · expected by ${new Date(r.expected_by).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}{r.error ? ` · ${r.error}` : ""}</p></div>
@@ -103,33 +104,60 @@ function SopReview() {
       </div>; })}</div>
     </section>}
 
-    {selected?.status === "completed" && selected.report && <Report report={selected.report as unknown as SopReport} college={selected.college_name} samples={selected.samples_used} />}
+    {!busy && selected?.status === "completed" && selected.report && <Report key={selected.id} report={selected.report as unknown as SopReport} college={selected.college_name} samples={selected.samples_used} evidence={<DocumentAnalysisWorkspace kind="sop" previewUrl={previewUrl} fileName={selected.file_name} progress={(selected.analysis_progress ?? { phase: "complete", sections: selected.report, updatedAt: selected.completed_at }) as unknown as ReviewProgress} sourceText={selected.extracted_text} complete />} />}
   </div>;
 }
 
 function List({ title, items, tone }: { title: string; items: string[]; tone: string }) {
-  return <div className={`section-card border-l-4 p-5 ${tone}`}><h3 className="font-bold">{title}</h3><ul className="mt-2 grid gap-1.5 text-sm">{items.map((x, i) => <li key={i}>· {x}</li>)}{!items.length && <li className="text-muted-foreground">Nothing here.</li>}</ul></div>;
+  return <div className={`section-card border-t-4 p-5 ${tone}`}><h3 className="font-bold">{title}</h3><ul className="mt-2 grid gap-1.5 text-sm">{items.map((x, i) => <li key={i}>· {x}</li>)}{!items.length && <li className="text-muted-foreground">Nothing here.</li>}</ul></div>;
 }
 
-function Report({ report, college, samples }: { report: SopReport; college: string; samples: number }) {
+function band(n: number) { return n >= 80 ? "Excellent" : n >= 65 ? "Good" : n >= 50 ? "Needs work" : "Weak"; }
+const esc = (t: string) => (t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+function sopHtml(sop: NonNullable<SopReport["improved_sop"]>) {
+  return `<html><head><meta charset="utf-8"><title>${esc(sop.title)}</title><style>@page{size:A4;margin:22mm 22mm}body{font-family:Calibri,Carlito,Arial,sans-serif;color:#111;max-width:700px;margin:0 auto;font-size:11.5pt;line-height:1.6}h1{font-size:15pt;text-align:center;color:#1f3a5f;margin:0 0 18px;letter-spacing:.5px}p{margin:0 0 12px;text-align:justify}</style></head><body><h1>${esc(sop.title)}</h1>${sop.paragraphs.map((x) => `<p>${esc(x)}</p>`).join("")}</body></html>`;
+}
+
+function Report({ report, college, samples, evidence }: { report: SopReport; college: string; samples: number; evidence: ReactNode }) {
+  const cats = (Object.keys(SOP_CATEGORY_LABELS) as (keyof typeof SOP_CATEGORY_LABELS)[]).map((k) => ({ k, ...report.categories[k] }));
+  const sorted = [...cats].sort((a, b) => b.score - a.score);
+  const sop = report.improved_sop;
+  function downloadWord() { if (!sop) return; const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([sopHtml(sop)], { type: "application/msword" })); a.download = "SOP_improved.doc"; a.click(); URL.revokeObjectURL(a.href); }
+  function printPdf() { if (!sop) return; const w = window.open("", "_blank"); if (!w) return toast.error("Allow pop-ups to save as PDF."); w.document.write(sopHtml(sop)); w.document.close(); w.focus(); w.print(); }
   return <div className="grid gap-6 animate-reveal">
-    <section className="section-card grid gap-6 p-6 md:grid-cols-[auto_1fr]">
-      <div className="text-primary"><ScoreRing value={report.overall_score} size={120} label="SOP score" tone="primary" /></div>
-      <div><p className="text-xs text-muted-foreground">{college} · about {report.word_count} words{samples > 0 ? ` · compared against ${samples} private sample SOP${samples === 1 ? "" : "s"} for this college` : ""}</p><p className="mt-2 text-sm leading-relaxed">{report.summary}</p><p className="mt-3 rounded-md bg-secondary p-3 text-sm"><span className="font-semibold text-primary">College fit: </span>{report.college_fit_notes}</p></div>
+    <section className="section-card overflow-hidden p-0">
+      <div className="bg-gradient-panel grid gap-6 p-6 md:grid-cols-[auto_1fr_auto] md:items-center">
+        <div className="text-primary"><ScoreRing value={report.overall_score} size={120} label="SOP score" tone="primary" /></div>
+        <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Detailed SOP report · {college}</p><h2 className="mt-1 text-2xl font-bold">{band(report.overall_score)} statement</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{report.summary}</p></div>
+        <dl className="grid grid-cols-3 gap-3 text-center md:grid-cols-1 md:text-right">
+          <div><dt className="text-xs text-muted-foreground">Words</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.word_count} /></dd></div>
+          <div><dt className="text-xs text-muted-foreground">Lines reviewed</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.line_feedback.length} /></dd></div>
+          <div><dt className="text-xs text-muted-foreground">College fit</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.categories.college_fit.score} /></dd></div>
+        </dl>
+      </div>
+      <div className="grid gap-px border-t bg-border sm:grid-cols-2"><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-success">Strongest areas</span><p className="mt-1 font-semibold">{sorted.slice(0, 3).map((c) => SOP_CATEGORY_LABELS[c.k]).join(" · ")}</p></div><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-destructive">Fix first</span><p className="mt-1 font-semibold">{sorted.slice(-3).reverse().map((c) => SOP_CATEGORY_LABELS[c.k]).join(" · ")}</p></div></div>
     </section>
-    <section className="section-card p-6"><h2 className="text-xl font-bold">Category scores</h2>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">{(Object.keys(SOP_CATEGORY_LABELS) as (keyof typeof SOP_CATEGORY_LABELS)[]).map((k) => { const c = report.categories[k]; return <div key={k}><div className="flex justify-between text-sm"><span className="font-semibold">{SOP_CATEGORY_LABELS[k]}</span><span className="font-bold text-primary"><AnimatedNumber value={c.score} /></span></div><GrowBar value={c.score} tone="bg-primary" className="mt-1.5" /><p className="mt-1 text-xs text-muted-foreground">{c.comment}</p></div>; })}</div>
-    </section>
-    <section className="grid gap-4 md:grid-cols-3"><List title="Strengths" items={report.strengths} tone="border-success/40" /><List title="Weaknesses" items={report.weaknesses} tone="border-destructive/40" /><List title="Improvement opportunities" items={report.opportunities} tone="border-primary/40" /></section>
-    <section className="section-card p-6"><h2 className="text-xl font-bold">Line-by-line feedback</h2>
-      <div className="mt-3 divide-y">{report.line_feedback.map((l, i) => <div key={i} className="grid gap-1.5 py-4 text-sm">
-        <p className="rounded-md border-l-4 border-destructive/40 bg-muted/50 p-2 italic">“{l.original}”</p>
-        <p><span className="font-semibold text-muted-foreground">What is wrong: </span>{l.whats_wrong}</p>
-        <p><span className="font-semibold text-muted-foreground">Why it matters: </span>{l.why}</p>
-        <p><span className="font-semibold text-muted-foreground">How to improve: </span>{l.how_to_improve}</p>
-        <p className="rounded-md bg-secondary p-2"><span className="font-semibold text-primary">Suggestion: </span>{l.suggestion}</p>
-      </div>)}</div>
-    </section>
-    <section className="grid gap-4 md:grid-cols-2"><List title="Add" items={report.add_points} tone="border-success/40" /><List title="Remove" items={report.remove_points} tone="border-destructive/40" /><List title="Clarify" items={report.clarify_points} tone="border-primary/40" /><List title="Strengthen" items={report.strengthen_points} tone="border-accent" /></section>
+    <Tabs defaultValue="report">
+      <TabsList className="flex h-auto flex-wrap justify-start"><TabsTrigger value="report">Full report</TabsTrigger><TabsTrigger value="lines">Line-by-line feedback</TabsTrigger><TabsTrigger value="sop">Recreated SOP</TabsTrigger><TabsTrigger value="source">Source evidence</TabsTrigger></TabsList>
+      <TabsContent value="report" className="grid gap-6">
+        <section className="section-card p-6"><h2 className="text-xl font-bold">Category scores</h2>
+          <div className="mt-4 grid gap-x-8 gap-y-5 md:grid-cols-2">{cats.map((c) => <div key={c.k}><div className="flex justify-between text-sm"><span className="font-semibold">{SOP_CATEGORY_LABELS[c.k]}</span><span className="font-bold text-primary"><AnimatedNumber value={c.score} /><span className="ml-1 text-xs font-normal text-muted-foreground">{band(c.score)}</span></span></div><GrowBar value={c.score} tone={c.score >= 65 ? "bg-success" : c.score >= 50 ? "bg-primary" : "bg-destructive"} className="mt-1.5" /><p className="mt-1 text-xs text-muted-foreground">{c.comment}</p></div>)}</div>
+        </section>
+        <section className="section-card p-6"><h2 className="text-xl font-bold">College fit</h2><p className="mt-2 text-sm leading-relaxed">{report.college_fit_notes}</p>{samples > 0 && <p className="mt-2 text-xs text-muted-foreground">Compared against {samples} private sample SOP{samples === 1 ? "" : "s"} for this college.</p>}</section>
+        <section className="grid gap-4 md:grid-cols-3"><List title="Strengths" items={report.strengths} tone="border-success" /><List title="Weaknesses" items={report.weaknesses} tone="border-destructive" /><List title="Opportunities" items={report.opportunities} tone="border-primary" /></section>
+        <section className="grid gap-4 md:grid-cols-2"><List title="Add" items={report.add_points} tone="border-success" /><List title="Remove" items={report.remove_points} tone="border-destructive" /><List title="Clarify" items={report.clarify_points} tone="border-primary" /><List title="Strengthen" items={report.strengthen_points} tone="border-accent" /></section>
+      </TabsContent>
+      <TabsContent value="lines" className="grid gap-4">{report.line_feedback.map((l, i) => <div key={i} className="section-card grid gap-3 p-5 text-sm">
+        <p className="rounded-md border-l-4 border-destructive/50 bg-destructive/5 p-3 italic">“{l.original}”</p>
+        <div className="grid gap-2 md:grid-cols-3"><p><span className="block text-xs font-semibold uppercase text-muted-foreground">What is wrong</span>{l.whats_wrong}</p><p><span className="block text-xs font-semibold uppercase text-muted-foreground">Why it matters</span>{l.why}</p><p><span className="block text-xs font-semibold uppercase text-muted-foreground">How to improve</span>{l.how_to_improve}</p></div>
+        <p className="rounded-md border border-success/40 bg-success/10 p-3"><span className="block text-xs font-bold text-success">Suggested line</span>{l.suggestion}</p>
+      </div>)}</TabsContent>
+      <TabsContent value="sop">{sop ? <div className="grid gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold">Polished in your own voice</p><p className="text-sm text-muted-foreground">Uses only what you wrote. Replace any [placeholders] with your real details.</p></div><div className="flex gap-2"><Button variant="outline" onClick={downloadWord}>Download Word</Button><Button onClick={printPdf}>Save as PDF</Button></div></div>
+        <div className="rounded-xl bg-muted/60 p-3 sm:p-8"><article className="mx-auto w-full max-w-[794px] bg-card px-6 py-10 shadow-soft sm:px-16 sm:py-14"><h2 className="mb-6 text-center text-xl font-bold tracking-wide text-primary">{sop.title}</h2>{sop.paragraphs.map((p, i) => <p key={i} className="mb-4 text-justify text-[0.95rem] leading-7">{p}</p>)}</article></div>
+        {sop.changes.length > 0 && <section className="section-card p-5"><h3 className="font-bold">What we improved</h3><ol className="mt-2 grid gap-1.5 text-sm">{sop.changes.map((c, i) => <li key={i}><strong className="text-primary">{i + 1}.</strong> {c}</li>)}</ol></section>}
+      </div> : <p className="section-card p-6 text-sm text-muted-foreground">This earlier review was made before recreated SOPs were available. Submit again to get one.</p>}</TabsContent>
+      <TabsContent value="source">{evidence}</TabsContent>
+    </Tabs>
   </div>;
 }
