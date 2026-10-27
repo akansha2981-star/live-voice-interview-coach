@@ -158,7 +158,7 @@ export async function downloadReportPdf(report: InterviewReport, meta: { name: s
   meta.vision?.timeline?.forEach((p) => { text(`${fmtTime(p.t_s)} - approximate gaze ${p.eye}%, face visible ${p.face}%, framing ${p.framed}% (15-second observation group)`, 9); ensure(14); page.drawRectangle({x:margin,y:y-4,width:220,height:4,color:light}); page.drawRectangle({x:margin,y:y-4,width:220*Math.max(0,Math.min(100,p.eye))/100,height:4,color:blue}); gap(14); });
   text("Exact posture change moments, facial expressions, gesture quality and psychological confidence: Insufficient data. Shoulder-level posture is a session aggregate only.", 9, font, grey);
   gap(12); text("Peer benchmarking", 13, bold);
-  text(meta.benchmark ? `${meta.benchmark.sample_size} other-candidate interviews in the same category. Peer average: ${meta.benchmark.avg_overall == null ? "Insufficient data" : Math.round(meta.benchmark.avg_overall)}. Your score: ${report.overall_score}.` : "Insufficient comparable data; at least five other-candidate interviews in the same category are needed.", 9);
+  text(meta.benchmark && meta.benchmark.avg_overall != null ? `${meta.benchmark.sample_size} other-candidate interviews. Peer average: ${Math.round(meta.benchmark.avg_overall)}. Your score: ${report.overall_score}.` : "No comparison data yet; the peer average appears once another candidate completes an interview.", 9);
   text("Percentile/rank: Insufficient data. Averages cannot establish a percentile. Duration and difficulty matching are not supplied.", 9, font, grey);
   gap(12); text("Session history & progress", 13, bold);
   meta.history?.forEach((h) => text(`${new Date(h.started_at).toLocaleString()} - ${h.overall_score ?? "Insufficient data"}/100`, 9));

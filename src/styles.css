@@ -315,8 +315,12 @@ a:hover .career-arrow { transform: translateX(5px); }
 /* Overview: readiness scale, key-number cards, next session */
 .student-content section.section-card.readiness, .student-content section.section-card.chart-card { border-radius: 10px; border-inline-width: 1px; }
 .readiness { position: relative; }
-.readiness-track { height: 14px; border-radius: 999px; background: linear-gradient(90deg, var(--destructive) 0%, color-mix(in oklab, var(--destructive) 45%, var(--warning)) 22%, var(--warning) 45%, color-mix(in oklab, var(--warning) 45%, var(--success)) 66%, var(--success) 100%); box-shadow: inset 0 2px 3px oklch(0.22 0.04 262 / 0.18), inset 0 -1px 0 oklch(1 0 0 / 0.4); }
-.readiness-mark { position: absolute; width: 0; transform: translateX(-50%); transition: left 900ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.readiness-track { position: relative; overflow: hidden; height: 14px; border-radius: 999px; background: linear-gradient(90deg, var(--destructive) 0%, color-mix(in oklab, var(--destructive) 45%, var(--warning)) 22%, var(--warning) 45%, color-mix(in oklab, var(--warning) 45%, var(--success)) 66%, var(--success) 100%); box-shadow: inset 0 2px 3px oklch(0.22 0.04 262 / 0.18), inset 0 -1px 0 oklch(1 0 0 / 0.4); }
+.readiness-track::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 32%, oklch(1 0 0 / 0.4) 50%, transparent 68%); transform: translateX(-100%); animation: readiness-shine 4.5s ease-in-out 1.2s infinite; }
+@keyframes readiness-shine { 0%, 55% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.readiness-mark { position: absolute; width: 0; transform: translateX(-50%); transition: left 900ms cubic-bezier(0.2, 0.7, 0.2, 1); animation: readiness-pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both; }
+.readiness-peer { animation-delay: 400ms; }
+@keyframes readiness-pop { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 .readiness-you { top: -46px; height: calc(100% + 46px); }
 .readiness-you-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); white-space: nowrap; border-radius: 7px; padding: 3px 10px; font-size: 12px; font-weight: 700; background: var(--primary); color: var(--primary-foreground); box-shadow: var(--student-shadow); }
 .readiness-you-stem { position: absolute; top: 28px; bottom: 7px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--primary); opacity: 0.5; }
