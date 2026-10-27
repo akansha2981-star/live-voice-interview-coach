@@ -31,7 +31,7 @@ export async function authorizeInterviewSession(token: unknown, interviewID: unk
   const ctx = { durationMinutes: settings?.duration_minutes ?? 20, collegeName: null as string | null, intelligence: null as string | null, cases: null as string | null };
   if (booking && !booking.practice_only && booking.college_id) {
     ctx.collegeName = booking.college_name;
-    const { data: docs } = await supabaseAdmin.from("college_training_docs").select("kind, knowledge").eq("college_id", booking.college_id).eq("status", "saved").order("created_at", { ascending: false }).limit(40);
+    const { data: docs } = await supabaseAdmin.from("college_training_docs").select("kind, knowledge").eq("college_id", booking.college_id).in("kind", ["training", "case"]).eq("status", "saved").order("created_at", { ascending: false }).limit(40);
     Object.assign(ctx, digestKnowledge((docs ?? []) as never));
   }
   return { instructions: buildInterviewerInstructions(p, ctx), opening: buildOpening(p) };

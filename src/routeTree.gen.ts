@@ -21,6 +21,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedResourcesRouteImport } from './routes/_authenticated/resources'
 import { Route as AuthenticatedResumeBuilderRouteImport } from './routes/_authenticated/resume-builder'
 import { Route as AuthenticatedSlotsRouteImport } from './routes/_authenticated/slots'
+import { Route as AuthenticatedSopReviewRouteImport } from './routes/_authenticated/sop-review'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
@@ -37,6 +38,7 @@ import { Route as AdminResourcesRouteImport } from './routes/admin.resources'
 import { Route as AdminResumesRouteImport } from './routes/admin.resumes'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSlotsRouteImport } from './routes/admin.slots'
+import { Route as AdminSopReviewsRouteImport } from './routes/admin.sop-reviews'
 import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminTrainingRouteImport } from './routes/admin.training'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -104,6 +106,11 @@ const AuthenticatedResumeBuilderRoute =
 const AuthenticatedSlotsRoute = AuthenticatedSlotsRouteImport.update({
   id: '/slots',
   path: '/slots',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSopReviewRoute = AuthenticatedSopReviewRouteImport.update({
+  id: '/sop-review',
+  path: '/sop-review',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
@@ -186,6 +193,11 @@ const AdminSlotsRoute = AdminSlotsRouteImport.update({
   path: '/slots',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSopReviewsRoute = AdminSopReviewsRouteImport.update({
+  id: '/sop-reviews',
+  path: '/sop-reviews',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSupportRoute = AdminSupportRouteImport.update({
   id: '/support',
   path: '/support',
@@ -237,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/resources': typeof AuthenticatedResourcesRoute
   '/resume-builder': typeof AuthenticatedResumeBuilderRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/sop-review': typeof AuthenticatedSopReviewRoute
   '/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -252,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/admin/resumes': typeof AdminResumesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/sop-reviews': typeof AdminSopReviewsRoute
   '/admin/support': typeof AdminSupportRoute
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
@@ -272,6 +286,7 @@ export interface FileRoutesByTo {
   '/resources': typeof AuthenticatedResourcesRoute
   '/resume-builder': typeof AuthenticatedResumeBuilderRoute
   '/slots': typeof AuthenticatedSlotsRoute
+  '/sop-review': typeof AuthenticatedSopReviewRoute
   '/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -287,6 +302,7 @@ export interface FileRoutesByTo {
   '/admin/resumes': typeof AdminResumesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/sop-reviews': typeof AdminSopReviewsRoute
   '/admin/support': typeof AdminSupportRoute
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
@@ -310,6 +326,7 @@ export interface FileRoutesById {
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/resume-builder': typeof AuthenticatedResumeBuilderRoute
   '/_authenticated/slots': typeof AuthenticatedSlotsRoute
+  '/_authenticated/sop-review': typeof AuthenticatedSopReviewRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -325,6 +342,7 @@ export interface FileRoutesById {
   '/admin/resumes': typeof AdminResumesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
+  '/admin/sop-reviews': typeof AdminSopReviewsRoute
   '/admin/support': typeof AdminSupportRoute
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
@@ -348,6 +366,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/resume-builder'
     | '/slots'
+    | '/sop-review'
     | '/support'
     | '/admin/announcements'
     | '/admin/audit'
@@ -363,6 +382,7 @@ export interface FileRouteTypes {
     | '/admin/resumes'
     | '/admin/settings'
     | '/admin/slots'
+    | '/admin/sop-reviews'
     | '/admin/support'
     | '/admin/training'
     | '/admin/users'
@@ -383,6 +403,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/resume-builder'
     | '/slots'
+    | '/sop-review'
     | '/support'
     | '/admin/announcements'
     | '/admin/audit'
@@ -398,6 +419,7 @@ export interface FileRouteTypes {
     | '/admin/resumes'
     | '/admin/settings'
     | '/admin/slots'
+    | '/admin/sop-reviews'
     | '/admin/support'
     | '/admin/training'
     | '/admin/users'
@@ -420,6 +442,7 @@ export interface FileRouteTypes {
     | '/_authenticated/resources'
     | '/_authenticated/resume-builder'
     | '/_authenticated/slots'
+    | '/_authenticated/sop-review'
     | '/_authenticated/support'
     | '/admin/announcements'
     | '/admin/audit'
@@ -435,6 +458,7 @@ export interface FileRouteTypes {
     | '/admin/resumes'
     | '/admin/settings'
     | '/admin/slots'
+    | '/admin/sop-reviews'
     | '/admin/support'
     | '/admin/training'
     | '/admin/users'
@@ -537,6 +561,13 @@ declare module '@tanstack/react-router' {
       path: '/slots'
       fullPath: '/slots'
       preLoaderRoute: typeof AuthenticatedSlotsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sop-review': {
+      id: '/_authenticated/sop-review'
+      path: '/sop-review'
+      fullPath: '/sop-review'
+      preLoaderRoute: typeof AuthenticatedSopReviewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/support': {
@@ -651,6 +682,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSlotsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sop-reviews': {
+      id: '/admin/sop-reviews'
+      path: '/sop-reviews'
+      fullPath: '/admin/sop-reviews'
+      preLoaderRoute: typeof AdminSopReviewsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/support': {
       id: '/admin/support'
       path: '/support'
@@ -711,6 +749,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedResourcesRoute: typeof AuthenticatedResourcesRoute
   AuthenticatedResumeBuilderRoute: typeof AuthenticatedResumeBuilderRoute
   AuthenticatedSlotsRoute: typeof AuthenticatedSlotsRoute
+  AuthenticatedSopReviewRoute: typeof AuthenticatedSopReviewRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedInterviewIdRoute: typeof AuthenticatedInterviewIdRoute
   AuthenticatedInterviewCheckRoute: typeof AuthenticatedInterviewCheckRoute
@@ -726,6 +765,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedResourcesRoute: AuthenticatedResourcesRoute,
   AuthenticatedResumeBuilderRoute: AuthenticatedResumeBuilderRoute,
   AuthenticatedSlotsRoute: AuthenticatedSlotsRoute,
+  AuthenticatedSopReviewRoute: AuthenticatedSopReviewRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedInterviewIdRoute: AuthenticatedInterviewIdRoute,
   AuthenticatedInterviewCheckRoute: AuthenticatedInterviewCheckRoute,
@@ -751,6 +791,7 @@ interface AdminRouteChildren {
   AdminResumesRoute: typeof AdminResumesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlotsRoute: typeof AdminSlotsRoute
+  AdminSopReviewsRoute: typeof AdminSopReviewsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   AdminTrainingRoute: typeof AdminTrainingRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -772,6 +813,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminResumesRoute: AdminResumesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlotsRoute: AdminSlotsRoute,
+  AdminSopReviewsRoute: AdminSopReviewsRoute,
   AdminSupportRoute: AdminSupportRoute,
   AdminTrainingRoute: AdminTrainingRoute,
   AdminUsersRoute: AdminUsersRoute,
