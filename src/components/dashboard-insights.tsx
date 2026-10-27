@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient, useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -40,7 +40,7 @@ export function DashboardInsights() {
 
   const num = (v: number | null | undefined, opts: { signed?: boolean; suffix?: string; delay?: number } = {}) => v == null ? "—" : <AnimatedNumber value={v} signed={opts.signed} suffix={opts.suffix} delay={opts.delay} />;
   const top = [
-    { label: "Average user score", value: num(enough ? Math.round(Number(b!.avg_overall)) : null, { delay: 150 }), note: bench.isLoading ? "Loading…" : enough ? `${b!.sample_size} anonymous interviews` : "Not enough comparison data", bar: enough ? Number(b!.avg_overall) : null },
+    { label: "Latest score", value: num(latest.overall_score, { delay: 150 }), note: report.readiness_level, bar: latest.overall_score ?? 0 },
     { label: "Score difference", value: num(diff, { signed: true, delay: 250 }), note: diff == null ? "Needs comparison data" : diff >= 0 ? "Above average" : "Below average", tone: diff == null ? "" : diff >= 0 ? "text-success" : "text-destructive" },
     { label: "Progress score", value: num(cmp?.delta ?? null, { signed: true, delay: 350 }), note: cmp?.previous ? "Vs previous interview" : "No previous interview yet", tone: cmp?.delta == null ? "" : cmp.delta >= 0 ? "text-success" : "text-destructive" },
     { label: "Questions reviewed", value: <><AnimatedNumber value={done.length} delay={450} /><span className="text-lg text-muted-foreground">/{items.length}</span></>, note: `${pending.length} pending`, bar: items.length ? (done.length / items.length) * 100 : 0 },
@@ -64,20 +64,14 @@ export function DashboardInsights() {
 
     <ReviewSection pending={pending} done={done} />
 
-    <div className="grid gap-6 xl:grid-cols-2">
-      <section {...card(7)}><Heading n="03" title="Moments to improve" sub="Timestamped moments from your latest interview" /><div className="mt-4"><Moments report={report} /></div></section>
+    <section {...card(7)}><Heading n="03" title="Moments to improve" sub="Read each moment and mark it as read" /><div className="mt-4"><Moments report={report} interviewId={latest.id} /></div></section>
+    <div className="grid gap-6">
       <section {...card(8)}><Heading n="04" title="Posture and presentation" sub="Simple statuses from camera and microphone" tag="measured" /><div className="mt-4"><Presentation v={latest.vision_summary} sp={latest.speech_metrics} /></div></section>
     </div>
 
     <section {...card(9)}><Heading n="05" title="Your interview journey" sub="Every interview in order, latest compared with previous" /><div className="mt-4"><Journey chrono={chrono} cmp={cmp} /></div></section>
 
-    <div className="grid gap-6 xl:grid-cols-2">
-      <section {...card(10)}><Heading n="06" title="Average user score comparison" sub="Anonymous, aggregated data only" /><div className="mt-4">
-        {bench.isError ? <p className="text-sm text-destructive">Could not load comparison data.</p> : !enough ? <div className="rounded-lg bg-secondary/60 p-4 text-sm text-muted-foreground"><p className="font-semibold text-foreground">Not enough comparison data</p><p className="mt-1">At least {MIN_COMPARISON_SAMPLE} completed interviews from other students are needed (currently {b?.sample_size ?? 0}).</p></div> : <div className="grid gap-3 text-sm">
-          <p className="text-xs text-muted-foreground">Averages from {b!.sample_size} interviews{b!.scope === "category" ? " of the same interview type" : " across all interview types"}.</p>
-          {[["Overall", latest.overall_score, b!.avg_overall], ["Resume-based", cats.resume, b!.avg_resume], ["Case-based", cats.practical, b!.avg_practical], ["College intelligence", cats.general_knowledge, b!.avg_general], ["Communication", report.scores.communication.score, b!.avg_communication]].map(([l, y, a]) => <div key={l as string}><div className="flex justify-between"><span className="font-semibold">{l as string}</span><span className="tabular-nums">You {y ?? "—"} · Avg {a == null ? "—" : Math.round(Number(a))} · <strong>{y == null || a == null ? "—" : signed(Math.round(Number(y) - Number(a)))}</strong></span></div><div className="relative mt-1.5"><GrowBar value={Number(y ?? 0)} tone="bg-primary" />{a != null && <span className="absolute -top-1 h-4 w-0.5 bg-foreground" style={{ left: `${Number(a)}%` }} />}</div></div>)}
-        </div>}
-      </div></section>
+    <div className="grid gap-6">
       <section {...card(11)}><Heading n="07" title="What you should improve next" sub="Top priorities from your latest report" />
         <ol className="mt-4 grid gap-3">{topPriorities(report).map((p, i) => <li key={i} style={{ "--i": i } as React.CSSProperties} className="animate-reveal flex gap-3 border-b bg-muted/50 p-4"><span className="shrink-0 text-2xl font-bold text-primary">{i + 1}</span><div><p className="font-semibold">{p.area}</p>{p.exercise && <p className="mt-1 text-sm text-muted-foreground">Exercise: {p.exercise}</p>}</div></li>)}</ol>
         <p className="mt-3 text-xs text-muted-foreground">Updates after every interview.</p>
@@ -123,10 +117,27 @@ function ReviewSection({ pending, done }: { pending: ReturnType<typeof reviewIte
   </section>;
 }
 
-function Moments({ report }: { report: NonNullable<ScoredInterview["report"]> }) {
+function Moments({ report, interviewId }: { report: NonNullable<ScoredInterview["report"]>; interviewId: string }) {
   const all = [...(report.measured_moments ?? []).map((m) => ({ ...m, src: "measured" as const })), ...(report.content_moments ?? []).map((m) => ({ ...m, src: "ai" as const }))].sort((a, b) => a.timestamp_s - b.timestamp_s);
+  const key = `moments-read:${interviewId}`;
+  const [read, setRead] = useState<Set<number>>(new Set());
+  const [showRead, setShowRead] = useState(false);
+  useEffect(() => { try { setRead(new Set(JSON.parse(localStorage.getItem(key) ?? "[]"))); } catch { /* ignore */ } }, [key]);
+  const toggle = (i: number) => setRead((prev) => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); localStorage.setItem(key, JSON.stringify([...n])); return n; });
   if (!all.length) return <p className="text-sm text-muted-foreground">No moments flagged in your latest interview{report.measured_moments ? "" : " (this report predates moment tracking)"}.</p>;
-  return <ul className="grid gap-3">{all.map((m, i) => <li key={i} style={{ "--i": i } as React.CSSProperties} className="animate-reveal rounded-r-lg border-l-2 border-accent bg-secondary/50 px-3 py-2"><div className="flex flex-wrap items-center gap-2"><span className="font-bold tabular-nums text-primary">{fmtTime(m.timestamp_s)}</span><span className="text-sm font-semibold">{m.issue}</span><span className="ml-auto"><Tag kind={m.src} /></span></div>{m.question && <p className="mt-1 text-xs text-muted-foreground">Question: {m.question}</p>}<p className="mt-1 text-sm italic">“{m.excerpt}”</p><p className="mt-1 text-sm">{m.correction}</p></li>)}</ul>;
+  const list = all.map((m, i) => ({ m, i })).filter(({ i }) => read.has(i) === showRead);
+  return <div className="grid gap-4">
+    <div className="flex flex-wrap items-center gap-3"><Button size="sm" variant={!showRead ? "secondary" : "ghost"} onClick={() => setShowRead(false)}>To read ({all.length - read.size})</Button><Button size="sm" variant={showRead ? "secondary" : "ghost"} onClick={() => setShowRead(true)}>Read ({read.size})</Button><div className="ml-auto w-40"><GrowBar value={(read.size / all.length) * 100} tone="bg-success" /></div></div>
+    {!list.length ? <p className="rounded-md bg-secondary/60 p-4 text-center text-sm text-muted-foreground">{showRead ? "Nothing marked as read yet." : "All caught up — every moment is read."}</p> :
+    <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{list.map(({ m, i }, n) => <li key={i} style={{ "--i": n } as React.CSSProperties} className={`animate-reveal flex flex-col rounded-xl border bg-card p-4 shadow-sm transition ${read.has(i) ? "opacity-75" : "border-t-4 border-t-accent"}`}>
+      <div className="flex items-center gap-2"><span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-bold tabular-nums text-primary">{fmtTime(m.timestamp_s)}</span><span className="ml-auto"><Tag kind={m.src} /></span></div>
+      <p className="mt-3 font-semibold leading-snug">{m.issue}</p>
+      {m.question && <p className="mt-1 text-xs text-muted-foreground">Question: {m.question}</p>}
+      <p className="mt-2 rounded-md bg-secondary/50 px-3 py-2 text-sm italic">“{m.excerpt}”</p>
+      <p className="mt-2 flex-1 text-sm"><span className="font-semibold text-success">Try instead: </span>{m.correction}</p>
+      <Button size="sm" variant={read.has(i) ? "outline" : "default"} className="mt-4 self-start" onClick={() => toggle(i)}>{read.has(i) ? "Mark as unread" : "Mark as read"}</Button>
+    </li>)}</ul>}
+  </div>;
 }
 
 function Presentation({ v, sp }: { v: VisionSummary | null; sp: Record<string, unknown> | null }) {
