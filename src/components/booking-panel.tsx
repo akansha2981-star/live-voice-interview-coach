@@ -57,7 +57,8 @@ export function SlotPicker() {
   async function book() {
     if (!selected || !interviewDetailsReady(details)) return;
     setBusy(true);
-    const { error } = await supabase.rpc("book_interview_with_details", { _slot_id: selected, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath });
+    // Generated RPC argument types omit SQL nullability; practice deliberately uses null fields.
+    const { error } = await supabase.rpc("book_interview_with_details", { _slot_id: selected, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Interview booked. Your appointment is on the dashboard.");

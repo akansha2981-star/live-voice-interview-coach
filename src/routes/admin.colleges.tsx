@@ -8,6 +8,7 @@ import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validQuestionBudget } from "@/lib/interview-limits";
 
 export const Route = createFileRoute("/admin/colleges")({ head: () => ({ meta: [{title:"College interview configuration — MBA Compass Admin"},{name:"description",content:"Configure college interview durations, question budgets and answer windows."},{property:"og:title",content:"College interview configuration — MBA Compass"},{property:"og:description",content:"College-specific interview configuration for authorized staff."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: CollegesPage });
 
@@ -24,7 +25,8 @@ function CollegesPage() {
   const refresh = () => Promise.all([qc.invalidateQueries({ queryKey: ["admin", "colleges"] }), qc.invalidateQueries({ queryKey: ["colleges"] })]);
   async function add() {
     const n = name.trim(); if (!n) return;
-    const { error } = await supabase.rpc("admin_save_college_limits", { _id: editing, _name: n, _duration: duration, _count: count, _min: minSeconds, _max: maxSeconds });
+    if (!validQuestionBudget(duration,count,minSeconds,maxSeconds)) return toast.error("Check your answer time range and allow all minimum answers plus 15 seconds for closing within the interview duration.");
+    const { error } = await supabase.rpc("admin_save_college_limits", { _id: editing, _name: n, _duration: duration, _count: count, _min: minSeconds, _max: maxSeconds } as never);
     if (error) return toast.error(error.message.includes("duplicate") ? "That college is already listed." : error.message);
     setName(""); setEditing(null); toast.success("College configuration saved."); await refresh();
   }
