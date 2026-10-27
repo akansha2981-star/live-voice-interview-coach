@@ -32,6 +32,7 @@ import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
 import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
+import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
 import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
@@ -48,6 +49,7 @@ import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
 import { Route as AuthenticatedPrepSectionRouteImport } from './routes/_authenticated/prep.$section'
 import { Route as AuthenticatedReportIdRouteImport } from './routes/_authenticated/report.$id'
+import { Route as ApiPublicJobsEmailAlertsRouteImport } from './routes/api/public/jobs/email-alerts'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -166,6 +168,11 @@ const AdminDownloadsRoute = AdminDownloadsRouteImport.update({
   path: '/downloads',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminEmailsRoute = AdminEmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFinanceRoute = AdminFinanceRouteImport.update({
   id: '/finance',
   path: '/finance',
@@ -249,6 +256,12 @@ const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
   path: '/report/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicJobsEmailAlertsRoute =
+  ApiPublicJobsEmailAlertsRouteImport.update({
+    id: '/api/public/jobs/email-alerts',
+    path: '/api/public/jobs/email-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -278,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
@@ -295,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -318,6 +333,7 @@ export interface FileRoutesByTo {
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
@@ -335,6 +351,7 @@ export interface FileRoutesByTo {
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -361,6 +378,7 @@ export interface FileRoutesById {
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
@@ -378,6 +396,7 @@ export interface FileRoutesById {
   '/_authenticated/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/_authenticated/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -404,6 +423,7 @@ export interface FileRouteTypes {
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
+    | '/admin/emails'
     | '/admin/finance'
     | '/admin/interviews'
     | '/admin/purchases'
@@ -421,6 +441,7 @@ export interface FileRouteTypes {
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -444,6 +465,7 @@ export interface FileRouteTypes {
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
+    | '/admin/emails'
     | '/admin/finance'
     | '/admin/interviews'
     | '/admin/purchases'
@@ -461,6 +483,7 @@ export interface FileRouteTypes {
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -486,6 +509,7 @@ export interface FileRouteTypes {
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
+    | '/admin/emails'
     | '/admin/finance'
     | '/admin/interviews'
     | '/admin/purchases'
@@ -503,6 +527,7 @@ export interface FileRouteTypes {
     | '/_authenticated/interview/check'
     | '/_authenticated/prep/$section'
     | '/_authenticated/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -513,6 +538,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicJobsEmailAlertsRoute: typeof ApiPublicJobsEmailAlertsRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -679,6 +705,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDownloadsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/emails': {
+      id: '/admin/emails'
+      path: '/emails'
+      fullPath: '/admin/emails'
+      preLoaderRoute: typeof AdminEmailsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/finance': {
       id: '/admin/finance'
       path: '/finance'
@@ -791,6 +824,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/jobs/email-alerts': {
+      id: '/api/public/jobs/email-alerts'
+      path: '/api/public/jobs/email-alerts'
+      fullPath: '/api/public/jobs/email-alerts'
+      preLoaderRoute: typeof ApiPublicJobsEmailAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -844,6 +884,7 @@ interface AdminRouteChildren {
   AdminCreditsRoute: typeof AdminCreditsRoute
   AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminDownloadsRoute: typeof AdminDownloadsRoute
+  AdminEmailsRoute: typeof AdminEmailsRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
   AdminInterviewsRoute: typeof AdminInterviewsRoute
   AdminPurchasesRoute: typeof AdminPurchasesRoute
@@ -867,6 +908,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCreditsRoute: AdminCreditsRoute,
   AdminDocumentsRoute: AdminDocumentsRoute,
   AdminDownloadsRoute: AdminDownloadsRoute,
+  AdminEmailsRoute: AdminEmailsRoute,
   AdminFinanceRoute: AdminFinanceRoute,
   AdminInterviewsRoute: AdminInterviewsRoute,
   AdminPurchasesRoute: AdminPurchasesRoute,
@@ -891,6 +933,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicJobsEmailAlertsRoute: ApiPublicJobsEmailAlertsRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport

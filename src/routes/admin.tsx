@@ -31,7 +31,7 @@ const NAV_GROUPS = [
   { title: "Courses & payments", items: [{ to: "/admin/courses", label: "Courses" }, { to: "/admin/purchases", label: "Course purchases" }, { to: "/admin/finance", label: "Finance & costing" }] },
   { title: "AI & career tools", items: [{ to: "/admin/colleges", label: "Colleges" }, { to: "/admin/training", label: "AI training" }, { to: "/admin/resumes", label: "Resume analyzer" }, { to: "/admin/sop-reviews", label: "SOP reviews" }] },
   { title: "Content & resources", items: [{ to: "/admin/resources", label: "Prep material" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource downloads" }, { to: "/admin/documents", label: "Student documents" }] },
-  { title: "Administration", items: [{ to: "/admin/settings", label: "Settings" }, { to: "/admin/audit", label: "Audit logs" }] },
+  { title: "Administration", items: [{ to: "/admin/emails", label: "Email notifications" }, { to: "/admin/settings", label: "Settings" }, { to: "/admin/audit", label: "Audit logs" }] },
 ];
 
 function AdminLayout() {

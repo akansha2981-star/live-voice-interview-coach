@@ -264,6 +264,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string | null
+          email_sent_at: string | null
           id: string
           interview_credits: number
           order_id: string | null
@@ -279,6 +280,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          email_sent_at?: string | null
           id?: string
           interview_credits?: number
           order_id?: string | null
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          email_sent_at?: string | null
           id?: string
           interview_credits?: number
           order_id?: string | null
@@ -384,6 +387,42 @@ export type Database = {
           interview_id?: string | null
           reason?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body: string
+          button_label: string
+          enabled: boolean
+          heading: string
+          key: string
+          name: string
+          subject: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body: string
+          button_label?: string
+          enabled?: boolean
+          heading: string
+          key: string
+          name: string
+          subject: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string
+          button_label?: string
+          enabled?: boolean
+          heading?: string
+          key?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -602,6 +641,8 @@ export type Database = {
           interview_id: string | null
           practice_only: boolean
           preflight: Json | null
+          reminder_10_sent_at: string | null
+          reminder_5_sent_at: string | null
           slot_id: string
           status: string
           user_id: string
@@ -617,6 +658,8 @@ export type Database = {
           interview_id?: string | null
           practice_only?: boolean
           preflight?: Json | null
+          reminder_10_sent_at?: string | null
+          reminder_5_sent_at?: string | null
           slot_id: string
           status?: string
           user_id: string
@@ -632,6 +675,8 @@ export type Database = {
           interview_id?: string | null
           practice_only?: boolean
           preflight?: Json | null
+          reminder_10_sent_at?: string | null
+          reminder_5_sent_at?: string | null
           slot_id?: string
           status?: string
           user_id?: string
@@ -722,6 +767,7 @@ export type Database = {
           duration_s: number | null
           ended_at: string | null
           error: string | null
+          feedback_email_sent_at: string | null
           id: string
           limit_closed_reason: string | null
           limit_deadline: string | null
@@ -745,6 +791,7 @@ export type Database = {
           duration_s?: number | null
           ended_at?: string | null
           error?: string | null
+          feedback_email_sent_at?: string | null
           id?: string
           limit_closed_reason?: string | null
           limit_deadline?: string | null
@@ -768,6 +815,7 @@ export type Database = {
           duration_s?: number | null
           ended_at?: string | null
           error?: string | null
+          feedback_email_sent_at?: string | null
           id?: string
           limit_closed_reason?: string | null
           limit_deadline?: string | null
@@ -977,6 +1025,7 @@ export type Database = {
           ats_score: number | null
           completed_at: string | null
           created_at: string
+          email_sent_at: string | null
           error: string | null
           extracted_text: string | null
           file_name: string
@@ -993,6 +1042,7 @@ export type Database = {
           ats_score?: number | null
           completed_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
           error?: string | null
           extracted_text?: string | null
           file_name: string
@@ -1009,6 +1059,7 @@ export type Database = {
           ats_score?: number | null
           completed_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
           error?: string | null
           extracted_text?: string | null
           file_name?: string
@@ -1029,6 +1080,7 @@ export type Database = {
           college_name: string
           completed_at: string | null
           created_at: string
+          email_sent_at: string | null
           error: string | null
           expected_by: string
           extracted_text: string | null
@@ -1048,6 +1100,7 @@ export type Database = {
           college_name: string
           completed_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
           error?: string | null
           expected_by?: string
           extracted_text?: string | null
@@ -1067,6 +1120,7 @@ export type Database = {
           college_name?: string
           completed_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
           error?: string | null
           expected_by?: string
           extracted_text?: string | null
