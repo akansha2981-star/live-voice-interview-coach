@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/interview/$id")({ staticDa
   component: InterviewRoom,
 });
 
-type Turn = { role: "user" | "assistant"; text: string; start_ms: number; end_ms: number };
+type Turn = { role: "user" | "assistant"; text: string; start_ms: number; end_ms: number; clarity?: number[] };
 const LOOK_AWAY_MS = 2000;
 
 
@@ -72,13 +72,15 @@ function InterviewRoom() {
     const observed = startedAt.current ? performance.now() - startedAt.current : 0;
     const start = typeof event.start_ms === "number" ? event.start_ms : observed;
     const end = typeof event.end_ms === "number" ? event.end_ms : observed;
+    const clarity = typeof event.clarity === "number" ? [event.clarity] : [];
     const list = turnsRef.current;
     const last = list[list.length - 1];
     if (last && last.role === role) {
       last.text += delta;
       last.end_ms = Math.max(last.end_ms, end);
+      if (clarity.length) last.clarity = [...(last.clarity ?? []), ...clarity];
     } else {
-      list.push({ role, text: delta, start_ms: start, end_ms: end });
+      list.push({ role, text: delta, start_ms: start, end_ms: end, ...(clarity.length ? { clarity } : {}) });
     }
     setTurns(list.map((t) => ({ ...t })));
   }, []);

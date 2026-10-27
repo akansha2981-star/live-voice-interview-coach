@@ -34,6 +34,9 @@ declare const WebSocketPair: { new (): { 0: WorkerSocket; 1: WorkerSocket } };
 
 type OpenAIEvent = {
   type: string;
+  audio_start_ms?: number;
+  audio_end_ms?: number;
+  logprobs?: { logprob?: number }[] | null;
   delta?: string;
   transcript?: string;
   item_id?: string;
@@ -123,6 +126,9 @@ export function bindLiveConnection(
     stop();
   }, 5000);
 
+  // Real speech timing per caller utterance (from server VAD) so pace can be measured.
+  const speech = new Map<string, { start?: number; end?: number }>();
+  let assistantStart: number | null = null;
   const elapsed = () => (startedAt ? Date.now() - startedAt : 0);
   const seconds = () => Math.max(0, Math.round(elapsed() / 1000));
 
@@ -200,10 +206,24 @@ export function bindLiveConnection(
       const text = typeof data === "string" ? data : new TextDecoder().decode(data as ArrayBuffer);
       const event: OpenAIEvent = JSON.parse(text);
       const at = elapsed();
-      if (event.type === "response.output_audio_transcript.delta" && event.delta) {
-        emit({ type: "session.output_transcript.delta", delta: event.delta, start_ms: at, end_ms: at });
+      if (event.type === "input_audio_buffer.speech_started" && event.item_id) {
+        speech.set(event.item_id, { ...speech.get(event.item_id), start: event.audio_start_ms ?? at });
+      } else if (event.type === "input_audio_buffer.speech_stopped" && event.item_id) {
+        speech.set(event.item_id, { ...speech.get(event.item_id), end: event.audio_end_ms ?? at });
+      } else if (event.type === "response.output_audio_transcript.delta" && event.delta) {
+        assistantStart ??= at;
+        emit({ type: "session.output_transcript.delta", delta: event.delta, start_ms: assistantStart, end_ms: at });
+      } else if (event.type === "response.done") {
+        assistantStart = null;
       } else if (event.type === "conversation.item.input_audio_transcription.completed" && event.transcript?.trim()) {
-        emit({ type: "session.input_transcript.delta", delta: `${event.transcript.trim()} `, start_ms: at, end_ms: at });
+        const timing = (event.item_id && speech.get(event.item_id)) || {};
+        if (event.item_id) speech.delete(event.item_id);
+        const end = timing.end ?? at;
+        const start = Math.min(timing.start ?? end, end);
+        // Transcription confidence (mean token probability) is a real, per-answer intelligibility signal.
+        const probs = (event.logprobs ?? []).map((l) => l.logprob).filter((l): l is number => typeof l === "number" && Number.isFinite(l));
+        const clarity = probs.length ? Math.round(Math.exp(probs.reduce((a, b) => a + b, 0) / probs.length) * 100) : undefined;
+        emit({ type: "session.input_transcript.delta", delta: `${event.transcript.trim()} `, start_ms: start, end_ms: end, clarity });
       } else if (event.type === "error") {
         const message = event.error?.message ?? "OpenAI voice error";
         // Cancelling a response that has already finished is harmless; keep the call alive.
@@ -240,6 +260,7 @@ export function bindLiveConnection(
         type: "realtime",
         model: config.liveModel,
         instructions: session.instructions,
+        include: ["item.input_audio_transcription.logprobs"],
         audio: {
           input: {
             transcription: { model: config.transcribeModel, language: "en" },
