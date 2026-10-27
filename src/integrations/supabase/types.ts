@@ -224,22 +224,34 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          duration_minutes: number
           id: string
           name: string
+          question_count: number
+          question_max_seconds: number
+          question_min_seconds: number
           sop_requirements: string | null
         }
         Insert: {
           active?: boolean
           created_at?: string
+          duration_minutes?: number
           id?: string
           name: string
+          question_count?: number
+          question_max_seconds?: number
+          question_min_seconds?: number
           sop_requirements?: string | null
         }
         Update: {
           active?: boolean
           created_at?: string
+          duration_minutes?: number
           id?: string
           name?: string
+          question_count?: number
+          question_max_seconds?: number
+          question_min_seconds?: number
           sop_requirements?: string | null
         }
         Relationships: []
@@ -711,6 +723,12 @@ export type Database = {
           ended_at: string | null
           error: string | null
           id: string
+          limit_closed_reason: string | null
+          limit_deadline: string | null
+          limit_duration_seconds: number | null
+          limit_question_count: number | null
+          limit_question_max_seconds: number | null
+          limit_question_min_seconds: number | null
           overall_score: number | null
           report: Json | null
           speech_metrics: Json | null
@@ -728,6 +746,12 @@ export type Database = {
           ended_at?: string | null
           error?: string | null
           id?: string
+          limit_closed_reason?: string | null
+          limit_deadline?: string | null
+          limit_duration_seconds?: number | null
+          limit_question_count?: number | null
+          limit_question_max_seconds?: number | null
+          limit_question_min_seconds?: number | null
           overall_score?: number | null
           report?: Json | null
           speech_metrics?: Json | null
@@ -745,6 +769,12 @@ export type Database = {
           ended_at?: string | null
           error?: string | null
           id?: string
+          limit_closed_reason?: string | null
+          limit_deadline?: string | null
+          limit_duration_seconds?: number | null
+          limit_question_count?: number | null
+          limit_question_max_seconds?: number | null
+          limit_question_min_seconds?: number | null
           overall_score?: number | null
           report?: Json | null
           speech_metrics?: Json | null
@@ -943,6 +973,7 @@ export type Database = {
       }
       resume_analyses: {
         Row: {
+          analysis_progress: Json | null
           ats_score: number | null
           completed_at: string | null
           created_at: string
@@ -958,6 +989,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_progress?: Json | null
           ats_score?: number | null
           completed_at?: string | null
           created_at?: string
@@ -973,6 +1005,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_progress?: Json | null
           ats_score?: number | null
           completed_at?: string | null
           created_at?: string
@@ -991,6 +1024,7 @@ export type Database = {
       }
       sop_reviews: {
         Row: {
+          analysis_progress: Json | null
           college_id: string | null
           college_name: string
           completed_at: string | null
@@ -1009,6 +1043,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_progress?: Json | null
           college_id?: string | null
           college_name: string
           completed_at?: string | null
@@ -1027,6 +1062,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_progress?: Json | null
           college_id?: string | null
           college_name?: string
           completed_at?: string | null
@@ -1169,6 +1205,17 @@ export type Database = {
         Returns: undefined
       }
       admin_metrics: { Args: { _from: string; _to: string }; Returns: Json }
+      admin_save_college_limits: {
+        Args: {
+          _count: number
+          _duration: number
+          _id: string
+          _max: number
+          _min: number
+          _name: string
+        }
+        Returns: string
+      }
       admin_set_account_status: {
         Args: { _status: string; _user_id: string }
         Returns: undefined
@@ -1182,6 +1229,16 @@ export type Database = {
         Returns: undefined
       }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
+      book_interview_with_details: {
+        Args: {
+          _actual_at: string
+          _college: string
+          _letter: string
+          _practice: boolean
+          _slot_id: string
+        }
+        Returns: string
+      }
       can_operate: { Args: { _user_id: string }; Returns: boolean }
       can_read_finance: { Args: { _user_id: string }; Returns: boolean }
       can_support: { Args: { _user_id: string }; Returns: boolean }
