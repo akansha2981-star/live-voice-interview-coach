@@ -1190,6 +1190,7 @@ export type Database = {
         Returns: undefined
       }
       credit_balance: { Args: { _user_id: string }; Returns: number }
+      finance_record_usage: { Args: { _row: Json }; Returns: undefined }
       finance_save: { Args: { _data: Json; _kind: string }; Returns: string }
       has_role: {
         Args: {
