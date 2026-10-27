@@ -141,6 +141,13 @@
       "when": 1793083172051,
       "tag": "0019_enforce_booking_and_preflight_boundaries",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1793096081654,
+      "tag": "0020_tighten_settings_and_likes_reads",
+      "breakpoints": true
     }
   ]
 }
