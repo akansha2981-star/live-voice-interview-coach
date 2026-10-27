@@ -26,7 +26,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 const NAV: { to: string; label: string }[] = [
-  { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/purchases", label: "Course Purchases" },
+  { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/courses", label: "Courses" }, { to: "/admin/purchases", label: "Course Purchases" },
   { to: "/admin/interviews", label: "Interview Manager" }, { to: "/admin/slots", label: "Slot Manager" }, { to: "/admin/colleges", label: "Colleges" }, { to: "/admin/credits", label: "Interview Credits" },
   { to: "/admin/resources", label: "Prep Material" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource Downloads" }, { to: "/admin/support", label: "Support Tickets" },
   { to: "/admin/documents", label: "User Documents" }, { to: "/admin/reports", label: "Reports & Exports" }, { to: "/admin/settings", label: "Admin Settings" }, { to: "/admin/audit", label: "Audit Logs" },

@@ -25,6 +25,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
+import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
 import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
@@ -121,6 +122,11 @@ const AdminCollegesRoute = AdminCollegesRouteImport.update({
   path: '/colleges',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCoursesRoute = AdminCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCreditsRoute = AdminCreditsRouteImport.update({
   id: '/credits',
   path: '/credits',
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByTo {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -314,6 +323,7 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/audit'
     | '/admin/colleges'
+    | '/admin/courses'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -345,6 +355,7 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/audit'
     | '/admin/colleges'
+    | '/admin/courses'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -378,6 +389,7 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/audit'
     | '/admin/colleges'
+    | '/admin/courses'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -516,6 +528,13 @@ declare module '@tanstack/react-router' {
       path: '/colleges'
       fullPath: '/admin/colleges'
       preLoaderRoute: typeof AdminCollegesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/courses': {
+      id: '/admin/courses'
+      path: '/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminCoursesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/credits': {
@@ -661,6 +680,7 @@ interface AdminRouteChildren {
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminCollegesRoute: typeof AdminCollegesRoute
+  AdminCoursesRoute: typeof AdminCoursesRoute
   AdminCreditsRoute: typeof AdminCreditsRoute
   AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminDownloadsRoute: typeof AdminDownloadsRoute
@@ -679,6 +699,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminCollegesRoute: AdminCollegesRoute,
+  AdminCoursesRoute: AdminCoursesRoute,
   AdminCreditsRoute: AdminCreditsRoute,
   AdminDocumentsRoute: AdminDocumentsRoute,
   AdminDownloadsRoute: AdminDownloadsRoute,

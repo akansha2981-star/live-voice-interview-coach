@@ -61,8 +61,7 @@ export function CourseStore({ email, name }: { email?: string | null; name?: str
       <p className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-bold text-primary">{inr(c.final_price)}</span>{off > 0 && <><span className="text-sm text-muted-foreground line-through">{inr(c.actual_price)}</span><span className="text-xs font-semibold text-success">{off}% off</span></>}</p>
       {c.description && <p className="mt-3 text-sm text-muted-foreground">{c.description}</p>}
       {rows.length > 0 && <table className="mt-4 w-full text-left text-sm"><tbody className="divide-y border-y">{rows.map((r, j) => <tr key={j}><td className="py-2 pr-3 font-semibold">{r.item}</td><td className="py-2 text-muted-foreground">{r.detail}</td></tr>)}</tbody></table>}
-      <Button className="mt-auto w-full translate-y-4" disabled={busy !== null} onClick={() => buy(c.id)}>{busy === c.id ? "Opening payment…" : "Buy now"}</Button>
-      <div className="h-4" />
+      <Button className="mt-6 w-full" disabled={busy !== null} onClick={() => buy(c.id)}>{busy === c.id ? "Opening payment…" : "Buy now"}</Button>
     </div>;
   })}</div>;
 }
