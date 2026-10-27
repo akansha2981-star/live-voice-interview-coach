@@ -7,7 +7,7 @@ import { safeUrl } from "@/lib/prep";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-type Post = { id: string; body: string | null; image_path: string | null; link_url: string | null; created_at: string; image: string | null; likes: string[]; comments: { id: string; user_id: string; author_name: string; from_staff: boolean; body: string; created_at: string }[] };
+type Post = { id: string; body: string | null; image_path: string | null; link_url: string | null; created_at: string; image: string | null; likeCount: number; likedByMe: boolean; comments: { id: string; user_id: string; author_name: string; from_staff: boolean; body: string; created_at: string }[] };
 
 export const announcementsKey = ["announcements"] as const;
 export function useAnnouncements() {
@@ -17,10 +17,15 @@ export function useAnnouncements() {
       supabase.from("announcements").select("id, body, image_path, link_url, created_at, announcement_likes(user_id), announcement_comments(id, user_id, author_name, from_staff, body, created_at)").order("created_at", { ascending: false }).limit(50),
     ]);
     if (error) throw error;
+    const ids = (data ?? []).map((p) => p.id);
+    const { data: counts, error: countError } = ids.length ? await supabase.rpc("announcement_like_counts", { _ids: ids }) : { data: [], error: null };
+    if (countError) throw countError;
+    const countMap = new Map((counts ?? []).map((c) => [c.announcement_id, Number(c.likes)]));
+    const me = u.user?.id ?? null;
     const paths = (data ?? []).map((p) => p.image_path).filter(Boolean) as string[];
     const signed = paths.length ? (await supabase.storage.from("resources").createSignedUrls(paths, 3600)).data ?? [] : [];
     const urls = new Map(signed.map((s) => [s.path, s.signedUrl]));
-    return { me: u.user?.id ?? null, posts: (data ?? []).map((p) => ({ id: p.id, body: p.body, image_path: p.image_path, link_url: p.link_url, created_at: p.created_at, image: p.image_path ? urls.get(p.image_path) ?? null : null, likes: (p.announcement_likes ?? []).map((l) => l.user_id), comments: [...(p.announcement_comments ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at)) })) };
+    return { me, posts: (data ?? []).map((p) => ({ id: p.id, body: p.body, image_path: p.image_path, link_url: p.link_url, created_at: p.created_at, image: p.image_path ? urls.get(p.image_path) ?? null : null, likeCount: countMap.get(p.id) ?? 0, likedByMe: !!me && (p.announcement_likes ?? []).some((l) => l.user_id === me), comments: [...(p.announcement_comments ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at)) })) };
   } });
 }
 
