@@ -169,6 +169,13 @@
       "when": 1793125668992,
       "tag": "0023_gk_hub",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793127364590,
+      "tag": "0024_start_now_bookings",
+      "breakpoints": true
     }
   ]
 }

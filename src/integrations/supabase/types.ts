@@ -839,6 +839,7 @@ export type Database = {
           reminder_10_sent_at: string | null
           reminder_5_sent_at: string | null
           slot_id: string
+          start_now_until: string | null
           status: string
           user_id: string
         }
@@ -856,6 +857,7 @@ export type Database = {
           reminder_10_sent_at?: string | null
           reminder_5_sent_at?: string | null
           slot_id: string
+          start_now_until?: string | null
           status?: string
           user_id: string
         }
@@ -873,6 +875,7 @@ export type Database = {
           reminder_10_sent_at?: string | null
           reminder_5_sent_at?: string | null
           slot_id?: string
+          start_now_until?: string | null
           status?: string
           user_id?: string
         }
@@ -1543,6 +1546,10 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: { _action: string; _details: Json; _target: string }
+        Returns: undefined
+      }
+      mark_booking_start_now: {
+        Args: { _booking_id: string }
         Returns: undefined
       }
       reopen_ticket: { Args: { _ticket_id: string }; Returns: undefined }
