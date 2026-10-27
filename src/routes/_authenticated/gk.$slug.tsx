@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -64,12 +65,12 @@ function GkArticlePage() {
     {!!a.vocabulary?.length && <Section title="Vocabulary"><div className="grid gap-3 sm:grid-cols-2">{a.vocabulary.map((w, i) => <div key={i} className="rounded-lg bg-muted/50 p-3"><p className="font-bold">{w.word}{w.hindi_meaning && <span className="ml-2 font-normal text-muted-foreground">({w.hindi_meaning})</span>}</p><p className="text-sm">{w.meaning}</p>{w.example && <p className="mt-1 text-xs italic text-muted-foreground">{w.example}</p>}</div>)}</div></Section>}
 
     <div className="sticky bottom-20 flex flex-wrap gap-2 rounded-xl border bg-background/95 p-3 shadow-lg backdrop-blur md:bottom-4">
-      <button type="button" onClick={() => void update({ is_read: !p?.is_read }, p?.is_read ? "Marked as unread" : "Marked as read")} className={`rounded-md px-4 py-2 text-sm font-semibold ${p?.is_read ? "bg-success/15 text-success" : "bg-primary text-primary-foreground"}`}>{p?.is_read ? "Read ✓ — mark unread" : "Mark as read"}</button>
+      <button type="button" onClick={() => void update({ is_read: !p?.is_read }, p?.is_read ? "Marked as unread" : "Marked as read")} className={`rounded-md px-4 py-2 text-sm font-semibold ${p?.is_read ? "bg-success/15 text-success" : "bg-primary text-primary-foreground"}`}>{p?.is_read ? "Read — mark unread" : "Mark as read"}</button>
       <button type="button" onClick={() => void update({ is_saved: !p?.is_saved }, p?.is_saved ? "Removed from saved" : "Saved for later")} className="rounded-md border px-4 py-2 text-sm font-semibold hover:bg-muted">{p?.is_saved ? "Saved" : "Save for later"}</button>
     </div>
   </article>;
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return <section className="section-card animate-reveal p-5"><h2 className="mb-3 text-xl font-bold">{title}</h2>{children}</section>;
 }
