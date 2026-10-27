@@ -2,8 +2,8 @@
 import RefreshRuntime from "/@react-refresh"; RefreshRuntime.injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; window.$RefreshSig$ = () => (type) => type; window.__vite_plugin_react_preamble_installed__ = true;
 import React from '/node_modules/.vite/deps/react.js';
 import ReactDOM from '/node_modules/.vite/deps/react-dom_client.js';
-import {InterviewWorkspace} from '/src/components/interview-workspace.tsx';
-import {Button} from '/src/components/ui/button.tsx';
+const {InterviewWorkspace} = await import('/src/components/interview-workspace.tsx');
+const {Button} = await import('/src/components/ui/button.tsx');
 import '/src/styles.css';
 const turns = Array.from({length:30},(_,i)=>({role:i%2?'user':'assistant',text:i%2?'I led a team of five to improve our project delivery through weekly milestones and clear accountability.':'Tell me about a time you demonstrated leadership and how that experience influenced your decision to pursue an MBA.',start_ms:i*5000,end_ms:i*5000+4000}));
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement('div',{style:{height:'100dvh'}},React.createElement(InterviewWorkspace,{videoRef:{current:null},turns,frame:null,live:true,status:'Live',timer:'04:32',speaker:'user',eyePct:85,lookingAway:false,camError:false,muted:false,controls:React.createElement(React.Fragment,null,...['Mute microphone','Turn camera off','End interview'].map(t=>React.createElement(Button,{key:t},t))),audio:null,error:null,audioSample:{rms:.04,peak:.3,muted:false,t_ms:0}})));
