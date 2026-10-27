@@ -15,3 +15,13 @@ describe("booked interview checks", () => {
     expect(slotPhase(end, "2026-10-27T10:10:00Z", Date.parse(end))).toBe("ready");
   });
 });
+import { interviewDetailsReady } from "@/lib/booking";
+describe("interview details", () => {
+  it("practice needs no college, date or letter", () => {
+    expect(interviewDetailsReady({ practiceOnly: true, collegeId: null, actualInterviewAt: null, callLetterPath: null })).toBe(true);
+  });
+  it("real interview needs college, date and call letter", () => {
+    expect(interviewDetailsReady({ practiceOnly: false, collegeId: "c", actualInterviewAt: "2026-11-02T10:00", callLetterPath: null })).toBe(false);
+    expect(interviewDetailsReady({ practiceOnly: false, collegeId: "c", actualInterviewAt: "2026-11-02T10:00", callLetterPath: "u/x.pdf" })).toBe(true);
+  });
+});

@@ -8,11 +8,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { bookingQuery, meQuery } from "@/lib/queries";
 import { isProfileReady } from "@/lib/interview-prompt";
 import { createVisionAnalyzer, liveTip } from "@/lib/vision";
-import { MIC_PHRASE, preflightReady, slotPhase, speechMatches } from "@/lib/booking";
+import { interviewDetailsReady, MIC_PHRASE, preflightReady, slotPhase, speechMatches } from "@/lib/booking";
 import { checkConnection, confirmPreflight } from "@/lib/booking.functions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { InterviewDetailsForm, type DetailsState } from "@/components/interview-details-form";
 
 type SpeechResult = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
 type SpeechRecognizer = { lang: string; continuous: boolean; interimResults: boolean; onresult: ((e: SpeechResult) => void) | null; onerror: (() => void) | null; onend: (() => void) | null; start: () => void; stop: () => void };
@@ -34,6 +35,7 @@ function CheckPage() {
  const [network, setNetwork] = useState<{ downloadMbps: number; latencyMs: number } | null>(null); const [testing, setTesting] = useState(false);
  const [consent, setConsent] = useState(false); const [starting, setStarting] = useState(false); const [mediaError, setMediaError] = useState<string | null>(null);
  const [recording, setRecording] = useState(false); const [micConfirmed, setMicConfirmed] = useState(false); const [recordingUrl, setRecordingUrl] = useState<string | null>(null); const [played, setPlayed] = useState(false); const [speech, setSpeech] = useState(""); const [now, setNow] = useState(Date.now());
+ const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
  const booking = bookings.bookings.find((b) => b.status === "booked" && (requested ? b.id === requested : b.interview_slots && slotPhase(b.interview_slots.starts_at,b.interview_slots.ends_at,now) === "ready"));
  const phase = booking?.interview_slots ? slotPhase(booking.interview_slots.starts_at,booking.interview_slots.ends_at,now) : null;
  useEffect(() => { const t = setInterval(() => setNow(Date.now()),1000); return () => clearInterval(t); }, []);
@@ -73,9 +75,9 @@ function CheckPage() {
  }
  const values = { downloadMbps: network?.downloadMbps ?? 0, latencyMs: network?.latencyMs ?? 9999, faceVisible, cameraWorking, micWorking, micConfirmed: micConfirmed && !recording, consent };
  async function begin() {
-   if (!booking || phase !== "ready" || !preflightReady(values)) return;
+   if (!booking || phase !== "ready" || !preflightReady(values) || !interviewDetailsReady(details)) return;
    setStarting(true);
-   try { await confirm({ data: { bookingId: booking.id, ...values } }); const { data, error } = await supabase.rpc("start_interview"); if (error) throw error; if (!data) throw new Error("Interview could not start."); await Promise.all([qc.invalidateQueries({ queryKey: ["bookings"] }),qc.invalidateQueries({ queryKey: ["me"] })]); navigate({ to: "/interview/$id", params: { id: data } }); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not open interview."); } finally { setStarting(false); }
+   try { await confirm({ data: { bookingId: booking.id, ...values, ...details } }); const { data, error } = await supabase.rpc("start_interview"); if (error) throw error; if (!data) throw new Error("Interview could not start."); await Promise.all([qc.invalidateQueries({ queryKey: ["bookings"] }),qc.invalidateQueries({ queryKey: ["me"] })]); navigate({ to: "/interview/$id", params: { id: data } }); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not open interview."); } finally { setStarting(false); }
  }
  if (!isProfileReady(me.profile)) return <div><h1 className="text-3xl font-bold">Complete your profile first</h1><Button asChild className="mt-5"><Link to="/profile">Go to profile</Link></Button></div>;
  if (!booking || phase !== "ready") return <div className="grid gap-4"><h1 className="text-3xl font-bold">Your booked interview</h1><p className="text-muted-foreground">{phase === "upcoming" ? "Equipment verification opens at your scheduled start time." : "Book an available slot first. Equipment verification opens during your scheduled time."}</p><Button asChild className="w-fit"><Link to="/slots">View interview slots</Link></Button></div>;
@@ -84,6 +86,7 @@ function CheckPage() {
  <div className="grid gap-6 lg:grid-cols-2"><div><div className="relative aspect-video overflow-hidden rounded-lg bg-ink"><video ref={videoRef} muted playsInline className="h-full w-full -scale-x-100 object-cover" />{!stream && <div className="absolute inset-0 grid place-items-center"><Button onClick={enable}>Open camera & microphone</Button></div>}{stream && <p className="absolute inset-x-3 bottom-3 rounded-md bg-ink/85 p-3 text-sm text-ink-foreground">{tip}</p>}</div>{mediaError && <p className="mt-3 text-sm text-destructive">{mediaError}</p>}<p className="mt-3 text-xs text-muted-foreground">Camera analysis stays on your device. No video is uploaded.</p></div>
  <div className="grid content-start gap-6"><section className="border-b pb-5"><h2 className="text-lg font-bold">1. Internet connection</h2><p className="mt-1 text-sm text-muted-foreground">{network ? `${network.downloadMbps.toFixed(1)} Mbps estimated download · ${network.latencyMs} ms round trip` : "Check your connection to the interview service."}</p><p className="mt-1 text-xs text-muted-foreground">Estimated download only; upload and call stability may differ.</p><Button className="mt-3" variant="outline" onClick={testNetwork} disabled={testing}>{testing ? "Checking…" : "Check internet"}</Button>{network && !stages[0].done && <p className="mt-2 text-sm text-destructive">Your connection is too slow or delayed. Improve it and check again.</p>}</section>
  <section><h2 className="text-lg font-bold">2. Read this aloud</h2><blockquote className="my-3 border-l-2 border-primary bg-secondary p-4 text-base">{MIC_PHRASE}</blockquote><div className="flex items-center gap-3"><Progress value={level} className="flex-1" /><span className="w-12 text-xs">{Math.round(level)}%</span></div><Button className="mt-3" onClick={verifyMic} disabled={!stream || recording}>{recording ? "Listening for 9 seconds…" : "Record microphone test"}</Button>{speech && <p className="mt-2 text-sm text-muted-foreground">Heard: {speech}</p>}{recordingUrl && <div className="mt-3 grid gap-3"><audio ref={audioRef} src={recordingUrl} onEnded={() => setPlayed(true)} /><Button variant="outline" onClick={() => void audioRef.current?.play()}>Play my recording</Button>{!micConfirmed && <Button variant="secondary" disabled={!played} onClick={() => setMicConfirmed(true)}>I heard the displayed sentence clearly</Button>}</div>}{micConfirmed && <p className="mt-2 text-sm font-semibold text-success">Microphone verified</p>}</section></div></div>
- <div className="flex flex-wrap items-center justify-between gap-5 border-t pt-5"><label className="flex max-w-2xl items-start gap-3 text-sm"><Checkbox checked={consent} onCheckedChange={(v) => setConsent(v === true)} /><span>I consent to spoken-answer transcription and browser-only camera analysis for presentation feedback. Starting uses one interview credit.</span></label><Button size="lg" disabled={!preflightReady(values) || starting || me.credits < 1} onClick={begin}>{starting ? "Opening interview…" : "Start interview"}</Button></div>
+ <InterviewDetailsForm userId={me.id} value={details} onChange={setDetails} />
+ <div className="flex flex-wrap items-center justify-between gap-5 border-t pt-5"><label className="flex max-w-2xl items-start gap-3 text-sm"><Checkbox checked={consent} onCheckedChange={(v) => setConsent(v === true)} /><span>I consent to spoken-answer transcription and browser-only camera analysis for presentation feedback. Starting uses one interview credit.</span></label><Button size="lg" disabled={!preflightReady(values) || !interviewDetailsReady(details) || starting || me.credits < 1} onClick={begin}>{starting ? "Opening interview…" : "Start interview"}</Button></div>
  </div>;
 }
