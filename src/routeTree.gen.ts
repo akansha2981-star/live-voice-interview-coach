@@ -24,6 +24,7 @@ import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticate
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
 import { Route as AdminCreditsRouteImport } from './routes/admin.credits'
 import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
 import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
@@ -113,6 +114,11 @@ const AdminAnnouncementsRoute = AdminAnnouncementsRouteImport.update({
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCollegesRoute = AdminCollegesRouteImport.update({
+  id: '/colleges',
+  path: '/colleges',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCreditsRoute = AdminCreditsRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/colleges': typeof AdminCollegesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/colleges': typeof AdminCollegesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/colleges': typeof AdminCollegesRoute
   '/admin/credits': typeof AdminCreditsRoute
   '/admin/documents': typeof AdminDocumentsRoute
   '/admin/downloads': typeof AdminDownloadsRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/admin/announcements'
     | '/admin/audit'
+    | '/admin/colleges'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/admin/announcements'
     | '/admin/audit'
+    | '/admin/colleges'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/_authenticated/support'
     | '/admin/announcements'
     | '/admin/audit'
+    | '/admin/colleges'
     | '/admin/credits'
     | '/admin/documents'
     | '/admin/downloads'
@@ -497,6 +509,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/colleges': {
+      id: '/admin/colleges'
+      path: '/colleges'
+      fullPath: '/admin/colleges'
+      preLoaderRoute: typeof AdminCollegesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/credits': {
@@ -641,6 +660,7 @@ const AuthenticatedRouteRouteWithChildren =
 interface AdminRouteChildren {
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminCollegesRoute: typeof AdminCollegesRoute
   AdminCreditsRoute: typeof AdminCreditsRoute
   AdminDocumentsRoute: typeof AdminDocumentsRoute
   AdminDownloadsRoute: typeof AdminDownloadsRoute
@@ -658,6 +678,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminCollegesRoute: AdminCollegesRoute,
   AdminCreditsRoute: AdminCreditsRoute,
   AdminDocumentsRoute: AdminDocumentsRoute,
   AdminDownloadsRoute: AdminDownloadsRoute,
