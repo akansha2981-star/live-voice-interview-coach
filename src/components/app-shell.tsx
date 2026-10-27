@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import { PREP_SECTIONS } from "@/lib/prep";
 
-type NavItem = { to: "/dashboard" | "/slots" | "/my-slots" | "/announcements" | "/prep/$section" | "/profile" | "/admin" | "/support"; params?: { section: string }; label: string; short: string; mark: string; tone: string };
+type NavItem = { to: "/dashboard" | "/slots" | "/my-slots" | "/resume-builder" | "/announcements" | "/prep/$section" | "/profile" | "/admin" | "/support"; params?: { section: string }; label: string; short: string; mark: string; tone: string };
 const GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Workspace", items: [
     { to: "/dashboard", label: "Overview", short: "Home", mark: "OV", tone: "bg-primary text-primary-foreground" },
@@ -16,6 +16,9 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "My interviews", items: [
     { to: "/slots", label: "Book interview", short: "Book", mark: "BK", tone: "bg-sky text-primary-foreground" },
     { to: "/my-slots", label: "My slots", short: "Slots", mark: "MS", tone: "bg-success text-primary-foreground" },
+  ] },
+  { title: "Career tools", items: [
+    { to: "/resume-builder", label: "Resume Builder", short: "Resume", mark: "RB", tone: "bg-primary text-primary-foreground" },
   ] },
   { title: "My prep material", items: PREP_SECTIONS.map((p) => ({ to: "/prep/$section" as const, params: { section: p.slug }, label: p.label, short: "Prep", mark: p.mark, tone: "bg-ink text-ink-foreground" })) },
   { title: "Account", items: [
