@@ -44,7 +44,7 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   for await (const part of result.fullStream) {
     if (part.type === "error") streamError = part.error;
   }
-  const usage = await result.totalUsage.catch(() => undefined);
+  const usage = await Promise.resolve(result.totalUsage).catch(() => undefined);
   await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:streamError?"failed":"completed", finalized:true, inputTokens:usage?.inputTokens, outputTokens:usage?.outputTokens, cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens, reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
   if (streamError) {
     const status = (streamError as { statusCode?: number }).statusCode;

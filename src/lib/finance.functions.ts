@@ -27,7 +27,8 @@ export const getFinance = createServerFn({ method: "POST" }).middleware([require
       read("interviews","started_at","id,user_id,status,started_at,duration_s"),read("resume_analyses","created_at","id,user_id,status,created_at"),read("sop_reviews","created_at","id,user_id,status,created_at"),read("college_training_docs","created_at","id,created_by,status,created_at"),read("course_purchases","purchased_at","id,amount,currency,payment_status,purchased_at,source")
     ]);
     const activity=[...interviews.map(r=>({...r,product:"interview",occurred_at:r.started_at})),...resumes.map(r=>({...r,product:"resume",occurred_at:r.created_at,duration_s:null})),...sops.map(r=>({...r,product:"sop",occurred_at:r.created_at,duration_s:null})),...training.map(r=>({...r,product:"training",user_id:r.created_by,occurred_at:r.created_at,duration_s:null}))] as Activity[];
-    return {usage:usage as unknown as Usage[],expenses:expenses as unknown as Expense[],rates:rates as unknown as Rate[],balances:balances as unknown as Balance[],activity,sales,partial};
+    const saleRows=sales.map(r=>({id:String(r.id),amount:r.amount==null?null:Number(r.amount),currency:r.currency==null?null:String(r.currency),payment_status:r.payment_status==null?null:String(r.payment_status),purchased_at:String(r.purchased_at),source:String(r.source)}));
+    return {usage:usage as unknown as Usage[],expenses:expenses as unknown as Expense[],rates:rates as unknown as Rate[],balances:balances as unknown as Balance[],activity,sales:saleRows,partial:Boolean(partial)};
   });
 
 const currency=z.enum(["INR","USD","credits"]);

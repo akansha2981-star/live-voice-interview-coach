@@ -202,7 +202,7 @@ async function answerQuestion(
     if (part.type === "error" || part.type === "abort") failed = true;
     if (part.type === "finish") completed = part.finishReason === "stop";
   }
-  const usage = await result.totalUsage.catch(() => undefined);
+  const usage = await Promise.resolve(result.totalUsage).catch(() => undefined);
   await recordUsage({eventKey,occurredAt,model:config.backendModel,attribution,status:failed || !completed?"failed":"completed",finalized:true,inputTokens:usage?.inputTokens,outputTokens:usage?.outputTokens,cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens,reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
   signal.throwIfAborted();
   if (failed || !completed) throw new Error("The backend response did not complete");
