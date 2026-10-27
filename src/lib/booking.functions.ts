@@ -19,7 +19,8 @@ export const confirmPreflight = createServerFn({ method: "POST" })
     const { data: booking, error } = await context.supabase.from("interview_bookings").select("*, interview_slots(starts_at, ends_at)").eq("id", data.bookingId).eq("user_id", context.userId).eq("status", "booked").maybeSingle();
     if (error) throw new Error(error.message);
     const slot = booking?.interview_slots;
-    if (!slot || Date.parse(slot.starts_at) > Date.now() || Date.parse(slot.ends_at) <= Date.now()) throw new Error("Your booked interview is not open now.");
+    const openNow = booking?.start_now_until && Date.parse(booking.start_now_until) > Date.now();
+    if (!slot || (!openNow && (Date.parse(slot.starts_at) > Date.now() || Date.parse(slot.ends_at) <= Date.now()))) throw new Error("Your booked interview is not open now.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error: updateError } = await supabaseAdmin.from("interview_bookings").update({ checked_at: new Date().toISOString(), preflight: data, practice_only: data.practiceOnly, college_id: data.practiceOnly ? null : data.collegeId, college_name: collegeName, actual_interview_at: data.practiceOnly || !data.actualInterviewAt ? null : new Date(data.actualInterviewAt).toISOString(), call_letter_path: data.practiceOnly ? null : data.callLetterPath }).eq("id", data.bookingId).eq("user_id", context.userId).eq("status", "booked");
     if (updateError) throw new Error(updateError.message);

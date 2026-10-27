@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { availableSlotsQuery, bookingQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
-import { slotPhase } from "@/lib/booking";
+import { bookingPhase } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
 import { InterviewDetailsForm, type DetailsState } from "@/components/interview-details-form";
 import { interviewDetailsReady } from "@/lib/booking";
@@ -27,7 +27,7 @@ export function BookedInterviews() {
     <div className="divide-y">{bookings.map((b) => {
       const s = b.interview_slots;
       if (!s) return null;
-      const phase = slotPhase(s.starts_at, s.ends_at, Date.now());
+      const phase = bookingPhase(b, Date.now());
       return <div key={b.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
         <div><p className="font-semibold">MBA mock interview</p><p className="text-sm text-muted-foreground">{new Date(s.starts_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })} – {new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p><p className="mt-1 text-xs font-semibold text-primary">{phase === "ready" ? "Your interview is open" : phase === "upcoming" ? "Scheduled" : "Slot ended"}</p></div>
         <div className="flex gap-2"><Button variant="ghost" disabled={busy === b.id} onClick={() => cancel(b.id)}>Cancel booking</Button>{phase === "ready" ? <Button asChild><Link to="/interview/check" search={{ booking: b.id }}>Start interview</Link></Button> : <Button disabled>{phase === "upcoming" ? "Not open yet" : "Expired"}</Button>}</div>
@@ -49,7 +49,7 @@ export function SlotPicker() {
   const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
   const taken = (id: string) => data.bookings.some((b) => b.slot_id === id && b.status !== "cancelled");
   // A slot that is open right now with room left and enough time to run the interview.
-  const openNow = allSlots.find((s) => Date.parse(s.starts_at) <= Date.now() && Date.parse(s.ends_at) - Date.now() > 60_000 && s.remaining > 0 && !taken(s.id));
+  const openNow = allSlots.find((s) => Date.parse(s.starts_at) <= Date.now() && Date.parse(s.ends_at) > Date.now() && s.remaining > 0 && !taken(s.id));
   const future = allSlots.filter((s) => Date.parse(s.starts_at) > Date.now());
   const dates = [...new Set(future.map((s) => new Date(s.starts_at).toDateString()))];
   const periods = [{ id: "all", label: "Any time", from: 0, to: 24 }, { id: "morning", label: "Morning", from: 6, to: 12 }, { id: "afternoon", label: "Afternoon", from: 12, to: 18 }, { id: "evening", label: "Evening", from: 18, to: 24 }, { id: "night", label: "Night", from: 0, to: 6 }];
@@ -66,6 +66,10 @@ export function SlotPicker() {
     setBusy(true);
     // Generated RPC argument types omit SQL nullability; practice deliberately uses null fields.
     const { data: bookingId, error } = await supabase.rpc("book_interview_with_details", { _slot_id: selectedSlot.id, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
+    if (!error && now && bookingId) {
+      const { error: nowError } = await supabase.rpc("mark_booking_start_now", { _booking_id: bookingId as string });
+      if (nowError) toast.error(nowError.message);
+    }
     setBusy(false);
     if (error) return toast.error(error.message);
     await qc.invalidateQueries({ queryKey: ["bookings"] });
