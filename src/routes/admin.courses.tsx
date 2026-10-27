@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/admin/courses")({ component: CoursesPage });
+export const Route = createFileRoute("/admin/courses")({ staticData: { sitemap: false }, component: CoursesPage });
 
 type Form = { id: string | null; name: string; actual: string; final: string; credits: string; description: string; rows: Deliverable[] };
 const blank: Form = { id: null, name: "", actual: "", final: "", credits: "1", description: "", rows: [{ item: "", detail: "" }] };

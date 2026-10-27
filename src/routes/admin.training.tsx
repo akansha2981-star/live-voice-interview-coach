@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const Route = createFileRoute("/admin/training")({ component: TrainingPage });
+export const Route = createFileRoute("/admin/training")({ staticData: { sitemap: false }, component: TrainingPage });
 
 const STATUS: Record<string, string> = { reading: "AI is Reading", saved: "Saved to Intelligence System", failed: "Could not read" };
 

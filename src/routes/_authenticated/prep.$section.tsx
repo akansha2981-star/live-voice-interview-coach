@@ -10,7 +10,7 @@ import { downloadResource } from "@/lib/admin.functions";
 import { PREP_SECTIONS, prepBySlug, safeUrl } from "@/lib/prep";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/prep/$section")({
+export const Route = createFileRoute("/_authenticated/prep/$section")({ staticData: { sitemap: false },
   beforeLoad: ({ params }) => { if (!prepBySlug(params.section)) throw notFound(); },
   head: ({ params }) => {
     const s = prepBySlug(params.section); const t = s ? s.label : "Prep material";

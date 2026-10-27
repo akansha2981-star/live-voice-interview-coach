@@ -10,7 +10,7 @@ import { INTERVIEW_CATEGORIES } from "@/lib/interview-prompt";
 import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/admin/interviews")({ component: InterviewsPage });
+export const Route = createFileRoute("/admin/interviews")({ staticData: { sitemap: false }, component: InterviewsPage });
 
 const STATUS_OPTS: [string, string][] = [["", "All statuses"], ["booked", "Booked"], ["upcoming", "Upcoming"], ["in_progress", "In Progress"], ["completed", "Completed"], ["cancelled", "Cancelled"], ["no_show", "No-show"], ["processing", "Processing"], ["failed", "Failed"]];
 

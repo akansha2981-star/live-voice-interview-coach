@@ -8,7 +8,7 @@ import { peopleQuery } from "@/lib/admin-queries";
 import { fmtDateTime } from "@/lib/admin-utils";
 import { useStaff } from "@/hooks/use-staff";
 
-export const Route = createFileRoute("/admin/credits")({ component: CreditsPage });
+export const Route = createFileRoute("/admin/credits")({ staticData: { sitemap: false }, component: CreditsPage });
 
 function CreditsPage() {
   const staff = useStaff();

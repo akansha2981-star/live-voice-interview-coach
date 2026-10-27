@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const Route = createFileRoute("/admin/sop-reviews")({
+export const Route = createFileRoute("/admin/sop-reviews")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "SOP Review — MBA Compass Admin" }, { name: "description", content: "Manage SOP requirements, turnaround time and review analytics." }, { property: "og:title", content: "SOP Review admin" }, { property: "og:description", content: "SOP review settings and analytics." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AdminSop,
 });

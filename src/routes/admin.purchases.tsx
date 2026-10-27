@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SalesCostSummary } from "@/components/admin/sales-cost-summary";
 
-export const Route = createFileRoute("/admin/purchases")({ head:()=>({meta:[{title:"Sales & purchases — MBA Compass"},{name:"description",content:"Recorded course purchases and AI product cost context."},{property:"og:title",content:"MBA Compass sales & purchases"},{property:"og:description",content:"Purchase history and recorded product expenses."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: PurchasesPage });
+export const Route = createFileRoute("/admin/purchases")({ staticData: { sitemap: false }, head:()=>({meta:[{title:"Sales & purchases — MBA Compass"},{name:"description",content:"Recorded course purchases and AI product cost context."},{property:"og:title",content:"MBA Compass sales & purchases"},{property:"og:description",content:"Purchase history and recorded product expenses."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: PurchasesPage });
 
 /*
  * RAZORPAY INTEGRATION PLACEHOLDER (not enabled).

@@ -11,7 +11,7 @@ import { openUserDocument } from "@/lib/admin.functions";
 import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/admin/documents")({ component: DocumentsPage });
+export const Route = createFileRoute("/admin/documents")({ staticData: { sitemap: false }, component: DocumentsPage });
 
 type Doc = { id: string; bucket: "resumes" | "support"; path: string; name: string; category: string; owner: string; uploaded: string | null; related: string; type: string; access: string };
 

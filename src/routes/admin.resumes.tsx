@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, PageHeader, Stat } from "@/components/admin/admin-ui";
 
-export const Route = createFileRoute("/admin/resumes")({ component: ResumesAdmin });
+export const Route = createFileRoute("/admin/resumes")({ staticData: { sitemap: false }, component: ResumesAdmin });
 
 type Row = { user_id: string; status: string; ats_score: number | null; created_at: string; report: { issues?: { issue: string }[] } | null };
 

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import type { TranscriptTurn } from "@/lib/interview-metrics";
 import { meQuery } from "@/lib/queries";
 
-export const Route = createFileRoute("/_authenticated/report/$id")({
+export const Route = createFileRoute("/_authenticated/report/$id")({ staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Interview report — MBA Compass AI Interview" },

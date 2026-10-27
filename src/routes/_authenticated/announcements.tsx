@@ -2,7 +2,7 @@ import { StudentPageHeading } from "@/components/student-page-heading";
 import { createFileRoute } from "@tanstack/react-router";
 import { AnnouncementCard, useAnnouncements } from "@/components/announcement-feed";
 
-export const Route = createFileRoute("/_authenticated/announcements")({
+export const Route = createFileRoute("/_authenticated/announcements")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Important announcements — MBA Compass" }, { name: "description", content: "Official updates from the MBA Compass team." }, { property: "og:title", content: "Important announcements — MBA Compass" }, { property: "og:description", content: "Latest official updates, events and notices." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Announcements,
 });

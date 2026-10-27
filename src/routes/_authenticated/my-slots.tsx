@@ -10,7 +10,7 @@ import { BookedInterviews } from "@/components/booking-panel";
 import { slotPhase } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/my-slots")({
+export const Route = createFileRoute("/_authenticated/my-slots")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "My slots — MBA Compass AI Interview" }, { name: "description", content: "All your booked AI interview slots in one place." }, { property: "og:title", content: "My slots — MBA Compass" }, { property: "og:description", content: "See and manage your booked interview slots." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(bookingQuery),
   component: MySlots,

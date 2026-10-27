@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin")({ staticData: { sitemap: "exclude-subtree" },
   ssr: false,
   head: () => ({ meta: [{ title: "Admin portal — MBA Compass AI Interview" }, { name: "description", content: "Secure administrator portal for MBA Compass AI Interview." }, { property: "og:title", content: "Admin portal — MBA Compass" }, { property: "og:description", content: "Manage users, interviews, slots, credits, resources and support." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { name: "robots", content: "noindex" }] }),
   beforeLoad: async () => {

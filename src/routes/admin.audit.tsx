@@ -6,7 +6,7 @@ import { Card, DataTable, ExportButton, PageHeader, Pager, Select } from "@/comp
 import { peopleQuery } from "@/lib/admin-queries";
 import { fmtDateTime } from "@/lib/admin-utils";
 
-export const Route = createFileRoute("/admin/audit")({ component: AuditPage });
+export const Route = createFileRoute("/admin/audit")({ staticData: { sitemap: false }, component: AuditPage });
 const PAGE = 50;
 
 function AuditPage() {
