@@ -15,6 +15,7 @@ export const Route = createFileRoute("/reset-password")({ staticData: { sitemap:
       { property: "og:description", content: "Choose a new password for your MBA Compass student account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: ResetPassword,
