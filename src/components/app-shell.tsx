@@ -22,7 +22,7 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     { to: "/resume-builder", label: "Resume Builder", short: "Resume", mark: "RB", tone: "bg-primary text-primary-foreground" },
     { to: "/sop-review", label: "AI SOP Review", short: "SOP", mark: "SR", tone: "bg-sky text-primary-foreground" },
   ] },
-  { title: "My prep material", items: PREP_SECTIONS.map((p) => (p.slug === "gk" ? { to: "/gk" as const, label: p.label, short: "GK", mark: p.mark, tone: "bg-ink text-ink-foreground" } : { to: "/prep/$section" as const, params: { section: p.slug }, label: p.label, short: "Prep", mark: p.mark, tone: "bg-ink text-ink-foreground" }))) },
+  { title: "My prep material", items: PREP_SECTIONS.map((p) => (p.slug === "gk" ? { to: "/gk" as const, label: p.label, short: "GK", mark: p.mark, tone: "bg-ink text-ink-foreground" } : { to: "/prep/$section" as const, params: { section: p.slug }, label: p.label, short: "Prep", mark: p.mark, tone: "bg-ink text-ink-foreground" })) as NavItem[] },
   { title: "Account", items: [
     { to: "/profile", label: "My profile", short: "Profile", mark: "PR", tone: "bg-accent text-accent-foreground" },
     { to: "/support", label: "Help & Support", short: "Help", mark: "HS", tone: "bg-secondary text-primary" },
