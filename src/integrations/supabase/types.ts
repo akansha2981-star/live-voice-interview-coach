@@ -191,6 +191,7 @@ export type Database = {
       course_purchases: {
         Row: {
           amount: number | null
+          course_id: string | null
           course_name: string
           created_at: string
           created_by: string | null
@@ -205,6 +206,7 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          course_id?: string | null
           course_name: string
           created_at?: string
           created_by?: string | null
@@ -219,6 +221,7 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          course_id?: string | null
           course_name?: string
           created_at?: string
           created_by?: string | null
@@ -230,6 +233,59 @@ export type Database = {
           purchased_at?: string
           source?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_purchases_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          actual_price: number
+          created_at: string
+          created_by: string | null
+          credits: number
+          deliverables: Json
+          description: string | null
+          final_price: number
+          id: string
+          name: string
+          sort_order: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_price: number
+          created_at?: string
+          created_by?: string | null
+          credits: number
+          deliverables?: Json
+          description?: string | null
+          final_price: number
+          id?: string
+          name: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_price?: number
+          created_at?: string
+          created_by?: string | null
+          credits?: number
+          deliverables?: Json
+          description?: string | null
+          final_price?: number
+          id?: string
+          name?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
