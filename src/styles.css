@@ -91,6 +91,12 @@
   --gradient-panel: linear-gradient(160deg, oklch(0.995 0.005 235), oklch(0.95 0.028 240));
   --gradient-glow: radial-gradient(60% 60% at 70% 30%, oklch(0.79 0.15 72 / 0.28), transparent 70%);
   --shadow-soft: 0 1px 2px oklch(0.22 0.04 262 / 0.05), 0 12px 32px -12px oklch(0.22 0.04 262 / 0.18);
+  --student-shadow: 0 4px 18px -8px oklch(0.28 0.05 245 / 0.14);
+  --student-focus: linear-gradient(115deg, var(--secondary), var(--card) 80%);
+  --student-resume: oklch(0.975 0.024 150);
+  --student-sop: oklch(0.98 0.03 85);
+  --student-stat-primary: oklch(0.97 0.023 240);
+  --student-stat-sky: oklch(0.97 0.025 220);
   --sidebar: oklch(0.97 0.01 85);
   --sidebar-foreground: oklch(0.22 0.04 262);
   --sidebar-primary: oklch(0.27 0.06 262);
@@ -274,9 +280,56 @@
 }
 @utility section-card {
   border: 1px solid var(--border);
-  border-radius: 0.875rem;
+  border-radius: 0.5rem;
   background: var(--card);
   box-shadow: 0 1px 2px oklch(0.22 0.04 262 / 0.04);
+}
+
+/* Student workspace: editorial hierarchy, distinct data surfaces, no decorative icons. */
+.student-shell { background: var(--muted); }
+.student-eyebrow { color: var(--primary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+.student-nav-link { position: relative; }
+.student-nav-link[aria-current="page"] { background: var(--secondary); box-shadow: inset 3px 0 var(--primary); }
+.student-sidebar { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.student-page-heading { padding: 0 0 8px; }
+.overview-focus { background: var(--student-focus); border-block: 1px solid var(--border); }
+.next-session { box-shadow: var(--student-shadow); }
+.dashboard-stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--student-shadow); transition: transform 220ms, box-shadow 220ms; }
+.dashboard-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+.stat-primary { background: var(--student-stat-primary); }
+.stat-sky { background: var(--student-stat-sky); }
+.stat-success { background: var(--student-resume); }
+.stat-accent { background: var(--student-sop); }
+.stat-primary .stat-dot { background: var(--primary); }
+.stat-sky .stat-dot { background: var(--sky); }
+.stat-success .stat-dot { background: var(--success); }
+.stat-accent .stat-dot { background: var(--accent); }
+.career-tile { display: block; min-width: 0; border-top: 2px solid var(--primary); background: var(--card); padding: 20px; transition: background 200ms, transform 200ms; }
+a.career-tile:hover { transform: translateY(-2px); }
+.career-resume { background: var(--student-resume); border-color: var(--success); }
+.career-sop { background: var(--student-sop); border-color: var(--accent); }
+.student-content .section-card { box-shadow: var(--student-shadow); }
+.student-content section.section-card { border-radius: 0; border-inline: 0; padding-block: 26px; }
+.student-content section.section-card > div:first-child h2 { font-size: 20px; }
+.student-content h2 { line-height: 1.3; }
+.student-content table th { font-weight: 600; background: var(--muted); white-space: nowrap; }
+.student-content table td { padding-block: 16px; }
+.student-content tbody tr { transition: background 180ms; }
+.student-content tbody tr:hover { background: var(--secondary); }
+.student-content [data-slot="tabs-list"] { border-bottom: 1px solid var(--border); border-radius: 0; padding: 4px; background: var(--card); gap: 4px; }
+.student-content [data-slot="tabs-trigger"] { min-height: 40px; padding-inline: 16px; }
+.student-content label:has(input[type="file"]) { min-height: 190px; border-width: 1px; background: var(--student-focus); }
+.student-content [role="region"] { scrollbar-width: thin; scrollbar-color: var(--primary) var(--muted); }
+.insight-panel { border-top: 1px solid var(--border); background: var(--card); padding: 24px; }
+.insight-heading { padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.insight-heading-number { font-size: 22px; font-weight: 400; color: var(--primary); }
+.latest-score-panel { background: var(--student-focus); border-top: 3px solid var(--primary); color: var(--foreground); }
+.latest-score-panel .score-focus-note { background: var(--card); border-top: 1px solid var(--border); }
+.category-metric { border-bottom: 2px solid var(--border); background: var(--muted); }
+@media (max-width: 639px) {
+  .student-content section.section-card, .insight-panel { padding: 20px 16px; }
+  .student-content table { font-size: 12px; }
+  .student-page-heading h1 { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .animate-reveal, .animate-slide-in { animation: none; }
