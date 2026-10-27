@@ -9,8 +9,9 @@ import { fmtDateTime } from "@/lib/admin-utils";
 import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SalesCostSummary } from "@/components/admin/sales-cost-summary";
 
-export const Route = createFileRoute("/admin/purchases")({ component: PurchasesPage });
+export const Route = createFileRoute("/admin/purchases")({ head:()=>({meta:[{title:"Sales & purchases — MBA Compass"},{name:"description",content:"Recorded course purchases and AI product cost context."},{property:"og:title",content:"MBA Compass sales & purchases"},{property:"og:description",content:"Purchase history and recorded product expenses."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: PurchasesPage });
 
 /*
  * RAZORPAY INTEGRATION PLACEHOLDER (not enabled).
@@ -41,6 +42,7 @@ function PurchasesPage() {
   }
   return <>
     <PageHeader title="Course Purchases" sub="Who purchased which course and when"><DateRange {...r} /><ExportButton name="course-purchases" rows={() => rows.map((p) => ({ user_id: p.user_id, name: p.name, email: p.email, course: p.course_name, purchased_at: p.purchased_at, order_id: p.order_id, amount: p.amount, currency: p.currency, payment_status: p.payment_status, source: p.source, interview_credits: p.interview_credits }))} /></PageHeader>
+    <SalesCostSummary from={r.fromIso} to={new Date(new Date(r.toIso).getTime()+1000).toISOString()}/>
     <div className="rounded-lg border-l-4 border-accent bg-accent/10 p-4 text-sm"><strong>Payment gateway not connected.</strong> Razorpay is not integrated yet, so no online payments are recorded automatically. Amount and payment status only appear when verified data exists.</div>
     {staff.canOperate && <Card title="Record a verified purchase" sub="For purchases confirmed outside the platform"><div className="grid gap-2 md:grid-cols-[1fr_1fr_1fr_100px_auto]"><Input placeholder="Student email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /><Input placeholder="Course name" value={form.course} onChange={(e) => setForm({ ...form, course: e.target.value })} /><Input placeholder="Order ID (optional)" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} /><Input type="number" min={0} placeholder="Credits" value={form.credits} onChange={(e) => setForm({ ...form, credits: Number(e.target.value) })} /><Button onClick={record}>Record</Button></div><p className="mt-2 text-xs text-muted-foreground">Recording a purchase does not add credits automatically — use Interview Credits so the change is audited.</p></Card>}
     <Card><div className="mb-4"><SearchBox value={q} onChange={setQ} placeholder="Search student, course or order ID" /></div>
