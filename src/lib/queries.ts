@@ -1,10 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Reads the locally stored session (no network round-trip); the database re-validates every request.
 async function uid() {
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) throw new Error("Not signed in");
-  return data.user.id;
+  const { data } = await supabase.auth.getSession();
+  const id = data.session?.user.id;
+  if (!id) throw new Error("Not signed in");
+  return id;
 }
 
 export const meQuery = queryOptions({
@@ -50,22 +52,27 @@ export const interviewQuery = (id: string) =>
     },
   });
 
+/** The student's own bookings only — light enough for the dashboard. */
 export const bookingQuery = queryOptions({
-  queryKey: ["bookings"],
+  queryKey: ["bookings", "mine"],
   queryFn: async () => {
     const id = await uid();
-    const [slots, { data: bookings, error: bookingError }] = await Promise.all([
-      allAvailableSlots(),
-      supabase.from("interview_bookings").select("*, interview_slots(*)").eq("user_id", id).order("created_at", { ascending: false }),
-    ]);
-    if (bookingError) throw bookingError;
-    return { userId: id, slots: slots ?? [], bookings: bookings ?? [] };
+    const { data: bookings, error } = await supabase.from("interview_bookings").select("*, interview_slots(*)").eq("user_id", id).order("created_at", { ascending: false });
+    if (error) throw error;
+    return { userId: id, bookings: bookings ?? [] };
   },
   refetchInterval: 30000,
 });
 
+/** Every open slot (thousands of rows) — only loaded on the booking page. */
+export const availableSlotsQuery = queryOptions({
+  queryKey: ["bookings", "slots"],
+  queryFn: () => allAvailableSlots(),
+  refetchInterval: 30000,
+});
+
 async function allAvailableSlots() {
-  const pageSize = 500;
+  const pageSize = 1000;
   const slots: import("@/integrations/supabase/types").Database["public"]["Functions"]["interview_slot_availability"]["Returns"] = [];
   for (let offset = 0; ; offset += pageSize) {
     const { data, error } = await supabase.rpc("interview_slot_availability").order("starts_at").order("id").range(offset, offset + pageSize - 1);
