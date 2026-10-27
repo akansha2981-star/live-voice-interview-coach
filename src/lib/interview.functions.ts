@@ -80,7 +80,7 @@ export const finishInterview = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin.from("interviews").select("user_id, status").eq("id", data.id).maybeSingle();
+    const { data: row } = await supabaseAdmin.from("interviews").select("user_id, status, limit_duration_seconds").eq("id", data.id).maybeSingle();
     if (!row || row.user_id !== context.userId) throw new Error("Interview not found");
     if (row.status !== "in_progress") return { ok: true };
     const userWords = data.transcript.filter((t) => t.role === "user").reduce((n, t) => n + t.text.split(/\s+/).length, 0);
@@ -90,7 +90,7 @@ export const finishInterview = createServerFn({ method: "POST" })
         transcript: data.transcript,
         vision_summary: data.vision_summary as never,
         speech_metrics: data.speech_metrics as never,
-        duration_s: data.duration_s,
+        duration_s: Math.min(data.duration_s, row.limit_duration_seconds ?? 7200),
         ended_at: new Date().toISOString(),
         status: userWords < 25 ? "too_short" : "analyzing",
       })
