@@ -328,7 +328,7 @@ a.career-tile:hover { transform: translateY(-2px); }
 .category-metric { border-bottom: 2px solid var(--border); background: var(--muted); }
 .report-summary { background: var(--student-focus); border-block: 1px solid var(--border); }
 .report-readiness { background: var(--student-sop); border: 1px solid var(--accent); color: var(--foreground); padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-.report-tab-content { display: grid; gap: 24px; padding-top: 16px; }
+.report-tab-content { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 24px; padding-top: 16px; }
 .report-tab-content[data-state="inactive"] { display: none; }
 .report-section { background: var(--card); border-block: 1px solid var(--border); padding: 24px; min-width: 0; }
 .report-metric { background: var(--secondary); padding: 16px; border-radius: 6px; border-top: 2px solid var(--sky); }
@@ -338,6 +338,7 @@ a.career-tile:hover { transform: translateY(-2px); }
 .feedback-negative { border-color: var(--accent); background: var(--student-sop); }
 .report-moment { background: var(--muted); padding: 18px; border-left: 2px solid var(--accent); }
 .report-tabs [data-state="active"] { border-bottom: 2px solid var(--primary); color: var(--primary); }
+.report-workspace .recharts-wrapper { max-width: 100%; }
 @media (max-width: 639px) {
   .report-section { padding: 20px 16px; }
   .report-tabs [data-slot="tabs-trigger"] { padding-inline: 10px; min-height: 38px; font-size: 12px; }
