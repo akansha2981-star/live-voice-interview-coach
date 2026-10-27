@@ -298,7 +298,8 @@
 .student-nav-link:hover .nav-mark { transform: scale(1.1); box-shadow: var(--shadow-soft); }
 .nav-arrow { opacity: 0; transform: translateX(-4px); transition: opacity 200ms ease, transform 200ms ease; color: var(--primary); }
 .student-nav-link:hover .nav-arrow, .student-nav-link[aria-current="page"] .nav-arrow { opacity: 1; transform: translateX(0); }
-.side-credits { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: linear-gradient(160deg, color-mix(in oklab, var(--accent) 30%, var(--card)), var(--card) 65%); box-shadow: var(--shadow-soft); }
+.side-credits { --kpi-accent: var(--primary); border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: linear-gradient(160deg, color-mix(in oklab, var(--accent) 30%, var(--card)), var(--card) 65%); box-shadow: var(--shadow-soft); }
+.side-credits .kpi-dots { margin-top: 8px; }
 .student-page-heading { padding: 0 0 8px; }
 .overview-focus { background: var(--student-focus); border-block: 1px solid var(--border); }
 .next-session { box-shadow: var(--student-shadow); }
