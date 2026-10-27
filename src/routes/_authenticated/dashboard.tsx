@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
 import { BookedInterviews } from "@/components/booking-panel";
 import { InterviewHistory } from "@/components/interview-history";
-import { MIN_COMPARISON_SAMPLE } from "@/lib/dashboard-insights";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Student dashboard — MBA Compass AI Interview" }, { name: "description", content: "Your booked MBA interviews, available credits and performance history." }, { property: "og:title", content: "Student dashboard — MBA Compass" }, { property: "og:description", content: "Manage booked interviews and track your preparation." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),

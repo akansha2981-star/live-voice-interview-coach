@@ -5,7 +5,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { benchmarkQuery, myReportsQuery, myReviewsQuery } from "@/lib/queries";
-import { MIN_COMPARISON_SAMPLE, SECTIONS, compareLatest, fmtTime, journey, pctStatus, reviewItems, splitReviews, strongestWeakest, topPriorities, weakestArea, type ScoredInterview, type Status } from "@/lib/dashboard-insights";
+import { SECTIONS, compareLatest, fmtTime, journey, pctStatus, reviewItems, splitReviews, strongestWeakest, topPriorities, weakestArea, type ScoredInterview, type Status } from "@/lib/dashboard-insights";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";

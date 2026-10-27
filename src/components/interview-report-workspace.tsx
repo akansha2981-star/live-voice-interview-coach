@@ -9,7 +9,7 @@ import { StudentPageHeading } from "@/components/student-page-heading";
 import { InterviewTranscript } from "@/components/interview-transcript";
 import { ReportObservations } from "@/components/report-observations";
 import { benchmarkQuery, myReportsQuery } from "@/lib/queries";
-import { SECTIONS, categoryScores, MIN_COMPARISON_SAMPLE, fmtTime } from "@/lib/dashboard-insights";
+import { SECTIONS, categoryScores, fmtTime } from "@/lib/dashboard-insights";
 import { answerEvidence, PANEL_CRITERIA, reportCommunication, reportMoments } from "@/lib/report-evidence";
 import { SCORE_LABELS, type ReportExportContext } from "@/lib/report-pdf";
 import type { InterviewReport } from "@/lib/interview-report";
@@ -54,7 +54,7 @@ export function InterviewReportWorkspace({ report, transcript, vision, speech, i
   const sectionData = SECTIONS.map((s) => ({label:s.label,score:sections[s.key]})).filter((s) => s.score != null);
   const bench = benchmark.data;
   // Never compare a category report against a fallback pool of different interview types.
-  const comparable = bench?.scope === "category" && bench.sample_size >= MIN_COMPARISON_SAMPLE && bench.avg_overall != null;
+  const comparable = bench != null && bench.avg_overall != null;
   const exportContext: ReportExportContext = { history: throughCurrent.map((h) => ({started_at:h.started_at,overall_score:h.overall_score})), benchmark: comparable && bench ? {sample_size:bench.sample_size,scope:bench.scope,avg_overall:Number(bench.avg_overall)} : null };
   const exportPdf = () => onPdf(exportContext);
   return <div className="report-workspace grid min-w-0 gap-6">
