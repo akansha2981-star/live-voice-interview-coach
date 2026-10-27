@@ -30,6 +30,7 @@ export const analyzeResume = createServerFn({ method: "POST" })
     if (insErr) throw new Error(insErr.code === "23505" ? "Your resume credit has already been used." : insErr.message);
     let sections: Record<string, unknown> = {};
     let lastProgress = "";
+    let lastSavedAt = 0;
     const progress = async (phase: "reading" | "analysing" | "complete" | "failed") => {
       const { error } = await supabaseAdmin.from("resume_analyses").update({ analysis_progress: JSON.parse(JSON.stringify({ phase, sections, updatedAt: new Date().toISOString() })) }).eq("id", row.id);
       if (error) throw new Error("Could not save analysis progress.");
@@ -56,12 +57,13 @@ export const analyzeResume = createServerFn({ method: "POST" })
       const report = await generateStructured({ attribution: {product:"resume",userId:context.userId,transactionId:row.id,service:"analysis"}, schema: resumeReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }], onPartial: async (partial) => {
         const next = validatedSections(resumeReportSchema, partial, "is_resume");
         const signature = JSON.stringify(next);
-        if (signature !== lastProgress && Object.keys(next).length) { sections = next; lastProgress = signature; await progress("analysing"); }
+        if (signature !== lastProgress && Object.keys(next).length && Date.now() - lastSavedAt >= 1500) { sections = next; await progress("analysing"); lastProgress = signature; lastSavedAt = Date.now(); }
       } });
       if (!report.is_resume) return await fail(report.invalid_reason || "This file does not look like a resume. Please upload your resume.");
       const { improved_resume, ...rest } = report;
       sections = rest; await progress("complete");
-      await supabaseAdmin.from("resume_analyses").update({ status: "completed", report: rest, improved_resume, ats_score: report.ats_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      const { error: savedError } = await supabaseAdmin.from("resume_analyses").update({ status: "completed", report: rest, improved_resume, ats_score: report.ats_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      if (savedError) throw new Error("Could not save the completed resume analysis.");
       return { id: row.id, ok: true as const, error: null };
     } catch (e) {
       return await fail(e instanceof Error ? e.message : "Analysis failed. Your credit was not used.");

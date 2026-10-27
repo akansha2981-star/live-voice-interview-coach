@@ -35,6 +35,7 @@ export const submitSop = createServerFn({ method: "POST" })
     if (insErr) throw new Error(insErr.message);
     let sections: Record<string, unknown> = {};
     let lastProgress = "";
+    let lastSavedAt = 0;
     const progress = async (phase: "reading" | "analysing" | "complete" | "failed") => {
       const { error } = await supabaseAdmin.from("sop_reviews").update({ analysis_progress: JSON.parse(JSON.stringify({ phase, sections, updatedAt: new Date().toISOString() })) }).eq("id", row.id);
       if (error) throw new Error("Could not save review progress.");
@@ -62,11 +63,12 @@ export const submitSop = createServerFn({ method: "POST" })
       const report = await generateStructured({ attribution: {product:"sop",userId:context.userId,transactionId:row.id,service:"review"}, schema: sopReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }], onPartial: async (partial) => {
         const next = validatedSections(sopReportSchema, partial, "is_sop");
         const signature = JSON.stringify(next);
-        if (signature !== lastProgress && Object.keys(next).length) { sections = next; lastProgress = signature; await progress("analysing"); }
+        if (signature !== lastProgress && Object.keys(next).length && Date.now() - lastSavedAt >= 1500) { sections = next; await progress("analysing"); lastProgress = signature; lastSavedAt = Date.now(); }
       } });
       if (!report.is_sop) return await fail(report.invalid_reason || "This file does not look like an SOP. Please upload your Statement of Purpose.");
       sections = report; await progress("complete");
-      await supabaseAdmin.from("sop_reviews").update({ status: "completed", report, overall_score: report.overall_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      const { error: savedError } = await supabaseAdmin.from("sop_reviews").update({ status: "completed", report, overall_score: report.overall_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      if (savedError) throw new Error("Could not save the completed SOP review.");
       return { ok: true as const, error: null };
     } catch (e) {
       return await fail(e instanceof Error ? e.message : "Review failed. Please try again.");

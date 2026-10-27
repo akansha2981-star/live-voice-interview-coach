@@ -43,11 +43,15 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   });
   let streamError: unknown;
   const partialWork = opts.onPartial ? (async () => {
-    for await (const partial of result.partialOutputStream) await opts.onPartial?.(partial);
+    try {
+      for await (const partial of result.partialOutputStream) await opts.onPartial?.(partial);
+    } catch (error) { streamError ??= error; }
   })() : Promise.resolve();
-  for await (const part of result.fullStream) {
-    if (part.type === "error") streamError = part.error;
-  }
+  try {
+    for await (const part of result.fullStream) {
+      if (part.type === "error") streamError = part.error;
+    }
+  } catch (error) { streamError ??= error; }
   await partialWork;
   const usage = await Promise.resolve(result.totalUsage).catch(() => undefined);
   await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:streamError?"failed":"completed", finalized:true, inputTokens:usage?.inputTokens, outputTokens:usage?.outputTokens, cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens, reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
