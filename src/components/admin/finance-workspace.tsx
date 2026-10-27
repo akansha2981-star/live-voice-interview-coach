@@ -31,7 +31,7 @@ export function FinanceWorkspace() {
   for(const u of usage) if(!u.expense_id && u.estimates[currency]!=null) day(u.occurred_at).estimated+=Number(u.estimates[currency]);
   let cumulative=0;
   const chart=[...trend.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>{cumulative+=r.billed;return {...r,cumulative};});
-  const [form,setForm]=useState({provider:"Lovable AI",product:"interview",category:"api",amount:"",reference:"",notes:"",model:"openai/gpt-6-astra",service:"report",unit:"input_tokens",unit_price:"",per_quantity:"1000000",balance:"",spending_limit:"",date:new Date().toISOString().slice(0,10),currency:"INR"});
+  const [form,setForm]=useState({provider:"OpenAI",product:"interview",category:"api",amount:"",reference:"",notes:"",model:"gpt-5.5",service:"report",unit:"input_tokens",unit_price:"",per_quantity:"1000000",balance:"",spending_limit:"",date:new Date().toISOString().slice(0,10),currency:"INR"});
   const [selected,setSelected]=useState<string[]>([]);
   const set=(key:keyof typeof form,value:string)=>{if(key==="provider"||key==="product")setSelected([]);setForm(f=>({...f,[key]:value}));};
   const refresh=()=>qc.invalidateQueries({queryKey:["admin","finance"]});

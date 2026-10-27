@@ -3,10 +3,11 @@ import { NoObjectGeneratedError, Output, streamText, type ModelMessage } from "a
 import type { z } from "zod";
 import { recordUsage, type Attribution } from "./finance.server";
 
-const GATEWAY = "https://ai.gateway.lovable.dev/v1";
-export const CHAT_MODEL = "openai/gpt-6-astra";
+// All text AI runs on the owner's own OpenAI account (OPENAI_API_KEY), billed by OpenAI directly.
+const OPENAI_BASE = "https://api.openai.com/v1";
+export const CHAT_MODEL = "gpt-5.5";
 
-// Streams a strict structured-output request through the Lovable AI Gateway and returns the parsed object.
+// Streams a strict structured-output request through OpenAI Responses and returns the parsed object.
 export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   schema: T;
   system: string;
@@ -15,15 +16,14 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   attribution: Attribution;
   onPartial?: (partial: unknown) => Promise<void>;
 }): Promise<z.infer<T>> {
-  const key = process.env["LOVABLE_API_KEY"];
+  const key = process.env["OPENAI_API_KEY"];
   if (!key) throw new Error("AI is not configured for this app.");
   const eventKey = `structured:${crypto.randomUUID()}`;
   const occurredAt = new Date().toISOString();
   await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:"started", finalized:false});
   const provider = createOpenAI({
-    baseURL: GATEWAY,
+    baseURL: OPENAI_BASE,
     apiKey: key,
-    headers: { "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
   });
   const result = streamText({
     model: provider.responses(CHAT_MODEL),
@@ -33,7 +33,6 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
     output: Output.object({ schema: opts.schema }),
     providerOptions: {
       openai: {
-        forceReasoning: true,
         reasoningEffort: opts.effort ?? "medium",
         reasoningSummary: "auto",
         store: false,
@@ -63,9 +62,10 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   if (streamError) {
     if (NoObjectGeneratedError.isInstance(streamError)) throw new Error("The AI returned an incomplete result. Please retry.");
     const status = (streamError as { statusCode?: number }).statusCode;
-    if (status === 402) throw new Error("AI credits are used up. Please top up in Settings → Plans & credits.");
+    if (status === 401) throw new Error("The OpenAI key is invalid or revoked.");
+    if (status === 402 || (streamError as { data?: { error?: { code?: string } } }).data?.error?.code === "insufficient_quota") throw new Error("The OpenAI account has run out of credit. Please top up the OpenAI billing balance.");
     if (status === 429) throw new Error("The AI service is busy. Please try again in a minute.");
-    if (status === 403) throw new Error("AI access is blocked for this workspace.");
+    if (status === 403) throw new Error("The OpenAI account refused this request.");
     throw new Error("The AI service could not complete the request.");
   }
   if (!output) throw new Error("The AI returned an incomplete result. Please retry.");
