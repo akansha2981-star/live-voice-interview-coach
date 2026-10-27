@@ -1,5 +1,5 @@
 # Admin portal
-- [ ] Premium student UI refresh: shared navigation, overview, analytics, booking, prep and career sections; verify signed-in desktop/mobile views
+- [x] Premium student UI refresh: shared navigation, overview, analytics, booking, prep, career, profile and support sections; signed-in desktop/mobile navigation and transcript access verified
 - [x] Separate /admin login and 13-section portal (dashboard, users, purchases, interviews, slots, credits, resources, downloads, support, documents, reports, settings, audit)
 - [x] Student Help & Support and SOP & Resources pages
 - [ ] Razorpay payments and webhook — deferred by user (placeholder documented)
