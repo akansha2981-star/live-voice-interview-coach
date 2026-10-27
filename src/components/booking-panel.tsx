@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { bookingQuery } from "@/lib/queries";
+import { availableSlotsQuery, bookingQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { slotPhase } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
@@ -38,13 +38,19 @@ export function BookedInterviews() {
 
 export function SlotPicker() {
   const { data } = useSuspenseQuery(bookingQuery);
+  const { data: allSlots } = useSuspenseQuery(availableSlotsQuery);
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [date, setDate] = useState<string | null>(null);
   const [period, setPeriod] = useState("all");
   const [selected, setSelected] = useState<string | null>(null);
+  const [now, setNow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
-  const future = data.slots.filter((s) => Date.parse(s.starts_at) > Date.now());
+  const taken = (id: string) => data.bookings.some((b) => b.slot_id === id && b.status !== "cancelled");
+  // A slot that is open right now with room left and enough time to run the interview.
+  const openNow = allSlots.find((s) => Date.parse(s.starts_at) <= Date.now() && Date.parse(s.ends_at) - Date.now() > 60_000 && s.remaining > 0 && !taken(s.id));
+  const future = allSlots.filter((s) => Date.parse(s.starts_at) > Date.now());
   const dates = [...new Set(future.map((s) => new Date(s.starts_at).toDateString()))];
   const periods = [{ id: "all", label: "Any time", from: 0, to: 24 }, { id: "morning", label: "Morning", from: 6, to: 12 }, { id: "afternoon", label: "Afternoon", from: 12, to: 18 }, { id: "evening", label: "Evening", from: 18, to: 24 }, { id: "night", label: "Night", from: 0, to: 6 }];
   const activePeriod = periods.find((p) => p.id === period) ?? periods[0];
@@ -52,18 +58,20 @@ export function SlotPicker() {
     const start = new Date(s.starts_at);
     return (!date || start.toDateString() === date) && start.getHours() >= activePeriod.from && start.getHours() < activePeriod.to;
   });
-  const selectedSlot = visible.find((s) => s.id === selected);
+  const selectedSlot = now ? openNow : visible.find((s) => s.id === selected);
   function resetFilters() { setDate(null); setPeriod("all"); setSelected(null); }
+  function pick(id: string) { setNow(false); setSelected(id); }
   async function book() {
-    if (!selected || !interviewDetailsReady(details)) return;
+    if (!selectedSlot || !interviewDetailsReady(details)) return;
     setBusy(true);
     // Generated RPC argument types omit SQL nullability; practice deliberately uses null fields.
-    const { error } = await supabase.rpc("book_interview_with_details", { _slot_id: selected, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
+    const { data: bookingId, error } = await supabase.rpc("book_interview_with_details", { _slot_id: selectedSlot.id, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
     setBusy(false);
     if (error) return toast.error(error.message);
+    await qc.invalidateQueries({ queryKey: ["bookings"] });
+    if (now && bookingId) { navigate({ to: "/interview/check", search: { booking: bookingId as string } }); return; }
     toast.success("Interview booked. Your appointment is on the dashboard.");
     setSelected(null);
-    await qc.invalidateQueries({ queryKey: ["bookings"] });
   }
   return <section className="insight-panel min-w-0 border-y">
     <div className="flex items-start justify-between gap-3"><div><h2 className="text-xl font-bold">Available times</h2><p className="mt-1 text-xs text-muted-foreground">{Intl.DateTimeFormat().resolvedOptions().timeZone} · One credit per interview</p></div><Button size="sm" variant="ghost" disabled={!date && period === "all"} onClick={resetFilters}>Reset</Button></div>
