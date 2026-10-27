@@ -32,3 +32,12 @@ describe("interview time split", () => {
     expect(sectionMinutes(20)).toEqual({ resume: 4, college: 10, case: 6 });
   });
 });
+
+import { resumeCreditsLeft } from "@/lib/resume-analysis";
+describe("resume credit", () => {
+  it("each student has exactly one credit; failed attempts don't use it", () => {
+    expect(resumeCreditsLeft([])).toBe(1);
+    expect(resumeCreditsLeft([{ status: "failed" }])).toBe(1);
+    expect(resumeCreditsLeft([{ status: "completed" }])).toBe(0);
+  });
+});

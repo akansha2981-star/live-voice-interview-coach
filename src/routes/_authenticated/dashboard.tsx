@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { resumeAnalysesQuery } from "./resume-builder";
+import { resumeCreditsLeft } from "@/lib/resume-analysis";
 import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -37,10 +40,17 @@ function Dashboard() {
         </div>
       </div>
     </section>
+    <ResumeCreditCard />
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{[{ label: "COMPLETED INTERVIEWS", value: interviews.filter((i) => i.status === "completed").length, note: "Reports ready" }, { label: "UPCOMING INTERVIEWS", value: upcoming, note: "Booked appointments" }, { label: "AVAILABLE CREDITS", value: me.credits, note: `${upcoming} reserved for bookings` }, { label: "AVERAGE SCORE", value: avg, note: scored.length ? "Across scored interviews" : "No scored interviews yet" }].map((s, i) => <div key={s.label} style={{ "--i": i } as React.CSSProperties} className="animate-reveal card-lift section-card p-5"><p className="text-xs font-semibold text-muted-foreground">{s.label}</p><p className="mt-2 text-3xl font-bold text-primary"><AnimatedNumber value={s.value} /></p><p className="mt-1 text-xs text-muted-foreground">{s.note}</p></div>)}</div>
     <DashboardInsights />
     <BookedInterviews />
     <section className="animate-reveal section-card grid gap-8 p-5 lg:grid-cols-[1fr_2fr]"><div><h2 className="text-xl font-bold">Performance summary</h2><div className="mt-5 flex items-center gap-6"><div className="text-primary"><ScoreRing value={avg} size={110} label="Average" tone="primary" /></div><div className="grid gap-3 text-sm"><p>Best score <strong className="ml-3">{scored.length ? Math.max(...scored.map((i) => i.overall_score ?? 0)) : "—"}</strong></p><p>Scored interviews <strong className="ml-3">{scored.length}</strong></p></div></div><div className="mt-6 flex justify-between text-xs text-muted-foreground"><span>Profile completion</span><span>{profileCompletion(me.profile)}%</span></div><GrowBar value={profileCompletion(me.profile)} tone="bg-primary" className="mt-2" /><Button asChild variant="ghost" size="sm" className="mt-2"><Link to="/profile">Update profile</Link></Button></div><div><h2 className="text-xl font-bold">Score progression</h2><div className="mt-4 h-52">{trend.length ? <ResponsiveContainer><AreaChart data={trend}><CartesianGrid stroke="var(--border)" vertical={false} /><XAxis dataKey="attempt" stroke="var(--muted-foreground)" fontSize={12} /><YAxis domain={[0,100]} stroke="var(--muted-foreground)" fontSize={12} width={30} /><Tooltip /><Area dataKey="score" type="monotone" stroke="var(--primary)" fill="var(--secondary)" strokeWidth={2} /></AreaChart></ResponsiveContainer> : <div className="grid h-full place-items-center text-sm text-muted-foreground">No performance data yet.</div>}</div></div></section>
     <InterviewHistory interviews={interviews} />
   </div>;
+}
+
+function ResumeCreditCard() {
+  const { data = [] } = useQuery(resumeAnalysesQuery);
+  const left = resumeCreditsLeft(data);
+  return <Link to="/resume-builder" className="animate-reveal card-lift section-card flex flex-wrap items-center justify-between gap-3 p-5"><div><p className="text-xs font-semibold text-muted-foreground">RESUME BUILDER</p><p className="mt-1 text-lg font-bold text-primary">{left ? "1 Resume Credit Available" : "Resume analysis ready"}</p></div><span className="text-sm font-semibold text-primary">{left ? "Analyse my resume →" : "View report →"}</span></Link>;
 }
