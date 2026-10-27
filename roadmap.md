@@ -14,6 +14,8 @@
 - [ ] Email notifications for ticket replies — not enabled yet
 
 # Dashboard and interview workflow
+- [ ] Move college and actual interview date/time into booking; add strict college duration/question/time-range settings and automatic closing
+- [ ] Upgrade Resume Builder and SOP Review with genuine progressive analysis, document preview and premium results
 - [x] Detailed light interview report: seven tabs, evidence-linked answers and timelines, communication/camera analysis, history/benchmarks, full PDF; real saved report, all tabs, desktop/mobile and eight-page PDF verified; unsupported metrics explicitly unavailable
 - [x] Dashboard brief (10 sections): scores vs average, category tracker, answer review queue, moments, presentation, journey, comparison, priorities; interview = 3 sections × 3 questions
 - [x] Mandatory working camera, visible face and microphone verification before interview — rule tests and signed-in blocked-start check passed; physical devices pending below
