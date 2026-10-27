@@ -34,6 +34,7 @@ import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
 import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminGkRouteImport } from './routes/admin.gk'
 import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
 import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
@@ -45,6 +46,8 @@ import { Route as AdminSopReviewsRouteImport } from './routes/admin.sop-reviews'
 import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminTrainingRouteImport } from './routes/admin.training'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AuthenticatedGkIndexRouteImport } from './routes/_authenticated/gk.index'
+import { Route as AuthenticatedGkSlugRouteImport } from './routes/_authenticated/gk.$slug'
 import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenticated/interview.$id'
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
 import { Route as AuthenticatedPrepSectionRouteImport } from './routes/_authenticated/prep.$section'
@@ -178,6 +181,11 @@ const AdminFinanceRoute = AdminFinanceRouteImport.update({
   path: '/finance',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGkRoute = AdminGkRouteImport.update({
+  id: '/gk',
+  path: '/gk',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminInterviewsRoute = AdminInterviewsRouteImport.update({
   id: '/interviews',
   path: '/interviews',
@@ -232,6 +240,16 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => AdminRoute,
+} as any)
+const AuthenticatedGkIndexRoute = AuthenticatedGkIndexRouteImport.update({
+  id: '/gk/',
+  path: '/gk/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGkSlugRoute = AuthenticatedGkSlugRouteImport.update({
+  id: '/gk/$slug',
+  path: '/gk/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedInterviewIdRoute =
   AuthenticatedInterviewIdRouteImport.update({
@@ -293,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -305,10 +324,12 @@ export interface FileRoutesByFullPath {
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/gk/$slug': typeof AuthenticatedGkSlugRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/gk/': typeof AuthenticatedGkIndexRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -335,6 +356,7 @@ export interface FileRoutesByTo {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -347,10 +369,12 @@ export interface FileRoutesByTo {
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
+  '/gk/$slug': typeof AuthenticatedGkSlugRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/gk': typeof AuthenticatedGkIndexRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -380,6 +404,7 @@ export interface FileRoutesById {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -392,10 +417,12 @@ export interface FileRoutesById {
   '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/gk/$slug': typeof AuthenticatedGkSlugRoute
   '/_authenticated/interview/$id': typeof AuthenticatedInterviewIdRoute
   '/_authenticated/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/_authenticated/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
+  '/_authenticated/gk/': typeof AuthenticatedGkIndexRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -425,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -437,10 +465,12 @@ export interface FileRouteTypes {
     | '/admin/training'
     | '/admin/users'
     | '/admin/'
+    | '/gk/$slug'
     | '/interview/$id'
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/gk/'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
@@ -467,6 +497,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -479,10 +510,12 @@ export interface FileRouteTypes {
     | '/admin/training'
     | '/admin/users'
     | '/admin'
+    | '/gk/$slug'
     | '/interview/$id'
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/gk'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   id:
@@ -511,6 +544,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -523,10 +557,12 @@ export interface FileRouteTypes {
     | '/admin/training'
     | '/admin/users'
     | '/admin/'
+    | '/_authenticated/gk/$slug'
     | '/_authenticated/interview/$id'
     | '/_authenticated/interview/check'
     | '/_authenticated/prep/$section'
     | '/_authenticated/report/$id'
+    | '/_authenticated/gk/'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
@@ -719,6 +755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFinanceRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gk': {
+      id: '/admin/gk'
+      path: '/gk'
+      fullPath: '/admin/gk'
+      preLoaderRoute: typeof AdminGkRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/interviews': {
       id: '/admin/interviews'
       path: '/interviews'
@@ -796,6 +839,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_authenticated/gk/': {
+      id: '/_authenticated/gk/'
+      path: '/gk'
+      fullPath: '/gk/'
+      preLoaderRoute: typeof AuthenticatedGkIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/gk/$slug': {
+      id: '/_authenticated/gk/$slug'
+      path: '/gk/$slug'
+      fullPath: '/gk/$slug'
+      preLoaderRoute: typeof AuthenticatedGkSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/interview/$id': {
       id: '/_authenticated/interview/$id'
       path: '/interview/$id'
@@ -851,10 +908,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSlotsRoute: typeof AuthenticatedSlotsRoute
   AuthenticatedSopReviewRoute: typeof AuthenticatedSopReviewRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedGkSlugRoute: typeof AuthenticatedGkSlugRoute
   AuthenticatedInterviewIdRoute: typeof AuthenticatedInterviewIdRoute
   AuthenticatedInterviewCheckRoute: typeof AuthenticatedInterviewCheckRoute
   AuthenticatedPrepSectionRoute: typeof AuthenticatedPrepSectionRoute
   AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
+  AuthenticatedGkIndexRoute: typeof AuthenticatedGkIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -867,10 +926,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSlotsRoute: AuthenticatedSlotsRoute,
   AuthenticatedSopReviewRoute: AuthenticatedSopReviewRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedGkSlugRoute: AuthenticatedGkSlugRoute,
   AuthenticatedInterviewIdRoute: AuthenticatedInterviewIdRoute,
   AuthenticatedInterviewCheckRoute: AuthenticatedInterviewCheckRoute,
   AuthenticatedPrepSectionRoute: AuthenticatedPrepSectionRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
+  AuthenticatedGkIndexRoute: AuthenticatedGkIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -886,6 +947,7 @@ interface AdminRouteChildren {
   AdminDownloadsRoute: typeof AdminDownloadsRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
+  AdminGkRoute: typeof AdminGkRoute
   AdminInterviewsRoute: typeof AdminInterviewsRoute
   AdminPurchasesRoute: typeof AdminPurchasesRoute
   AdminReportsRoute: typeof AdminReportsRoute
@@ -910,6 +972,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDownloadsRoute: AdminDownloadsRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   AdminFinanceRoute: AdminFinanceRoute,
+  AdminGkRoute: AdminGkRoute,
   AdminInterviewsRoute: AdminInterviewsRoute,
   AdminPurchasesRoute: AdminPurchasesRoute,
   AdminReportsRoute: AdminReportsRoute,
