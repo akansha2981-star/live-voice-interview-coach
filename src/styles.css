@@ -339,6 +339,57 @@ a.career-tile:hover { transform: translateY(-2px); }
 .report-moment { background: var(--muted); padding: 18px; border-left: 2px solid var(--accent); }
 .report-tabs [data-state="active"] { border-bottom: 2px solid var(--primary); color: var(--primary); }
 .report-workspace .recharts-wrapper { max-width: 100%; }
+.interview-room-body { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 10px; padding: 10px; overflow: hidden; }
+.interview-conversation { display: grid; flex: 1; min-height: 0; grid-template-columns: minmax(180px, .85fr) minmax(180px, 1fr) minmax(240px, 1.2fr); gap: 10px; }
+.interview-camera { background: var(--muted); }
+.interview-question { align-self: start; }
+.interview-tracking { flex-shrink: 0; border-radius: 8px; border: 1px solid var(--border); }
+.interview-signal-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); padding-inline: 10px; gap: 4px; }
+.interview-signal { min-width: 0; padding: 7px 8px; background: var(--secondary); border-radius: 4px; }
+.performance-compact { padding: 6px 10px 8px; }
+.advanced-signal-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.performance-compact > div:first-child { height: 28px; }
+.performance-compact > div:first-child button { height: 24px; padding: 2px 8px; font-size: 10px; }
+.compact-mic { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.compact-mic > p { font-size: 10px; }
+.compact-mic > div { flex: 1; height: 6px; margin-top: 0; }
+.compact-coaching { margin-top: 4px; font-size: 10px; line-height: 1.3; }
+.compact-coaching li { display: flex; gap: 8px; }
+.compact-coaching li p { margin-top: 0; }
+.interview-transcript-compact > div:first-child { padding: 8px 10px; }
+.interview-transcript-compact > div:first-child h2 { font-size: 13px; }
+.interview-transcript-compact > div:first-child p { font-size: 10px; }
+.interview-transcript-compact > div:first-child button { height: 26px; font-size: 10px; padding-inline: 8px; }
+.interview-transcript-compact > div:nth-child(2) { padding: 3px 8px; gap: 3px; }
+.interview-transcript-compact > div:nth-child(2) button { height: 24px; font-size: 10px; padding-inline: 8px; }
+.interview-transcript-compact > div:last-child { padding: 10px; }
+.interview-transcript-compact article p { font-size: 12px; line-height: 1.4; }
+@media (max-width: 1050px) {
+  .interview-conversation { grid-template-columns: minmax(140px, .7fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .interview-camera { grid-column: 1; grid-row: 1 / 3; }
+  .interview-question { grid-column: 2; grid-row: 1; }
+  .interview-captions { grid-column: 2; grid-row: 2; }
+  .interview-signal-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .interview-room-body { gap: 5px; padding: 5px; }
+  .interview-conversation { gap: 5px; grid-template-columns: minmax(96px, .48fr) minmax(0, 1fr); }
+  .interview-signal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); padding-inline: 5px; gap: 3px; }
+  .advanced-signal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+  .interview-signal { padding: 4px 5px; }
+  .interview-signal > p:nth-child(2) { font-size: 12px; }
+  .performance-compact { padding: 3px 5px 5px; }
+  .compact-mic > p { display: none; }
+  .interview-question { padding: 6px; }
+  .interview-question > p { font-size: 11px; }
+  .interview-question > p:last-child { margin-top: 4px; font-size: 10px; }
+  .interview-room footer { padding: 6px; }
+  .interview-room footer button { height: 28px; padding-inline: 7px; font-size: 10px; }
+  .interview-transcript-compact > div:first-child { flex-wrap: wrap; gap: 3px; padding: 5px; }
+  .interview-transcript-compact > div:first-child p { display: none; }
+  .interview-transcript-compact > div:nth-child(2) { padding: 2px; }
+  .interview-transcript-compact > div:last-child { padding: 5px; }
+}
 @media (max-width: 639px) {
   .report-section { padding: 20px 16px; }
   .report-tabs [data-slot="tabs-trigger"] { padding-inline: 10px; min-height: 38px; font-size: 12px; }
