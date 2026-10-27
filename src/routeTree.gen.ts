@@ -48,6 +48,7 @@ import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
 import { Route as AuthenticatedPrepSectionRouteImport } from './routes/_authenticated/prep.$section'
 import { Route as AuthenticatedReportIdRouteImport } from './routes/_authenticated/report.$id'
+import { Route as ApiPublicJobsEmailAlertsRouteImport } from './routes/api/public/jobs/email-alerts'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -249,6 +250,12 @@ const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
   path: '/report/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicJobsEmailAlertsRoute =
+  ApiPublicJobsEmailAlertsRouteImport.update({
+    id: '/api/public/jobs/email-alerts',
+    path: '/api/public/jobs/email-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -295,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -335,6 +343,7 @@ export interface FileRoutesByTo {
   '/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -378,6 +387,7 @@ export interface FileRoutesById {
   '/_authenticated/interview/check': typeof AuthenticatedInterviewCheckRoute
   '/_authenticated/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
+  '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -461,6 +472,7 @@ export interface FileRouteTypes {
     | '/interview/check'
     | '/prep/$section'
     | '/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -503,6 +515,7 @@ export interface FileRouteTypes {
     | '/_authenticated/interview/check'
     | '/_authenticated/prep/$section'
     | '/_authenticated/report/$id'
+    | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -513,6 +526,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicJobsEmailAlertsRoute: typeof ApiPublicJobsEmailAlertsRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -791,6 +805,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/jobs/email-alerts': {
+      id: '/api/public/jobs/email-alerts'
+      path: '/api/public/jobs/email-alerts'
+      fullPath: '/api/public/jobs/email-alerts'
+      preLoaderRoute: typeof ApiPublicJobsEmailAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -891,6 +912,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicJobsEmailAlertsRoute: ApiPublicJobsEmailAlertsRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
