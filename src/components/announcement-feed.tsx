@@ -37,7 +37,7 @@ function ago(iso: string) {
 
 export function AnnouncementCard({ p, me, i = 0, canModerate = false, onDelete }: { p: Post; me: string | null; i?: number; canModerate?: boolean; onDelete?: () => void }) {
   const qc = useQueryClient(); const [text, setText] = useState(""); const [open, setOpen] = useState(false); const [busy, setBusy] = useState(false);
-  const liked = !!me && p.likes.includes(me); const link = safeUrl(p.link_url);
+  const liked = p.likedByMe; const link = safeUrl(p.link_url);
   const refresh = () => qc.invalidateQueries({ queryKey: announcementsKey });
   async function toggleLike() {
     if (!me) return;
@@ -58,7 +58,7 @@ export function AnnouncementCard({ p, me, i = 0, canModerate = false, onDelete }
     {p.body && <p className="whitespace-pre-line px-4 pb-3 text-[15px] leading-relaxed">{p.body}</p>}
     {p.image && (link ? <a href={link} target="_blank" rel="noopener noreferrer"><img src={p.image} alt="" className="max-h-[520px] w-full bg-secondary object-contain" loading="lazy" /></a> : <img src={p.image} alt="" className="max-h-[520px] w-full bg-secondary object-contain" loading="lazy" />)}
     {link && <a href={link} target="_blank" rel="noopener noreferrer" className="mx-4 mt-3 block truncate rounded-lg border bg-secondary/60 px-3 py-2 text-sm font-semibold text-primary hover:border-primary/40">Open link · {new URL(link).hostname}</a>}
-    <div className="mx-4 mt-3 flex items-center justify-between border-b pb-2 text-xs text-muted-foreground"><span>{p.likes.length} {p.likes.length === 1 ? "like" : "likes"}</span><button className="hover:text-primary" onClick={() => setOpen((o) => !o)}>{p.comments.length} {p.comments.length === 1 ? "comment" : "comments"}</button></div>
+    <div className="mx-4 mt-3 flex items-center justify-between border-b pb-2 text-xs text-muted-foreground"><span>{p.likeCount} {p.likeCount === 1 ? "like" : "likes"}</span><button className="hover:text-primary" onClick={() => setOpen((o) => !o)}>{p.comments.length} {p.comments.length === 1 ? "comment" : "comments"}</button></div>
     <div className="grid grid-cols-2 gap-1 px-2 py-1">
       <Button variant="ghost" onClick={toggleLike} className={liked ? "font-bold text-primary" : "text-muted-foreground"}>{liked ? "Liked" : "Like"}</Button>
       <Button variant="ghost" onClick={() => setOpen((o) => !o)} className="text-muted-foreground">Comment</Button>
