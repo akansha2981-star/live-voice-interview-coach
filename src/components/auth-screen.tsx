@@ -65,10 +65,12 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: safeRedirect(redirect), replace: true });
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: safeRedirect(redirect), replace: true });
+      else setChecking(false);
     });
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) navigate({ to: safeRedirect(redirect), replace: true });
@@ -110,6 +112,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
     if (result.error) toast.error(result.error.message ?? "Sign-in failed");
   }
 
+  if (checking) return <div className="auth-shell min-h-dvh" aria-busy="true" />;
   return (
     <div className="auth-shell auth-layout min-h-dvh">
       <div className="grid min-h-dvh lg:grid-cols-2">
