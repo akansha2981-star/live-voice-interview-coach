@@ -451,6 +451,6 @@ a:hover .career-arrow { transform: translateX(5px); }
   .student-page-heading h1 { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .animate-reveal, .animate-slide-in, .kpi-meter span, .readiness-you-dot { animation: none; }
+  .animate-reveal, .animate-slide-in, .kpi-meter span, .readiness-you-dot, .readiness-mark, .readiness-track::after { animation: none; }
   .readiness-mark { transition: none; }
 }
