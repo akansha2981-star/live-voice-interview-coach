@@ -34,7 +34,7 @@ export async function authorizeInterviewSession(token: unknown, interviewID: unk
     const { data: docs } = await supabaseAdmin.from("college_training_docs").select("kind, knowledge").eq("college_id", booking.college_id).in("kind", ["training", "case"]).eq("status", "saved").order("created_at", { ascending: false }).limit(40);
     Object.assign(ctx, digestKnowledge((docs ?? []) as never));
   }
-  return { instructions: buildInterviewerInstructions(p, ctx), opening: buildOpening(p) };
+  return { instructions: buildInterviewerInstructions(p, ctx), opening: buildOpening(p), userId: userID, interviewId: interviewID };
 }
 
 type K = { summary: string; difficulty: string; expectations: string[]; patterns: string[]; questions: { question: string; topic: string; difficulty: string }[]; cases: { title: string; scenario: string; key_asks: string }[] };

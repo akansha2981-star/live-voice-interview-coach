@@ -1,6 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { NoObjectGeneratedError, Output, streamText, type ModelMessage } from "ai";
 import type { z } from "zod";
+import { recordUsage, type Attribution } from "./finance.server";
 
 const GATEWAY = "https://ai.gateway.lovable.dev/v1";
 export const CHAT_MODEL = "openai/gpt-6-astra";
@@ -11,9 +12,13 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   system: string;
   messages: ModelMessage[];
   effort?: "low" | "medium" | "high";
+  attribution: Attribution;
 }): Promise<z.infer<T>> {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("AI is not configured for this app.");
+  const eventKey = `structured:${crypto.randomUUID()}`;
+  const occurredAt = new Date().toISOString();
+  await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:"started", finalized:false});
   const provider = createOpenAI({
     baseURL: GATEWAY,
     apiKey: key,
@@ -39,6 +44,8 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   for await (const part of result.fullStream) {
     if (part.type === "error") streamError = part.error;
   }
+  const usage = await result.totalUsage.catch(() => undefined);
+  await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:streamError?"failed":"completed", finalized:true, inputTokens:usage?.inputTokens, outputTokens:usage?.outputTokens, cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens, reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
   if (streamError) {
     const status = (streamError as { statusCode?: number }).statusCode;
     if (status === 402) throw new Error("AI credits are used up. Please top up in Settings → Plans & credits.");

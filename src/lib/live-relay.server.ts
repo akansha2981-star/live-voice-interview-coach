@@ -2,6 +2,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { stepCountIs, streamText, type ModelMessage } from "ai";
 import process from "node:process";
 import { authorizeInterviewSession } from "./interview-session.server";
+import { recordUsage, type Attribution } from "./finance.server";
 
 export type LiveConfig = {
   baseURL: string;
@@ -41,6 +42,7 @@ type Transcript = {
 };
 type ProviderEvent = {
   type: string;
+  usage?: { seconds?: number };
   client_event_id?: string;
   error?: { client_event_id?: string; message?: string };
   session?: { id: string };
@@ -128,8 +130,12 @@ async function answerQuestion(
   correlation: { runID: string; sessionID: string | undefined; delegationID: string },
   signal: AbortSignal,
   consumeInput: () => void,
+  attribution: Attribution,
 ) {
   signal.throwIfAborted();
+  const eventKey = `delegation:${correlation.sessionID ?? correlation.runID}:${correlation.delegationID}:${crypto.randomUUID()}`;
+  const occurredAt = new Date().toISOString();
+  await recordUsage({eventKey,occurredAt,model:config.backendModel,attribution,status:"started",finalized:false});
   const provider = createOpenAI({
     baseURL: gatewayAPIBase(config.baseURL),
     apiKey: config.key,
@@ -196,6 +202,8 @@ async function answerQuestion(
     if (part.type === "error" || part.type === "abort") failed = true;
     if (part.type === "finish") completed = part.finishReason === "stop";
   }
+  const usage = await result.totalUsage.catch(() => undefined);
+  await recordUsage({eventKey,occurredAt,model:config.backendModel,attribution,status:failed || !completed?"failed":"completed",finalized:true,inputTokens:usage?.inputTokens,outputTokens:usage?.outputTokens,cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens,reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
   signal.throwIfAborted();
   if (failed || !completed) throw new Error("The backend response did not complete");
   const answer = await result.text;
@@ -239,6 +247,14 @@ export function bindLiveConnection(
   const setupAbort = new AbortController();
   let gateway: LiveSocket | undefined;
   let sessionID: string | undefined;
+  let financeAttribution: Attribution | undefined;
+  let financeStartedAt = new Date().toISOString();
+  let financeSeconds: number | undefined;
+  let financeFinalized = false;
+  function persistVoice(finalized: boolean) {
+    if (!financeAttribution || !sessionID) return;
+    execution.waitUntil(recordUsage({eventKey:`live:${sessionID}`,occurredAt:financeStartedAt,model:config.liveModel,attribution:{...financeAttribution,service:"live_voice"},status:finalized?"completed":"unconfirmed",finalized,seconds:financeSeconds}));
+  }
   let starting = false;
   let closing = false;
   let finished = false;
@@ -324,6 +340,7 @@ export function bindLiveConnection(
 
   function finish() {
     if (finished) return;
+    if (!financeFinalized) persistVoice(false);
     finished = closing = true;
     clearTimeout(startTimer);
     clearTimeout(startupTimer);
@@ -392,7 +409,7 @@ export function bindLiveConnection(
     const pending = pendingDelegations[0];
     const event = pending?.event;
     const id = event?.delegation?.id;
-    if (!pending || !event || !id || closing || task) return;
+    if (!pending || !event || !id || closing || task || !financeAttribution) return;
     if (!transcripts.some(({ role, text }) => role === "user" && text.trim())) return;
     const controller = new AbortController();
     task = controller;
@@ -410,6 +427,7 @@ export function bindLiveConnection(
           transcriptCursor = transcripts.length;
           taskRevision = revision;
         },
+        {...financeAttribution,service:"delegated_question"},
       );
       if (closing || controller.signal.aborted) return;
       if (taskRevision !== revision) return;
@@ -440,6 +458,10 @@ export function bindLiveConnection(
       if (typeof data !== "string" || data.length > 1024 * 1024) throw new Error("Invalid voice event");
       const event: ProviderEvent = JSON.parse(data);
       if (browser.readyState === 1) browser.send(data);
+      if ((event.type === "session.usage.updated" || event.type === "session.closed") && typeof event.usage?.seconds === "number" && Number.isFinite(event.usage.seconds) && event.usage.seconds >= 0) {
+        financeSeconds = event.usage.seconds;
+        if (event.type === "session.closed") { financeFinalized = true; persistVoice(true); }
+      }
       if (event.type === "session.closed") return finish();
       if (event.type === "gateway.session.closing" || event.type === "gateway.error" || event.type === "app.error") {
         return stop();
@@ -447,6 +469,7 @@ export function bindLiveConnection(
       if (closing) return;
       if (event.type === "gateway.session.created") {
         sessionID = event.session?.id;
+        persistVoice(false);
         clearTimeout(startupTimer);
         requestGreeting();
       }
@@ -529,6 +552,8 @@ export function bindLiveConnection(
       stop();
     }, 40_000);
     const session = await authorizeInterviewSession(token, interviewID);
+    financeAttribution = {product:"interview", userId:session.userId, transactionId:session.interviewId, service:"live_voice"};
+    financeStartedAt = new Date().toISOString();
     config.openingInstructions = session.opening;
     if (closing || browser.readyState !== 1) return;
     const accepted = await connect(

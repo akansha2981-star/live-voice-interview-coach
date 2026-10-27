@@ -48,7 +48,7 @@ export const submitSop = createServerFn({ method: "POST" })
         else return await fail("Unsupported file type. Upload a PDF, Word document, text file or image.");
       }
       const { generateStructured } = await import("./ai.server");
-      const report = await generateStructured({ schema: sopReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }] });
+      const report = await generateStructured({ attribution: {product:"sop",userId:context.userId,transactionId:row.id,service:"review"}, schema: sopReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }] });
       if (!report.is_sop) return await fail(report.invalid_reason || "This file does not look like an SOP. Please upload your Statement of Purpose.");
       await supabaseAdmin.from("sop_reviews").update({ status: "completed", report, overall_score: report.overall_score, completed_at: new Date().toISOString() }).eq("id", row.id);
       return { ok: true as const, error: null };
