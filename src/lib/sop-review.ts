@@ -23,6 +23,7 @@ export const sopReportSchema = z.object({
   clarify_points: z.array(z.string()),
   strengthen_points: z.array(z.string()),
   college_fit_notes: z.string(),
+  improved_sop: z.object({ title: z.string(), paragraphs: z.array(z.string()), changes: z.array(z.string()) }),
 });
 export type SopReport = z.infer<typeof sopReportSchema>;
 
