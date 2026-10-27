@@ -148,6 +148,13 @@
       "when": 1793096081654,
       "tag": "0020_tighten_settings_and_likes_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793097889223,
+      "tag": "0021_scope_announcement_feed_reads",
+      "breakpoints": true
     }
   ]
 }
