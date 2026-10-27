@@ -6,6 +6,7 @@
 - [ ] Email notifications for ticket replies — not enabled yet
 
 # Dashboard and interview workflow
+- [x] Detailed light interview report: seven tabs, evidence-linked answers and timelines, communication/camera analysis, history/benchmarks, full PDF; real saved report, all tabs, desktop/mobile and eight-page PDF verified; unsupported metrics explicitly unavailable
 - [x] Dashboard brief (10 sections): scores vs average, category tracker, answer review queue, moments, presentation, journey, comparison, priorities; interview = 3 sections × 3 questions
 - [x] Mandatory working camera, visible face and microphone verification before interview — rule tests and signed-in blocked-start check passed; physical devices pending below
 - [ ] Real Buy More Slots payments with automatic credit fulfilment — user deferred payment setup; price ₹100/interview confirmed
