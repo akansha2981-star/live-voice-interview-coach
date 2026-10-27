@@ -35,3 +35,4 @@
 - Private files (resources PDFs, support attachments, resumes) are served only via short-lived signed URLs; resource PDF downloads go through the authenticated `downloadResource` server function so every download is logged.
 - Prep material sections reuse `resources` with `category` values from `src/lib/prep.ts`; announcements are staff-only posts with student likes/comments, comment author names stamped by a DB trigger so they can't be spoofed.
 - SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.
+- Student email alerts are sent only by the minutely scheduled job in `src/lib/notifications.server.ts`, which claims a per-record sent-at column before sending, so each alert goes out once and features never send email inline; wording comes from the staff-edited `email_templates` table.
