@@ -92,8 +92,8 @@ function ResumeBuilder() {
       </>}
     </section>}
 
-    {(running || processing || done) && <DocumentAnalysisWorkspace kind="resume" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? done?.file_name} progress={(processing?.analysis_progress ?? done?.analysis_progress ?? (done ? {phase:"complete",sections:done.report,updatedAt:done.completed_at} : null)) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text ?? done?.extracted_text} complete={Boolean(done)} />}
-    {done && <Results report={done.report as unknown as Omit<ResumeReport, "improved_resume">} improved={done.improved_resume as unknown as Improved} fileName={done.file_name} />}
+    {(running || processing) && <DocumentAnalysisWorkspace kind="resume" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? null) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text} />}
+    {done && !running && <Results report={done.report as unknown as Omit<ResumeReport, "improved_resume">} improved={done.improved_resume as unknown as Improved} fileName={done.file_name} evidence={<DocumentAnalysisWorkspace kind="resume" previewUrl={previewUrl} fileName={done.file_name} progress={(done.analysis_progress ?? { phase: "complete", sections: done.report, updatedAt: done.completed_at }) as unknown as ReviewProgress} sourceText={done.extracted_text} complete />} />}
   </div>;
 }
 

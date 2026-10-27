@@ -86,7 +86,7 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
         {!complete && <ol className="grid gap-1" aria-live="polite">{stages.map((stage, i) => {
           const active = i === activeStage;
           return <li key={stage.label} className={`flex items-center gap-3 rounded-md px-3 py-2 transition-colors ${active ? "bg-secondary" : ""}`}>
-            <span className={`relative grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold transition-all ${stage.done ? "bg-success text-success-foreground" : active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+            <span className={`relative grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold transition-all ${stage.done ? "bg-success text-primary-foreground" : active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               {stage.done ? "✓" : i + 1}{active && <span className="absolute inset-0 rounded-full ring-2 ring-primary/40 motion-safe:animate-ping" />}
             </span>
             <span className="min-w-0 flex-1"><span className={`block text-sm font-semibold ${stage.done || active ? "" : "text-muted-foreground"}`}>{stage.label}</span>{active && <span className="block truncate text-xs text-muted-foreground">{stage.detail}</span>}</span>
