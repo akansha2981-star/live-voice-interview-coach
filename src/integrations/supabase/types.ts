@@ -732,6 +732,54 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_analyses: {
+        Row: {
+          ats_score: number | null
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          extracted_text: string | null
+          file_name: string
+          file_path: string
+          id: string
+          improved_resume: Json | null
+          mime_type: string | null
+          report: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ats_score?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          extracted_text?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          improved_resume?: Json | null
+          mime_type?: string | null
+          report?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ats_score?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          extracted_text?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          improved_resume?: Json | null
+          mime_type?: string | null
+          report?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           assigned_to: string | null

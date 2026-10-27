@@ -92,6 +92,13 @@
       "when": 1793072977694,
       "tag": "0012_college_training_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793073326416,
+      "tag": "0013_resume_analyses",
+      "breakpoints": true
     }
   ]
 }
