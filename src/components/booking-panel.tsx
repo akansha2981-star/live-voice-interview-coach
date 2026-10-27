@@ -19,9 +19,9 @@ export function BookedInterviews() {
     if (error) return toast.error(error.message);
     await qc.invalidateQueries({ queryKey: ["bookings"] });
   }
-  return <section className="border-y border-border bg-card px-5 py-6">
+  return <section className="insight-panel animate-reveal border-y">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">Booked interviews</h2><Button asChild variant="outline"><Link to="/slots">Book a slot</Link></Button></div>
-    {!bookings.length && <p className="py-8 text-center text-sm text-muted-foreground">No booked interviews yet.</p>}
+    {!bookings.length && <div className="my-5 border-l-2 border-primary bg-secondary/50 px-5 py-6"><p className="font-semibold">Your next interview awaits</p><p className="mt-1 text-sm text-muted-foreground">No booked interviews yet.</p></div>}
     <div className="divide-y">{bookings.map((b) => {
       const s = b.interview_slots;
       if (!s) return null;
@@ -61,7 +61,7 @@ export function SlotPicker() {
     setSelected(null);
     await qc.invalidateQueries({ queryKey: ["bookings"] });
   }
-  return <section className="min-w-0 border-y bg-card p-4 sm:p-5">
+  return <section className="insight-panel min-w-0 border-y">
     <div className="flex items-start justify-between gap-3"><div><h2 className="text-xl font-bold">Available times</h2><p className="mt-1 text-xs text-muted-foreground">{Intl.DateTimeFormat().resolvedOptions().timeZone} · One credit per interview</p></div><Button size="sm" variant="ghost" disabled={!date && period === "all"} onClick={resetFilters}>Reset</Button></div>
     <div role="group" aria-label="Filter by date" className="mt-4 flex gap-2 overflow-x-auto pb-2">
       <Button size="sm" variant={date === null ? "default" : "outline"} aria-pressed={date === null} className="shrink-0" onClick={() => { setDate(null); setSelected(null); }}>All dates</Button>

@@ -6,6 +6,7 @@ export function AnimatedNumber({ value, duration = 1400, suffix = "", prefix = "
   const from = useRef(0);
   const el = useRef<HTMLSpanElement>(null);
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(value); from.current = value; return; }
     let raf = 0; let timer = 0;
     const run = () => {
       const start = performance.now();

@@ -1,3 +1,4 @@
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -76,10 +77,7 @@ function ResumeBuilder() {
   }
 
   return <div className="grid gap-6">
-    <section className="animate-reveal section-card flex flex-wrap items-end justify-between gap-4 p-6">
-      <div><p className="text-xs font-semibold uppercase tracking-wider text-primary">Career tools</p><h1 className="mt-1 text-3xl font-bold">Resume Builder</h1><p className="mt-1 text-sm text-muted-foreground">AI resume analysis, ATS score, SWOT, line-by-line rewrites and an ATS-friendly resume.</p></div>
-      <div className="rounded-lg border bg-secondary px-5 py-3 text-center"><p className="text-2xl font-bold text-primary">{credits}</p><p className="text-xs font-semibold text-muted-foreground">{credits ? "Resume Credit Available" : "Resume credit used"}</p></div>
-    </section>
+    <StudentPageHeading eyebrow="Career tools" title="Resume Builder" description="A clearer resume. A stronger first impression."><div className="border-l-2 border-success pl-4"><p className="text-3xl font-bold text-primary">{credits}</p><p className="text-xs text-muted-foreground">{credits ? "Resume credit available" : "Resume credit used"}</p></div></StudentPageHeading>
 
     {!done && <section className="section-card p-6">
       {running || processing ? <AnalysisProgress stage={stage} waiting={!running} /> : <>

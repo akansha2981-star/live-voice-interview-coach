@@ -1,3 +1,4 @@
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -38,7 +39,7 @@ function SupportPage() {
   async function reopen(id: string) { const { error } = await supabase.rpc("reopen_ticket", { _ticket_id: id }); if (error) return toast.error(error.message); qc.invalidateQueries({ queryKey: ["tickets"] }); }
   const ticket = tickets.find((t) => t.id === open);
   return <div className="grid gap-6">
-    <section className="animate-reveal section-card p-6"><p className="text-xs font-semibold uppercase tracking-wider text-primary">Help & Support</p><h1 className="mt-1 text-3xl font-bold">How can we help?</h1><p className="mt-1 text-sm text-muted-foreground">Raise a ticket and our team will reply here.</p></section>
+    <StudentPageHeading eyebrow="We're here for you" title="How can we help?" description="Keep your preparation on track. Contact the MBA Compass team and follow your replies here." />
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
       <section className="animate-reveal section-card grid content-start gap-3 p-5">
         <h2 className="text-lg font-bold">New ticket</h2>
