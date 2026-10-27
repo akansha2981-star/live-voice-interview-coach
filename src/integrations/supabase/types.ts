@@ -167,6 +167,59 @@ export type Database = {
         }
         Relationships: []
       }
+      college_training_docs: {
+        Row: {
+          college_id: string
+          created_at: string
+          created_by: string | null
+          error: string | null
+          file_path: string
+          id: string
+          kind: string
+          knowledge: Json | null
+          mime_type: string | null
+          processed_at: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          file_path: string
+          id?: string
+          kind?: string
+          knowledge?: Json | null
+          mime_type?: string | null
+          processed_at?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          file_path?: string
+          id?: string
+          kind?: string
+          knowledge?: Json | null
+          mime_type?: string | null
+          processed_at?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_training_docs_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           active: boolean
@@ -388,6 +441,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      interview_settings: {
+        Row: {
+          duration_minutes: number
+          id: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          duration_minutes?: number
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          duration_minutes?: number
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       interview_slots: {
         Row: {

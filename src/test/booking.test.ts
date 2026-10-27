@@ -25,3 +25,10 @@ describe("interview details", () => {
     expect(interviewDetailsReady({ practiceOnly: false, collegeId: "c", actualInterviewAt: "2026-11-02T10:00", callLetterPath: "u/x.pdf" })).toBe(true);
   });
 });
+
+import { sectionMinutes } from "@/lib/interview-structure";
+describe("interview time split", () => {
+  it("splits 20 minutes as 20/50/30", () => {
+    expect(sectionMinutes(20)).toEqual({ resume: 4, college: 10, case: 6 });
+  });
+});

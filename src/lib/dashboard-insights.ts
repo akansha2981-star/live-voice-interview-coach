@@ -5,8 +5,8 @@ import { countFillers } from "./interview-prompt";
 
 export const SECTIONS = [
   { key: "resume", label: "Resume-based" },
-  { key: "practical", label: "Practical" },
-  { key: "general_knowledge", label: "General knowledge" },
+  { key: "practical", label: "Case-based" },
+  { key: "general_knowledge", label: "College intelligence" },
 ] as const;
 export type SectionKey = (typeof SECTIONS)[number]["key"];
 
