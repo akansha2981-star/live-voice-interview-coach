@@ -183,6 +183,13 @@
       "when": 1793128949691,
       "tag": "0025_benchmark_no_min_sample",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793129615049,
+      "tag": "0026_dashboard_speed_indexes",
+      "breakpoints": true
     }
   ]
 }
