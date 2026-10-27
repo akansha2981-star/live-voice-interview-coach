@@ -34,6 +34,7 @@ import { Route as AdminDocumentsRouteImport } from './routes/admin.documents'
 import { Route as AdminDownloadsRouteImport } from './routes/admin.downloads'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminGkRouteImport } from './routes/admin.gk'
 import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
 import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
@@ -180,6 +181,11 @@ const AdminFinanceRoute = AdminFinanceRouteImport.update({
   path: '/finance',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGkRoute = AdminGkRouteImport.update({
+  id: '/gk',
+  path: '/gk',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminInterviewsRoute = AdminInterviewsRouteImport.update({
   id: '/interviews',
   path: '/interviews',
@@ -305,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -349,6 +356,7 @@ export interface FileRoutesByTo {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -396,6 +404,7 @@ export interface FileRoutesById {
   '/admin/downloads': typeof AdminDownloadsRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/finance': typeof AdminFinanceRoute
+  '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -443,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -487,6 +497,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -533,6 +544,7 @@ export interface FileRouteTypes {
     | '/admin/downloads'
     | '/admin/emails'
     | '/admin/finance'
+    | '/admin/gk'
     | '/admin/interviews'
     | '/admin/purchases'
     | '/admin/reports'
@@ -743,6 +755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFinanceRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gk': {
+      id: '/admin/gk'
+      path: '/gk'
+      fullPath: '/admin/gk'
+      preLoaderRoute: typeof AdminGkRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/interviews': {
       id: '/admin/interviews'
       path: '/interviews'
@@ -928,6 +947,7 @@ interface AdminRouteChildren {
   AdminDownloadsRoute: typeof AdminDownloadsRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminFinanceRoute: typeof AdminFinanceRoute
+  AdminGkRoute: typeof AdminGkRoute
   AdminInterviewsRoute: typeof AdminInterviewsRoute
   AdminPurchasesRoute: typeof AdminPurchasesRoute
   AdminReportsRoute: typeof AdminReportsRoute
@@ -952,6 +972,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDownloadsRoute: AdminDownloadsRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   AdminFinanceRoute: AdminFinanceRoute,
+  AdminGkRoute: AdminGkRoute,
   AdminInterviewsRoute: AdminInterviewsRoute,
   AdminPurchasesRoute: AdminPurchasesRoute,
   AdminReportsRoute: AdminReportsRoute,
