@@ -126,15 +126,13 @@ function Report({ report, college, samples, evidence }: { report: SopReport; col
   function printPdf() { if (!sop) return; const w = window.open("", "_blank"); if (!w) return toast.error("Allow pop-ups to save as PDF."); w.document.write(sopHtml(sop)); w.document.close(); w.focus(); w.print(); }
   return <div className="grid gap-6 animate-reveal">
     <section className="section-card overflow-hidden p-0">
-      <div className="bg-gradient-panel grid gap-6 p-6 md:grid-cols-[auto_1fr_auto] md:items-center">
-        <div className="text-primary"><ScoreRing value={report.overall_score} size={120} label="SOP score" tone="primary" /></div>
-        <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Detailed SOP report · {college}</p><h2 className="mt-1 text-2xl font-bold">{band(report.overall_score)} statement</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{report.summary}</p></div>
-        <dl className="grid grid-cols-3 gap-3 text-center md:grid-cols-1 md:text-right">
-          <div><dt className="text-xs text-muted-foreground">Words</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.word_count} /></dd></div>
-          <div><dt className="text-xs text-muted-foreground">Lines reviewed</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.line_feedback.length} /></dd></div>
-          <div><dt className="text-xs text-muted-foreground">College fit</dt><dd className="text-2xl font-bold text-primary"><AnimatedNumber value={report.categories.college_fit.score} /></dd></div>
-        </dl>
+      <div className="bg-gradient-panel flex flex-col gap-6 p-6 md:flex-row md:items-center md:p-8">
+        <div className="shrink-0 text-primary"><ScoreRing value={report.overall_score} size={128} label="SOP score" tone="primary" /></div>
+        <div className="min-w-0 flex-1"><p className="student-eyebrow">Detailed SOP report · {college}</p><h2 className="mt-2 text-2xl font-bold md:text-3xl">{band(report.overall_score)} statement</h2><p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{report.summary}</p></div>
       </div>
+      <dl className="grid grid-cols-3 gap-px border-t bg-border">
+        {([["Words", report.word_count], ["Lines reviewed", report.line_feedback.length], ["College fit", report.categories.college_fit.score]] as const).map(([l, v]) => <div key={l} className="bg-card px-5 py-4"><dt className="text-xs font-semibold uppercase text-muted-foreground">{l}</dt><dd className="mt-1 text-2xl font-bold text-primary"><AnimatedNumber value={v} /></dd></div>)}
+      </dl>
       <div className="grid gap-px border-t bg-border sm:grid-cols-2"><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-success">Strongest areas</span><p className="mt-1 font-semibold">{sorted.slice(0, 3).map((c) => SOP_CATEGORY_LABELS[c.k]).join(" · ")}</p></div><div className="bg-card p-4 text-sm"><span className="text-xs font-semibold uppercase text-destructive">Fix first</span><p className="mt-1 font-semibold">{sorted.slice(-3).reverse().map((c) => SOP_CATEGORY_LABELS[c.k]).join(" · ")}</p></div></div>
     </section>
     <Tabs defaultValue="report">

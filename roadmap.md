@@ -44,3 +44,6 @@
 - [x] My Prep Material: Sample SOPs, GDPI Dockets, Domain Dossiers, Masterclasses & Workshops, GK Hub (admin managed)
 - [x] Important Announcements feed (admin posts text/image/link; students like and comment)
 - [ ] Admin posting end-to-end check — needs an admin sign-in in the preview
+
+- [ ] Redesign Resume Builder + SOP report layout (squashed text column)
+- [ ] Dashboard Overview: remove blank space, clearer sections
