@@ -7,7 +7,7 @@ import { InterviewTranscript } from "@/components/interview-transcript";
 import type { TranscriptTurn } from "@/lib/interview-metrics";
 import { bookingQuery, interviewQuery } from "@/lib/queries";
 import { BookedInterviews } from "@/components/booking-panel";
-import { slotPhase } from "@/lib/booking";
+import { bookingPhase } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/my-slots")({ staticData: { sitemap: false },
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/my-slots")({ staticData: {
 
 function MySlots() {
   const { data } = useSuspenseQuery(bookingQuery);
-  const past = data.bookings.filter((b) => b.status !== "booked" || (b.interview_slots && slotPhase(b.interview_slots.starts_at, b.interview_slots.ends_at, Date.now()) === "expired"));
+  const past = data.bookings.filter((b) => b.status !== "booked" || bookingPhase(b, Date.now()) === "expired");
   const [open, setOpen] = useState<string | null>(null);
   const { data: detail, isLoading } = useQuery({ ...interviewQuery(open ?? ""), enabled: open !== null });
   const label: Record<string, string> = { booked: "Missed", no_show: "Missed", started: "Completed", completed: "Completed", cancelled: "Cancelled" };
