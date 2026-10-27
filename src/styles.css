@@ -304,10 +304,54 @@
 .stat-sky .stat-dot { background: var(--sky); }
 .stat-success .stat-dot { background: var(--success); }
 .stat-accent .stat-dot { background: var(--accent); }
-.career-tile { display: block; min-width: 0; border-top: 2px solid var(--primary); background: var(--card); padding: 20px; transition: background 200ms, transform 200ms; }
-a.career-tile:hover { transform: translateY(-2px); }
-.career-resume { background: var(--student-resume); border-color: var(--success); }
-.career-sop { background: var(--student-sop); border-color: var(--accent); }
+.career-tile { display: block; min-width: 0; border: 1px solid var(--border); border-top: 3px solid var(--primary); border-radius: 10px; background: var(--card); padding: 22px; box-shadow: var(--student-shadow); transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 220ms, border-color 220ms; }
+a.career-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+.career-resume { background: linear-gradient(150deg, var(--student-resume), var(--card) 78%); border-top-color: color-mix(in oklab, var(--success) 65%, var(--border)); }
+.career-sop { background: linear-gradient(150deg, var(--student-sop), var(--card) 78%); border-top-color: color-mix(in oklab, var(--accent) 65%, var(--border)); }
+.career-cta { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; font-size: 14px; font-weight: 700; color: var(--primary); }
+.career-arrow { transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+a:hover .career-arrow { transform: translateX(5px); }
+
+/* Overview: readiness scale, key-number cards, next session */
+.student-content section.section-card.readiness, .student-content section.section-card.chart-card { border-radius: 10px; border-inline-width: 1px; }
+.readiness { position: relative; }
+.readiness-track { height: 14px; border-radius: 999px; background: linear-gradient(90deg, var(--destructive) 0%, color-mix(in oklab, var(--destructive) 45%, var(--warning)) 22%, var(--warning) 45%, color-mix(in oklab, var(--warning) 45%, var(--success)) 66%, var(--success) 100%); box-shadow: inset 0 2px 3px oklch(0.22 0.04 262 / 0.18), inset 0 -1px 0 oklch(1 0 0 / 0.4); }
+.readiness-mark { position: absolute; width: 0; transform: translateX(-50%); transition: left 900ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.readiness-you { top: -46px; height: calc(100% + 46px); }
+.readiness-you-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); white-space: nowrap; border-radius: 7px; padding: 3px 10px; font-size: 12px; font-weight: 700; background: var(--primary); color: var(--primary-foreground); box-shadow: var(--student-shadow); }
+.readiness-you-stem { position: absolute; top: 28px; bottom: 7px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--primary); opacity: 0.5; }
+.readiness-you-dot { position: absolute; top: 53px; left: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border-radius: 999px; background: var(--card); border: 3px solid var(--primary); animation: readiness-pulse 2.6s ease-in-out infinite; }
+@keyframes readiness-pulse { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent); } 50% { box-shadow: 0 0 0 9px color-mix(in oklab, var(--primary) 5%, transparent); } }
+.readiness-peer { top: -5px; height: calc(100% + 10px); }
+.readiness-peer-stem { position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); border-left: 2px dashed color-mix(in oklab, var(--muted-foreground) 55%, transparent); }
+.readiness-peer-label { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 7px; white-space: nowrap; font-size: 11px; font-weight: 600; color: var(--muted-foreground); }
+.band-pill { display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid; padding: 4px 12px; font-size: 12px; font-weight: 700; }
+.band-low { color: var(--destructive); border-color: color-mix(in oklab, var(--destructive) 35%, var(--border)); background: color-mix(in oklab, var(--destructive) 8%, var(--card)); }
+.band-mid { color: color-mix(in oklab, var(--warning) 62%, var(--foreground)); border-color: color-mix(in oklab, var(--warning) 45%, var(--border)); background: color-mix(in oklab, var(--warning) 12%, var(--card)); }
+.band-fair { color: color-mix(in oklab, var(--accent) 62%, var(--foreground)); border-color: color-mix(in oklab, var(--accent) 45%, var(--border)); background: color-mix(in oklab, var(--accent) 12%, var(--card)); }
+.band-good { color: color-mix(in oklab, var(--sky) 62%, var(--foreground)); border-color: color-mix(in oklab, var(--sky) 45%, var(--border)); background: color-mix(in oklab, var(--sky) 12%, var(--card)); }
+.band-high { color: color-mix(in oklab, var(--success) 62%, var(--foreground)); border-color: color-mix(in oklab, var(--success) 45%, var(--border)); background: color-mix(in oklab, var(--success) 12%, var(--card)); }
+.data-chip { border-radius: 999px; border: 1px solid var(--border); background: var(--secondary); padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--muted-foreground); }
+.next-session { position: relative; overflow: hidden; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 10px; background: var(--student-focus); box-shadow: var(--student-shadow); }
+.kpi-card { position: relative; overflow: hidden; min-width: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 16px 18px; box-shadow: var(--student-shadow); transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 220ms, border-color 220ms; }
+.kpi-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--kpi-accent); }
+.kpi-card::after { content: ""; position: absolute; top: -55%; right: -25%; width: 60%; height: 150%; pointer-events: none; background: radial-gradient(circle at center, color-mix(in oklab, var(--kpi-accent) 18%, transparent), transparent 70%); }
+.kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); border-color: color-mix(in oklab, var(--kpi-accent) 32%, var(--border)); }
+.kpi-primary { --kpi-accent: var(--primary); background: var(--student-stat-primary); }
+.kpi-sky { --kpi-accent: var(--sky); background: var(--student-stat-sky); }
+.kpi-success { --kpi-accent: var(--success); background: var(--student-resume); }
+.kpi-accent { --kpi-accent: var(--accent); background: var(--student-sop); }
+.kpi-label { position: relative; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; color: var(--muted-foreground); }
+.kpi-dot { position: relative; width: 9px; height: 9px; border-radius: 999px; background: color-mix(in oklab, var(--kpi-accent) 30%, var(--card)); box-shadow: 0 0 0 3px color-mix(in oklab, var(--kpi-accent) 12%, transparent); }
+.kpi-value { position: relative; margin-top: 10px; font-size: 34px; line-height: 1.05; font-weight: 700; color: var(--foreground); font-variant-numeric: tabular-nums; }
+.kpi-suffix { margin-left: 3px; font-size: 13px; font-weight: 500; color: var(--muted-foreground); }
+.kpi-note { position: relative; margin-top: 6px; font-size: 12px; color: var(--muted-foreground); }
+.kpi-meter { position: relative; margin-top: 12px; height: 5px; overflow: hidden; border-radius: 999px; background: color-mix(in oklab, var(--kpi-accent) 18%, var(--card)); }
+.kpi-meter span { display: block; height: 100%; border-radius: 999px; background: var(--kpi-accent); transform-origin: left center; animation: meter-in 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms + 260ms); }
+.kpi-dots { position: relative; display: flex; gap: 5px; margin-top: 14px; }
+.kpi-dots i { width: 9px; height: 9px; border-radius: 999px; background: color-mix(in oklab, var(--kpi-accent) 18%, var(--card)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--kpi-accent) 30%, transparent); }
+.kpi-dots i.on { background: var(--kpi-accent); box-shadow: none; }
+@keyframes meter-in { from { transform: scaleX(0); } }
 .student-content .section-card { box-shadow: var(--student-shadow); }
 .student-content section.section-card { border-radius: 0; border-inline: 0; padding-block: 26px; }
 .student-content section.section-card > div:first-child h2 { font-size: 20px; }
@@ -403,5 +447,6 @@ a.career-tile:hover { transform: translateY(-2px); }
   .student-page-heading h1 { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .animate-reveal, .animate-slide-in { animation: none; }
+  .animate-reveal, .animate-slide-in, .kpi-meter span, .readiness-you-dot { animation: none; }
+  .readiness-mark { transition: none; }
 }

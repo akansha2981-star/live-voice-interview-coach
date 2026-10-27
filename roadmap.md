@@ -45,5 +45,5 @@
 - [x] Important Announcements feed (admin posts text/image/link; students like and comment)
 - [ ] Admin posting end-to-end check — needs an admin sign-in in the preview
 
-- [ ] Redesign Resume Builder + SOP report layout (squashed text column)
-- [ ] Dashboard Overview: remove blank space, clearer sections
+- [x] Redesign Resume Builder + SOP report layout (squashed text column) — summary rows now span full width; SOP upload redesigned and checked at desktop/mobile
+- [x] Dashboard Overview: remove blank space, clearer sections — readiness scale with moving marker, four key-number cards with meters, gradient score chart, countdown "Up next", career tiles; verified signed-in at 1280, 777 and 390 px with no overflow
