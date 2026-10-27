@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { documentEvidenceSchema } from "./document-progress";
 
 const score = z.object({ score: z.number().int().min(0).max(100), comment: z.string() });
 const issue = z.object({ issue: z.string(), impact: z.string(), fix: z.string(), example: z.string() });
@@ -7,6 +8,7 @@ export const resumeReportSchema = z.object({
   is_resume: z.boolean(),
   invalid_reason: z.string().nullable(),
   candidate_name: z.string().nullable(),
+  document_evidence: documentEvidenceSchema,
   overall_score: z.number().int().min(0).max(100),
   ats_score: z.number().int().min(0).max(100),
   summary: z.string(),

@@ -13,6 +13,7 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
   messages: ModelMessage[];
   effort?: "low" | "medium" | "high";
   attribution: Attribution;
+  onPartial?: (partial: unknown) => Promise<void>;
 }): Promise<z.infer<T>> {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("AI is not configured for this app.");
@@ -41,9 +42,13 @@ export async function generateStructured<T extends z.ZodTypeAny>(opts: {
     },
   });
   let streamError: unknown;
+  const partialWork = opts.onPartial ? (async () => {
+    for await (const partial of result.partialOutputStream) await opts.onPartial?.(partial);
+  })() : Promise.resolve();
   for await (const part of result.fullStream) {
     if (part.type === "error") streamError = part.error;
   }
+  await partialWork;
   const usage = await Promise.resolve(result.totalUsage).catch(() => undefined);
   await recordUsage({eventKey, occurredAt, model:CHAT_MODEL, attribution:opts.attribution, status:streamError?"failed":"completed", finalized:true, inputTokens:usage?.inputTokens, outputTokens:usage?.outputTokens, cachedInputTokens:usage?.inputTokenDetails?.cacheReadTokens, reasoningTokens:usage?.outputTokenDetails?.reasoningTokens});
   if (streamError) {
