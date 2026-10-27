@@ -1,7 +1,7 @@
 import { StudentPageHeading } from "@/components/student-page-heading";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { bookingQuery, meQuery } from "@/lib/queries";
+import { availableSlotsQuery, bookingQuery, meQuery } from "@/lib/queries";
 import { BookedInterviews, SlotPicker } from "@/components/booking-panel";
 import { CourseStore } from "@/components/course-store";
 
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/slots")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ context }) => Promise.all([context.queryClient.ensureQueryData(meQuery), context.queryClient.ensureQueryData(bookingQuery)]),
+  loader: ({ context }) => Promise.all([context.queryClient.ensureQueryData(meQuery), context.queryClient.ensureQueryData(bookingQuery), context.queryClient.ensureQueryData(availableSlotsQuery)]),
   component: Slots,
 });
 
