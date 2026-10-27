@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { interviewQuery } from "@/lib/queries";
 import { generateReport, type InterviewReport } from "@/lib/interview.functions";
 import { INTERVIEW_CATEGORIES } from "@/lib/interview-prompt";
-import { downloadReportPdf, saveBlob } from "@/lib/report-pdf";
+import { downloadReportPdf, saveBlob, type ReportExportContext } from "@/lib/report-pdf";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
 import { InterviewReportWorkspace } from "@/components/interview-report-workspace";
@@ -109,13 +109,13 @@ function ReportPage() {
   const type = INTERVIEW_CATEGORIES[interview.category ?? ""] ?? "Interview";
   const date = new Date(interview.started_at).toLocaleDateString();
   const turns: TranscriptTurn[] = transcript.map((t) => ({ role: t.role === "user" ? "user" : "assistant", text: t.text, start_ms: t.start_ms, end_ms: typeof (t as Partial<TranscriptTurn>).end_ms === "number" ? Number((t as Partial<TranscriptTurn>).end_ms) : t.start_ms }));
-  async function exportPdf() {
+  async function exportPdf(context: ReportExportContext) {
     setPdfBusy(true);
-    try { await downloadReportPdf(report, { name: me?.profile?.full_name ?? "Candidate", date, type, transcript, vision, speech }); }
+    try { await downloadReportPdf(report, { name: me?.profile?.full_name ?? "Candidate", date, type, transcript, vision, speech, ...context }); }
     catch { toast.error("Could not prepare your PDF. Please try again."); }
     finally { setPdfBusy(false); }
   }
-  return <InterviewReportWorkspace report={report} transcript={turns} vision={vision} speech={speech} id={id} name={me?.profile?.full_name ?? "Candidate"} type={type} category={interview.category} date={interview.started_at} duration={interview.duration_s} onPdf={() => void exportPdf()} onTranscript={downloadTranscript} pdfBusy={pdfBusy} />;
+  return <InterviewReportWorkspace report={report} transcript={turns} vision={vision} speech={speech} id={id} name={me?.profile?.full_name ?? "Candidate"} type={type} category={interview.category} date={interview.started_at} duration={interview.duration_s} onPdf={(context) => void exportPdf(context)} onTranscript={downloadTranscript} pdfBusy={pdfBusy} />;
 }
 
 function fmt(s: number) {

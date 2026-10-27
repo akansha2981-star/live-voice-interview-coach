@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
@@ -11,7 +11,7 @@ import { ReportObservations } from "@/components/report-observations";
 import { benchmarkQuery, myReportsQuery } from "@/lib/queries";
 import { SECTIONS, categoryScores, MIN_COMPARISON_SAMPLE, fmtTime } from "@/lib/dashboard-insights";
 import { answerEvidence, PANEL_CRITERIA, reportCommunication, reportMoments } from "@/lib/report-evidence";
-import { SCORE_LABELS } from "@/lib/report-pdf";
+import { SCORE_LABELS, type ReportExportContext } from "@/lib/report-pdf";
 import type { InterviewReport } from "@/lib/interview-report";
 import type { TranscriptTurn } from "@/lib/interview-metrics";
 import type { VisionSummary } from "@/lib/vision";
@@ -36,7 +36,7 @@ function Chart({ data, lines, bar = false }: { data: Array<Record<string, unknow
   return <div><div className="mb-3 flex flex-wrap gap-4 text-xs text-muted-foreground">{lines.map((l) => <span key={l.key}>{l.label}</span>)}</div><div className="h-64 min-w-0"><ResponsiveContainer>{bar ? <BarChart data={data}>{shared}{lines.map((l) => <Bar key={l.key} dataKey={l.key} name={l.label} fill={`var(--${l.token})`} radius={[4,4,0,0]} />)}</BarChart> : <LineChart data={data}>{shared}{lines.map((l) => <Line key={l.key} dataKey={l.key} name={l.label} stroke={`var(--${l.token})`} strokeWidth={2} dot={{r:3}} connectNulls={false} />)}</LineChart>}</ResponsiveContainer></div></div>;
 }
 
-type Props = { report: InterviewReport; transcript: TranscriptTurn[]; vision: VisionSummary | null; speech: Record<string, unknown> | null; id: string; name: string; type: string; category: string | null; date: string; duration: number | null; onPdf: () => void; onTranscript: () => void; pdfBusy?: boolean };
+type Props = { report: InterviewReport; transcript: TranscriptTurn[]; vision: VisionSummary | null; speech: Record<string, unknown> | null; id: string; name: string; type: string; category: string | null; date: string; duration: number | null; onPdf: (context: ReportExportContext) => void; onTranscript: () => void; pdfBusy?: boolean };
 export function InterviewReportWorkspace({ report, transcript, vision, speech, id, name, type, category, date, duration, onPdf, onTranscript, pdfBusy }: Props) {
   const { data: history = [], isLoading: historyLoading } = useQuery(myReportsQuery);
   const benchmark = useQuery(benchmarkQuery(category));
@@ -56,9 +56,11 @@ export function InterviewReportWorkspace({ report, transcript, vision, speech, i
   const bench = benchmark.data;
   // Never compare a category report against a fallback pool of different interview types.
   const comparable = bench?.scope === "category" && bench.sample_size >= MIN_COMPARISON_SAMPLE && bench.avg_overall != null;
+  const exportContext: ReportExportContext = { history: throughCurrent.map((h) => ({started_at:h.started_at,overall_score:h.overall_score})), benchmark: comparable && bench ? {sample_size:bench.sample_size,scope:bench.scope,avg_overall:Number(bench.avg_overall)} : null };
+  const exportPdf = () => onPdf(exportContext);
   return <div className="report-workspace grid min-w-0 gap-6">
     <StudentPageHeading eyebrow="MBA Compass · Personal interview evaluation" title="Your interview report" description={`${name} · ${type} · ${new Date(date).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}`}>
-      <Button variant="outline" onClick={onTranscript}>Download transcript</Button><Button disabled={pdfBusy} onClick={onPdf}>{pdfBusy ? "Preparing PDF…" : "Download full PDF"}</Button>
+      <Button variant="outline" onClick={onTranscript}>Download transcript</Button><Button disabled={pdfBusy} onClick={exportPdf}>{pdfBusy ? "Preparing PDF…" : "Download full PDF"}</Button>
     </StudentPageHeading>
     <section className="report-summary grid gap-6 p-6 md:grid-cols-[auto_minmax(0,1fr)] md:p-8">
       <div className="flex flex-col items-center justify-center text-primary"><ScoreRing value={report.overall_score} size={144} stroke={10} tone="primary" /><p className="mt-3 text-xs font-semibold">Overall score / 100</p></div>
@@ -115,7 +117,7 @@ export function InterviewReportWorkspace({ report, transcript, vision, speech, i
         <Section title="Your Next Interview Preparation Plan" subtitle="Priorities from your saved evaluation—not invented weaknesses."><ol className="grid gap-4">{report.improvement_areas.slice(0,5).map((area,i)=><li key={i} className="report-moment flex gap-4"><span className="shrink-0 text-2xl font-bold text-primary">{String(i+1).padStart(2,"0")}</span><div><h3 className="font-bold">{area}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{report.improvement_plan[i]?.detail ?? "Use the relevant question's suggested answer and practice exercise."}</p><p className="mt-2 text-xs text-muted-foreground">Priority order from your report; no separate impact ranking measured.</p></div></li>)}</ol></Section>
         <Section title="Your seven-day practice schedule"><div className="grid gap-4 md:grid-cols-2">{report.improvement_plan.map((p,i)=><article key={i} className="report-evaluation"><p className="student-eyebrow">{p.timeframe || `Step ${i+1}`}</p><h3 className="mt-2 font-bold">{p.step}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.detail}</p></article>)}</div></Section>
         <Section title="Assessment limitations & data integrity"><Bullets items={report.assessment?.limitations} /><p className="mt-4 text-sm leading-relaxed text-muted-foreground">Feedback uses captured captions and available aggregate microphone/camera measurements. No recordings are exposed. Admission outcomes, psychological confidence, exact word timestamps and unsupported peer rankings are not measured.</p></Section>
-        <div className="flex flex-wrap gap-3"><Button asChild><Link to="/slots">Prepare for your next interview</Link></Button><Button variant="outline" disabled={pdfBusy} onClick={onPdf}>Download full PDF</Button></div>
+        <div className="flex flex-wrap gap-3"><Button asChild><Link to="/slots">Prepare for your next interview</Link></Button><Button variant="outline" disabled={pdfBusy} onClick={exportPdf}>Download full PDF</Button></div>
       </TabsContent>
     </Tabs>
   </div>;
