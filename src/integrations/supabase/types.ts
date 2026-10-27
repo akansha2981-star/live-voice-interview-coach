@@ -167,6 +167,27 @@ export type Database = {
         }
         Relationships: []
       }
+      colleges: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       course_purchases: {
         Row: {
           amount: number | null
@@ -244,36 +265,58 @@ export type Database = {
       }
       interview_bookings: {
         Row: {
+          actual_interview_at: string | null
+          call_letter_path: string | null
           checked_at: string | null
+          college_id: string | null
+          college_name: string | null
           created_at: string
           id: string
           interview_id: string | null
+          practice_only: boolean
           preflight: Json | null
           slot_id: string
           status: string
           user_id: string
         }
         Insert: {
+          actual_interview_at?: string | null
+          call_letter_path?: string | null
           checked_at?: string | null
+          college_id?: string | null
+          college_name?: string | null
           created_at?: string
           id?: string
           interview_id?: string | null
+          practice_only?: boolean
           preflight?: Json | null
           slot_id: string
           status?: string
           user_id: string
         }
         Update: {
+          actual_interview_at?: string | null
+          call_letter_path?: string | null
           checked_at?: string | null
+          college_id?: string | null
+          college_name?: string | null
           created_at?: string
           id?: string
           interview_id?: string | null
+          practice_only?: boolean
           preflight?: Json | null
           slot_id?: string
           status?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "interview_bookings_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "interview_bookings_interview_id_fkey"
             columns: ["interview_id"]
