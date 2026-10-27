@@ -629,6 +629,201 @@ export type Database = {
           },
         ]
       }
+      gk_article_views: {
+        Row: {
+          article_id: string
+          id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          article_id: string
+          id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Update: {
+          article_id?: string
+          id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gk_article_views_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "gk_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gk_articles: {
+        Row: {
+          article_date: string
+          author: string | null
+          category_id: string | null
+          cover_image: string | null
+          created_at: string
+          created_by: string | null
+          detailed_content: string
+          facts: Json
+          id: string
+          interview_angles: Json
+          interview_questions: Json
+          published_at: string | null
+          scheduled_at: string | null
+          slug: string
+          status: string
+          subcategory: string | null
+          summary_english: string
+          summary_hindi: string
+          summary_hinglish: string
+          tags: string[]
+          title: string
+          updated_at: string
+          vocabulary: Json
+          why_this_matters: string
+        }
+        Insert: {
+          article_date?: string
+          author?: string | null
+          category_id?: string | null
+          cover_image?: string | null
+          created_at?: string
+          created_by?: string | null
+          detailed_content?: string
+          facts?: Json
+          id?: string
+          interview_angles?: Json
+          interview_questions?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          slug: string
+          status?: string
+          subcategory?: string | null
+          summary_english?: string
+          summary_hindi?: string
+          summary_hinglish?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          vocabulary?: Json
+          why_this_matters?: string
+        }
+        Update: {
+          article_date?: string
+          author?: string | null
+          category_id?: string | null
+          cover_image?: string | null
+          created_at?: string
+          created_by?: string | null
+          detailed_content?: string
+          facts?: Json
+          id?: string
+          interview_angles?: Json
+          interview_questions?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          slug?: string
+          status?: string
+          subcategory?: string | null
+          summary_english?: string
+          summary_hindi?: string
+          summary_hinglish?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          vocabulary?: Json
+          why_this_matters?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gk_articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "gk_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gk_categories: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          mark: string | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          mark?: string | null
+          name: string
+          slug: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          mark?: string | null
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      gk_user_progress: {
+        Row: {
+          article_id: string
+          id: string
+          is_read: boolean
+          is_saved: boolean
+          read_at: string | null
+          saved_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          id?: string
+          is_read?: boolean
+          is_saved?: boolean
+          read_at?: string | null
+          saved_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          article_id?: string
+          id?: string
+          is_read?: boolean
+          is_saved?: boolean
+          read_at?: string | null
+          saved_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gk_user_progress_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "gk_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_bookings: {
         Row: {
           actual_interview_at: string | null
@@ -848,6 +1043,7 @@ export type Database = {
           employment_status: string | null
           full_name: string | null
           functional_skills: string | null
+          gk_language: string
           graduation_year: number | null
           id: string
           industry: string | null
@@ -880,6 +1076,7 @@ export type Database = {
           employment_status?: string | null
           full_name?: string | null
           functional_skills?: string | null
+          gk_language?: string
           graduation_year?: number | null
           id: string
           industry?: string | null
@@ -912,6 +1109,7 @@ export type Database = {
           employment_status?: string | null
           full_name?: string | null
           functional_skills?: string | null
+          gk_language?: string
           graduation_year?: number | null
           id?: string
           industry?: string | null
@@ -1311,6 +1509,20 @@ export type Database = {
       credit_balance: { Args: { _user_id: string }; Returns: number }
       finance_record_usage: { Args: { _row: Json }; Returns: undefined }
       finance_save: { Args: { _data: Json; _kind: string }; Returns: string }
+      gk_analytics: {
+        Args: never
+        Returns: {
+          article_id: string
+          bookmarks: number
+          completions: number
+          unique_readers: number
+          views: number
+        }[]
+      }
+      gk_is_live: {
+        Args: { _scheduled: string; _status: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
