@@ -14,8 +14,11 @@
 - [ ] Email notifications for ticket replies — not enabled yet
 
 # Dashboard and interview workflow
-- [ ] Move college and actual interview date/time into booking; add strict college duration/question/time-range settings and automatic closing
-- [ ] Upgrade Resume Builder and SOP Review with genuine progressive analysis, document preview and premium results
+- [x] Collect college/date/time/call letter at booking; keep practice option; authenticated practice booking saved/read back and test booking cancelled without spending interview credit
+- [x] Add audited college duration/question/answer-window configuration, start-time snapshots, server/UI duration cutoff and professional closing; rule tests pass and schema/old booking-RPC denial verified
+- [ ] Exact spoken main-question count and per-question maximum enforcement — current Live protocol has no pre-playback gate or authoritative answer-end event; requires supported controlled-audio mechanism without silently replacing voice
+- [x] Resume/SOP shared evidence workspace, private preview, real validated provisional model sections, source highlights and no fake timed stage completion; historical saved resume renders and desktop/mobile checks pass
+- [ ] Real resume/SOP streamed analysis, admin settings save/read-back and live deadline end-to-end verification — requires approved paid processing of a supplied resume/SOP, an admin session and a live interview participant; no paid AI test started
 - [x] Detailed light interview report: seven tabs, evidence-linked answers and timelines, communication/camera analysis, history/benchmarks, full PDF; real saved report, all tabs, desktop/mobile and eight-page PDF verified; unsupported metrics explicitly unavailable
 - [x] Dashboard brief (10 sections): scores vs average, category tracker, answer review queue, moments, presentation, journey, comparison, priorities; interview = 3 sections × 3 questions
 - [x] Mandatory working camera, visible face and microphone verification before interview — rule tests and signed-in blocked-start check passed; physical devices pending below

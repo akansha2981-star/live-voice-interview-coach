@@ -270,6 +270,7 @@ export function bindLiveConnection(
   let restartTimer: ReturnType<typeof setTimeout> | undefined;
   let startupTimer: ReturnType<typeof setTimeout> | undefined;
   let closeTimer: ReturnType<typeof setTimeout> | undefined;
+  let interviewTimer: ReturnType<typeof setTimeout> | undefined;
   let finishDrain: (() => void) | undefined;
   let browserReady = false;
   let greetingRequested = false;
@@ -345,6 +346,7 @@ export function bindLiveConnection(
     clearTimeout(startTimer);
     clearTimeout(startupTimer);
     clearTimeout(closeTimer);
+    clearTimeout(interviewTimer);
     clearTimeout(restartTimer);
     clearGreeting();
     discardPendingWork();
@@ -360,6 +362,7 @@ export function bindLiveConnection(
     discardPendingWork();
     clearTimeout(startupTimer);
     clearTimeout(startTimer);
+    clearTimeout(interviewTimer);
     clearGreeting();
     if (gateway?.readyState === 1) {
       execution.waitUntil(
@@ -552,6 +555,16 @@ export function bindLiveConnection(
       stop();
     }, 40_000);
     const session = await authorizeInterviewSession(token, interviewID);
+    interviewTimer = setTimeout(() => {
+      emit({ type: "app.interview.limit", reason: "duration", message: "Thank you for attending your interview." });
+      // Silence immediately, then preserve the normal final-usage drain.
+      emit({ type: "gateway.session.closing", reason: "interview_duration_limit" });
+      execution.waitUntil((async () => {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("interviews").update({ limit_closed_reason: "duration" }).eq("id", session.interviewId).eq("status", "in_progress");
+      })());
+      stop();
+    }, Math.max(0, session.deadline - Date.now()));
     financeAttribution = {product:"interview", userId:session.userId, transactionId:session.interviewId, service:"live_voice"};
     financeStartedAt = new Date().toISOString();
     config.openingInstructions = session.opening;

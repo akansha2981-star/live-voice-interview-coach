@@ -37,6 +37,12 @@ function CheckPage() {
  const [recording, setRecording] = useState(false); const [micConfirmed, setMicConfirmed] = useState(false); const [recordingUrl, setRecordingUrl] = useState<string | null>(null); const [played, setPlayed] = useState(false); const [speech, setSpeech] = useState(""); const [now, setNow] = useState(Date.now());
  const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
  const booking = bookings.bookings.find((b) => b.status === "booked" && (requested ? b.id === requested : b.interview_slots && slotPhase(b.interview_slots.starts_at,b.interview_slots.ends_at,now) === "ready"));
+ useEffect(() => {
+   if (!booking) return;
+   const at = booking.actual_interview_at ? new Date(booking.actual_interview_at) : null;
+   const local = at ? new Date(at.getTime() - at.getTimezoneOffset() * 60000).toISOString().slice(0,16) : null;
+   setDetails({ practiceOnly: booking.practice_only, collegeId: booking.college_id, actualInterviewAt: local, callLetterPath: booking.call_letter_path });
+ }, [booking?.id]);
  const phase = booking?.interview_slots ? slotPhase(booking.interview_slots.starts_at,booking.interview_slots.ends_at,now) : null;
  useEffect(() => { const t = setInterval(() => setNow(Date.now()),1000); return () => clearInterval(t); }, []);
  useEffect(() => () => { recognitionRef.current?.stop(); if (recordingTimer.current) clearTimeout(recordingTimer.current); if (recorderRef.current?.state === "recording") recorderRef.current.stop(); }, []);

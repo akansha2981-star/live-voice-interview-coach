@@ -6,6 +6,8 @@ import { bookingQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { slotPhase } from "@/lib/booking";
 import { Button } from "@/components/ui/button";
+import { InterviewDetailsForm, type DetailsState } from "@/components/interview-details-form";
+import { interviewDetailsReady } from "@/lib/booking";
 
 export function BookedInterviews() {
   const { data } = useSuspenseQuery(bookingQuery);
@@ -41,6 +43,7 @@ export function SlotPicker() {
   const [period, setPeriod] = useState("all");
   const [selected, setSelected] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
   const future = data.slots.filter((s) => Date.parse(s.starts_at) > Date.now());
   const dates = [...new Set(future.map((s) => new Date(s.starts_at).toDateString()))];
   const periods = [{ id: "all", label: "Any time", from: 0, to: 24 }, { id: "morning", label: "Morning", from: 6, to: 12 }, { id: "afternoon", label: "Afternoon", from: 12, to: 18 }, { id: "evening", label: "Evening", from: 18, to: 24 }, { id: "night", label: "Night", from: 0, to: 6 }];
@@ -52,9 +55,10 @@ export function SlotPicker() {
   const selectedSlot = visible.find((s) => s.id === selected);
   function resetFilters() { setDate(null); setPeriod("all"); setSelected(null); }
   async function book() {
-    if (!selected) return;
+    if (!selected || !interviewDetailsReady(details)) return;
     setBusy(true);
-    const { error } = await supabase.rpc("book_interview_slot", { _slot_id: selected });
+    // Generated RPC argument types omit SQL nullability; practice deliberately uses null fields.
+    const { error } = await supabase.rpc("book_interview_with_details", { _slot_id: selected, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Interview booked. Your appointment is on the dashboard.");
@@ -73,6 +77,7 @@ export function SlotPicker() {
       {!visible.length && <p className="py-8 text-center text-sm text-muted-foreground">No slots match these filters.</p>}
       {visible.map((s) => <Button key={s.id} variant={selected === s.id ? "default" : "outline"} aria-pressed={selected === s.id} disabled={s.remaining < 1 || data.bookings.some((b) => b.slot_id === s.id && b.status !== "cancelled")} onClick={() => setSelected(s.id)} className="h-auto shrink-0 justify-between gap-3 whitespace-normal px-4 py-3 text-left"><span>{new Date(s.starts_at).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })}<span className="block font-semibold">{new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – {new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span></span><span className="shrink-0 text-xs">{s.remaining} left</span></Button>)}
     </div>
-    <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><p className="min-w-0 text-xs text-muted-foreground">{selectedSlot ? new Date(selectedSlot.starts_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "No slot selected"}</p><Button className="shrink-0" onClick={book} disabled={!selectedSlot || busy}>{busy ? "Booking…" : "Confirm booking"}</Button></div>
+    {selectedSlot && <div className="mt-4"><InterviewDetailsForm userId={data.userId} value={details} onChange={setDetails} /></div>}
+    <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><p className="min-w-0 text-xs text-muted-foreground">{selectedSlot ? new Date(selectedSlot.starts_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "No slot selected"}</p><Button className="shrink-0" onClick={book} disabled={!selectedSlot || !interviewDetailsReady(details) || busy}>{busy ? "Booking…" : "Confirm booking"}</Button></div>
   </section>;
 }

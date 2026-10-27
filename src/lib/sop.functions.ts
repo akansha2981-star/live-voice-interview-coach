@@ -2,10 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { sopReportSchema } from "./sop-review";
+import { validatedSections } from "./document-progress";
 
 const SYSTEM = `You are an experienced, warm MBA admissions mentor reviewing a student's Statement of Purpose (SOP) for one specific Indian B-school.
 First decide if the document is really an SOP / personal statement. If it is blank, unreadable or not an SOP, set is_sop=false, give invalid_reason in one plain sentence, and fill other fields with minimal placeholders (scores 0, empty arrays/strings).
 Otherwise review the WHOLE SOP:
+- document_evidence: transcribe the student's actual SOP in reading order, then extract motivation, career goals, college references, education, experiences and achievements as label/value facts. Each fact needs an exact verbatim quote present in source_text. Missing facts are omitted. Return this evidence before scores and suggestions.
+- Authenticity assesses specificity and consistency of the writing, never truthfulness, personality or AI authorship.
 - Score every category 0-100 with one specific sentence grounded in the SOP.
 - strengths, weaknesses, opportunities: 3-6 specific points each.
 - line_feedback: 6-15 weak, vague or generic sentences quoted verbatim as "original". For each explain whats_wrong, why it needs improvement, how_to_improve, and a suggestion that keeps the student's own voice. Where the student must supply a real detail, use a placeholder like [your specific project] — never invent experiences, achievements, numbers or facts.
@@ -30,8 +33,16 @@ export const submitSop = createServerFn({ method: "POST" })
     const { data: samples } = await supabaseAdmin.from("college_training_docs").select("knowledge").eq("college_id", college.id).eq("kind", "sop_sample").eq("status", "saved").limit(40);
     const { data: row, error: insErr } = await supabaseAdmin.from("sop_reviews").insert({ user_id: context.userId, college_id: college.id, college_name: college.name, file_path: data.path, file_name: data.fileName, mime_type: data.mimeType, extracted_text: data.text ?? null, samples_used: samples?.length ?? 0, expected_by: new Date(Date.now() + tat * 60000).toISOString() }).select("id").single();
     if (insErr) throw new Error(insErr.message);
-    const fail = async (msg: string) => { await supabaseAdmin.from("sop_reviews").update({ status: "failed", error: msg, completed_at: new Date().toISOString() }).eq("id", row.id); return { ok: false as const, error: msg }; };
+    let sections: Record<string, unknown> = {};
+    let lastProgress = "";
+    let lastSavedAt = 0;
+    const progress = async (phase: "reading" | "analysing" | "complete" | "failed") => {
+      const { error } = await supabaseAdmin.from("sop_reviews").update({ analysis_progress: JSON.parse(JSON.stringify({ phase, sections, updatedAt: new Date().toISOString() })) }).eq("id", row.id);
+      if (error) throw new Error("Could not save review progress.");
+    };
+    const fail = async (msg: string) => { sections = {}; await progress("failed"); await supabaseAdmin.from("sop_reviews").update({ status: "failed", error: msg, completed_at: new Date().toISOString() }).eq("id", row.id); return { ok: false as const, error: msg }; };
     try {
+      await progress("reading");
       type Part = { type: "text"; text: string } | { type: "file"; filename: string; data: string; mediaType: string } | { type: "image"; image: string; mediaType: string };
       const insights = (samples ?? []).map((s) => { const k = s.knowledge as { summary?: string; expectations?: string[]; patterns?: string[] } | null; return k ? [k.summary, ...(k.expectations ?? []), ...(k.patterns ?? [])].filter(Boolean).join("; ") : ""; }).filter(Boolean).join("\n").slice(0, 12000);
       const content: Part[] = [{ type: "text", text: `Target college: ${college.name}.\nCollege SOP requirements: ${college.sop_requirements || "None specified."}\nPrivate sample-SOP insights (${samples?.length ?? 0} samples):\n${insights || "None available."}` }];
@@ -48,9 +59,16 @@ export const submitSop = createServerFn({ method: "POST" })
         else return await fail("Unsupported file type. Upload a PDF, Word document, text file or image.");
       }
       const { generateStructured } = await import("./ai.server");
-      const report = await generateStructured({ attribution: {product:"sop",userId:context.userId,transactionId:row.id,service:"review"}, schema: sopReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }] });
+      await progress("analysing");
+      const report = await generateStructured({ attribution: {product:"sop",userId:context.userId,transactionId:row.id,service:"review"}, schema: sopReportSchema, effort: "medium", system: SYSTEM, messages: [{ role: "user", content: content as never }], onPartial: async (partial) => {
+        const next = validatedSections(sopReportSchema, partial, "is_sop");
+        const signature = JSON.stringify(next);
+        if (signature !== lastProgress && Object.keys(next).length && Date.now() - lastSavedAt >= 1500) { sections = next; await progress("analysing"); lastProgress = signature; lastSavedAt = Date.now(); }
+      } });
       if (!report.is_sop) return await fail(report.invalid_reason || "This file does not look like an SOP. Please upload your Statement of Purpose.");
-      await supabaseAdmin.from("sop_reviews").update({ status: "completed", report, overall_score: report.overall_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      sections = report; await progress("complete");
+      const { error: savedError } = await supabaseAdmin.from("sop_reviews").update({ status: "completed", report, overall_score: report.overall_score, completed_at: new Date().toISOString() }).eq("id", row.id);
+      if (savedError) throw new Error("Could not save the completed SOP review.");
       return { ok: true as const, error: null };
     } catch (e) {
       return await fail(e instanceof Error ? e.message : "Review failed. Please try again.");

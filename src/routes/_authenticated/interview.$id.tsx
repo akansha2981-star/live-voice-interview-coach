@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { InterviewWorkspace } from "@/components/interview-workspace";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { questionTiming, summarizeAudio, type AudioSample } from "@/lib/performance";
+import { interviewDeadline } from "@/lib/interview-limits";
 
 export const Route = createFileRoute("/_authenticated/interview/$id")({
   head: () => ({
@@ -44,9 +45,9 @@ function InterviewRoom() {
   const framesRef = useRef<VisionFrame[]>([]);
   const startedAt = useRef<number>(0);
   const endingRef = useRef(false);
-  // Admin-configured duration plus a 5-minute grace period before the interview auto-ends.
-  const maxMsRef = useRef(25 * 60 * 1000);
-  useEffect(() => { void supabase.from("interview_settings").select("duration_minutes").eq("id", 1).maybeSingle().then(({ data }) => { if (data) maxMsRef.current = (data.duration_minutes + 5) * 60 * 1000; }); }, []);
+  const deadline = interview ? interviewDeadline(interview.started_at, interview.limit_duration_seconds ?? 1200, interview.limit_deadline) : Infinity;
+  const endRef = useRef<() => Promise<void>>(async () => {});
+  const [closingMessage, setClosingMessage] = useState(false);
   const lookAwaySince = useRef<number | null>(null);
   const lastSpeech = useRef<{ role: Turn["role"]; at: number } | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -62,6 +63,7 @@ function InterviewRoom() {
   const audioSamples = useRef<AudioSample[]>([]);
 
   const onEvent = useCallback((event: LiveEvent) => {
+    if (event.type === "app.interview.limit") { setClosingMessage(true); void endRef.current(); return; }
     if (event.type !== "session.input_transcript.delta" && event.type !== "session.output_transcript.delta") return;
     const delta = typeof event.delta === "string" ? event.delta : "";
     if (!delta) return;
@@ -135,7 +137,7 @@ function InterviewRoom() {
       if (!startedAt.current) return;
       const ms = performance.now() - startedAt.current;
       setElapsed(ms);
-      if (ms > maxMsRef.current && !endingRef.current) void endInterview();
+      if (Date.now() >= deadline && !endingRef.current) { setClosingMessage(true); void endInterview(); }
     }, 300);
     return () => clearInterval(t);
   });
@@ -188,6 +190,7 @@ function InterviewRoom() {
       toast.error(err instanceof Error ? err.message : "Could not save the interview");
     }
   }
+  endRef.current = endInterview;
 
   if (!interview) return <Navigate to="/dashboard" />;
   if (interview.status !== "in_progress" && !saving) return <Navigate to="/report/$id" params={{ id }} />;
@@ -206,6 +209,7 @@ function InterviewRoom() {
     {(call.hasConnected || turns.length > 0) && <Button variant="destructive" onClick={endInterview} disabled={saving}>{saving ? "Saving your interview…" : "End interview"}</Button>}
   </>;
   return <Dialog open><DialogContent aria-describedby={undefined} onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()} className="inset-0 left-0 top-0 flex h-dvh w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:rounded-none [&>button]:hidden"><DialogTitle className="sr-only">MBA Compass live interview</DialogTitle>
+    {closingMessage && <p role="status" className="border-b bg-secondary px-5 py-3 text-center text-sm font-semibold text-primary">Thank you for attending your interview. Saving your report…</p>}
     <InterviewWorkspace videoRef={videoRef} turns={turns} frame={frame} live={live} status={saving ? "Saving…" : live ? "Live" : call.status === "connecting" ? "Connecting…" : "Ready"} timer={`${mm}:${ss}`} speaker={speaker} eyePct={eyePct} lookingAway={lookingAway} camError={camError} muted={call.muted} controls={controls} audio={<audio ref={call.audioRef} autoPlay className="hidden" />} error={call.error} audioSample={audioSample} cameraEnabled={cameraEnabled} />
   </DialogContent></Dialog>;
 }

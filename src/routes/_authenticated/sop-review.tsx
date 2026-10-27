@@ -7,6 +7,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { submitSop } from "@/lib/sop.functions";
+import { DocumentAnalysisWorkspace } from "@/components/document-analysis-workspace";
+import type { ReviewProgress } from "@/lib/document-progress";
+import { useDocumentPreview } from "@/hooks/use-document-preview";
 import { SOP_CATEGORY_LABELS, SOP_FILE_TYPES, sopStatusLabel, type SopReport } from "@/lib/sop-review";
 import { ScoreRing, GrowBar, AnimatedNumber } from "@/components/motion";
 import { Label } from "@/components/ui/label";
@@ -14,9 +17,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export const sopReviewsQuery = queryOptions({
   queryKey: ["sop-reviews"],
+  refetchInterval: (query) => query.state.data?.some((r) => r.status === "under_review") ? 1500 : false,
   queryFn: async () => {
     const { data: u } = await supabase.auth.getUser();
-    const { data, error } = await supabase.from("sop_reviews").select("id, college_name, file_name, status, overall_score, report, samples_used, error, expected_by, created_at, completed_at").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("sop_reviews").select("id, college_name, file_name, file_path, status, overall_score, report, samples_used, error, expected_by, created_at, completed_at, extracted_text, analysis_progress").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
     if (error) throw error;
     return data;
   },
@@ -35,9 +39,13 @@ function SopReview() {
   const submit = useServerFn(submitSop);
   const [college, setCollege] = useState("");
   const [busy, setBusy] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [sourceText, setSourceText] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const selected = reviews.find((r) => r.id === openId) ?? reviews.find((r) => r.status === "completed");
+  const processing = reviews.find((r) => r.status === "under_review");
+  const previewUrl = useDocumentPreview("sop-reviews", processing?.file_path ?? selected?.file_path);
 
   async function upload(file: File | undefined) {
     setErr(null);
@@ -46,7 +54,7 @@ function SopReview() {
     if (!SOP_FILE_TYPES.test(file.name)) return setErr("Unsupported format. Upload a PDF, DOC/DOCX, TXT or image file.");
     if (!file.size) return setErr("This file is empty.");
     if (file.size > 10 * 1024 * 1024) return setErr("File is larger than 10 MB.");
-    setBusy(true);
+    setBusy(true); setFile(file); setSourceText(null);
     try {
       let text: string | null = null; let mime = file.type || "application/octet-stream";
       if (/\.docx?$/i.test(file.name)) {
@@ -56,13 +64,14 @@ function SopReview() {
       } else if (/\.txt$/i.test(file.name)) { text = (await file.text()).slice(0, 60000); mime = "text/plain"; }
       else if (/\.pdf$/i.test(file.name)) mime = "application/pdf";
       if (text !== null && text.length < 200) throw new Error("This document has too little text to be an SOP.");
+      setSourceText(text);
       const { data: u } = await supabase.auth.getUser();
       const path = `${u.user?.id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`;
       const { error } = await supabase.storage.from("sop-reviews").upload(path, file, { contentType: file.type || undefined });
       if (error) throw new Error(error.message);
       const p = submit({ data: { collegeId: college, path, fileName: file.name, mimeType: mime, text } });
-      setTimeout(() => void qc.invalidateQueries({ queryKey: ["sop-reviews"] }), 1500);
-      const res = await p;
+      const poll = setInterval(() => void qc.invalidateQueries({ queryKey: ["sop-reviews"] }), 1500);
+      const res = await p.finally(() => clearInterval(poll));
       if (!res.ok) throw new Error(res.error);
       toast.success("Review completed.");
     } catch (e) { setErr(e instanceof Error ? e.message : "Submission failed."); }
@@ -85,6 +94,7 @@ function SopReview() {
       {err && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{err}</p>}
     </section>
 
+    {(busy || processing || selected) && <DocumentAnalysisWorkspace kind="sop" file={busy || processing ? file : null} previewUrl={previewUrl} fileName={processing?.file_name ?? selected?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? (busy ? null : selected?.analysis_progress ?? (selected ? {phase:"complete",sections:selected.report,updatedAt:selected.completed_at} : null))) as unknown as ReviewProgress | null} sourceText={busy || processing ? sourceText ?? processing?.extracted_text : selected?.extracted_text} complete={!busy && !processing && selected?.status === "completed"} />}
     {reviews.length > 0 && <section className="section-card p-6"><h2 className="text-xl font-bold">My SOP reviews</h2>
       <div className="mt-3 divide-y">{reviews.map((r) => { const label = sopStatusLabel(r); return <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
         <div className="min-w-0"><p className="truncate font-semibold">{r.college_name} · {r.file_name}</p><p className="text-xs text-muted-foreground">Submitted {new Date(r.created_at).toLocaleString()}{r.status === "under_review" ? ` · expected by ${new Date(r.expected_by).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}{r.error ? ` · ${r.error}` : ""}</p></div>

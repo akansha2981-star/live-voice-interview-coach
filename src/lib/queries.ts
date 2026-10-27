@@ -59,7 +59,7 @@ export const bookingQuery = queryOptions({
       supabase.from("interview_bookings").select("*, interview_slots(*)").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     if (bookingError) throw bookingError;
-    return { slots: slots ?? [], bookings: bookings ?? [] };
+    return { userId: id, slots: slots ?? [], bookings: bookings ?? [] };
   },
   refetchInterval: 30000,
 });

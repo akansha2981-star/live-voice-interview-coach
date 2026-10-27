@@ -1,10 +1,12 @@
 import { z } from "zod";
+import { documentEvidenceSchema } from "./document-progress";
 
 const score = z.object({ score: z.number().int().min(0).max(100), comment: z.string() });
 
 export const sopReportSchema = z.object({
   is_sop: z.boolean(),
   invalid_reason: z.string().nullable(),
+  document_evidence: documentEvidenceSchema,
   overall_score: z.number().int().min(0).max(100),
   summary: z.string(),
   word_count: z.number().int().min(0),
