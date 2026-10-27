@@ -7,7 +7,10 @@ describe("genuine review evidence", () => {
     expect(validatedSections(schema, { score: 50 }, "is_resume")).toEqual({});
   });
   it("rejects unfinished or invalid fields", () => {
-    expect(validatedSections(schema, { is_resume: true, score: 101, facts: ["Acme"] }, "is_resume")).toEqual({ is_resume: true, facts: ["Acme"] });
+    expect(validatedSections(schema, { is_resume: true, score: 101, facts: ["Acme"], next_field: "started" }, "is_resume")).toEqual({ is_resume: true, facts: ["Acme"] });
+  });
+  it("holds a still-growing last field until the next field starts", () => {
+    expect(validatedSections(schema, {is_resume:true, facts:["Ac"]}, "is_resume")).toEqual({is_resume:true});
   });
   it("keeps facts only with exact source evidence", () => {
     expect(evidenceFacts({ source_text: "Worked at Acme", facts: [{label:"Company",value:"Acme",quote:"Acme"},{label:"Company",value:"Invented",quote:"Invented"}] })?.facts).toHaveLength(1);

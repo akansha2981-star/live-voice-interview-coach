@@ -3,8 +3,8 @@ import { evidenceFacts, exactQuoteRange, type ReviewProgress } from "@/lib/docum
 import { Button } from "@/components/ui/button";
 import { ScoreRing } from "@/components/motion";
 
-export function DocumentAnalysisWorkspace({ kind, file, fileName, progress, sourceText, complete = false }: {
-  kind: "resume" | "sop"; file?: File | null; fileName?: string; progress?: ReviewProgress | null; sourceText?: string | null; complete?: boolean;
+export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, progress, sourceText, complete = false }: {
+  kind: "resume" | "sop"; file?: File | null; fileName?: string; previewUrl?: string | null; progress?: ReviewProgress | null; sourceText?: string | null; complete?: boolean;
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [quote, setQuote] = useState("");
@@ -33,18 +33,19 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, progress, sour
   ];
   const fixes = (kind === "resume" ? sections.line_improvements : sections.line_feedback) as Array<{ original: string; improved?: string; suggestion?: string; why?: string }> | undefined;
   const failed = progress?.phase === "failed";
-  const image = file?.type.startsWith("image/");
-  const pdf = file && /\.pdf$/i.test(file.name);
+  const mediaUrl = url || previewUrl;
+  const image = file?.type.startsWith("image/") || /\.(png|jpe?g|webp)$/i.test(fileName ?? "");
+  const pdf = /\.pdf$/i.test(file?.name ?? fileName ?? "");
   return <section className="grid min-w-0 gap-6 border-y py-6 animate-reveal" aria-label={`${kind === "resume" ? "Resume" : "SOP"} analysis workspace`}>
     <header className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-semibold uppercase text-primary">Document intelligence</p><h2 className="mt-1 text-2xl font-bold">{complete ? "Your evidence, in focus" : "Your document, under review"}</h2><p className="mt-1 break-words text-sm text-muted-foreground">{fileName || file?.name || "Private document"}</p></div><span className={`border-l-2 pl-3 text-sm font-semibold ${failed ? "border-destructive text-destructive" : "border-primary text-primary"}`}>{failed ? "Analysis stopped" : complete ? "Review complete" : progress?.phase === "reading" ? "Reading document" : progress?.phase === "analysing" ? "Analysis in progress" : "Uploading document"}</span></header>
     <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       <article className="min-w-0 border bg-card shadow-sm">
         <div className="flex items-center justify-between border-b px-4 py-3"><h3 className="text-sm font-semibold">{quote ? "Source evidence" : "Document preview"}</h3>{quote && <Button size="sm" variant="ghost" onClick={() => setQuote("")}>Clear selection</Button>}</div>
         <div className="h-[28rem] overflow-auto overscroll-contain p-5 [scrollbar-gutter:stable]">
-          {quote || (!url && text) || (url && !image && !pdf && text) ? <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{range ? <>{text.slice(0, range.start)}<mark className="bg-accent/30 text-foreground">{text.slice(range.start, range.end)}</mark>{text.slice(range.end)}</> : text}</p>
-            : url && image ? <img src={url} alt="Uploaded document" className="h-full w-full object-contain" />
-            : url && pdf ? <object data={url} type="application/pdf" aria-label="Uploaded PDF" className="h-full w-full"><p className="text-sm text-muted-foreground">PDF preview is unavailable in this browser.</p><a href={url} target="_blank" rel="noreferrer" className="text-primary underline">Open uploaded PDF</a></object>
-            : <div className="grid h-full content-center gap-3 text-center"><p className="font-semibold">{failed ? "No document results available" : "Source text pending"}</p><p className="text-sm text-muted-foreground">{failed ? "Try your submission again." : "Extracted passages will appear after document reading."}</p></div>}
+          {quote || (!mediaUrl && text) || (mediaUrl && !image && !pdf && text) ? <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{range ? <>{text.slice(0, range.start)}<mark className="bg-accent/30 text-foreground">{text.slice(range.start, range.end)}</mark>{text.slice(range.end)}</> : text}</p>
+            : mediaUrl && image ? <img src={mediaUrl} alt="Uploaded document" className="h-full w-full object-contain" />
+            : mediaUrl && pdf ? <object data={mediaUrl} type="application/pdf" aria-label="Uploaded PDF" className="h-full w-full"><p className="text-sm text-muted-foreground">PDF preview is unavailable in this browser.</p><a href={mediaUrl} target="_blank" rel="noreferrer" className="text-primary underline">Open uploaded PDF</a></object>
+            : <div className="grid h-full content-center gap-3 text-center"><p className="font-semibold">{failed ? "No document results available" : complete ? "Preview unavailable" : "Source text pending"}</p><p className="text-sm text-muted-foreground">{failed ? "Try your submission again." : complete ? "Source text was not saved with this earlier review." : "Extracted passages will appear after document reading."}</p></div>}
         </div>
       </article>
       <div className="grid min-w-0 content-start gap-5">

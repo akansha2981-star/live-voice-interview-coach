@@ -11,8 +11,12 @@ export type ReviewProgress = { phase: "reading" | "analysing" | "complete" | "fa
 export function validatedSections(schema: z.AnyZodObject, partial: unknown, validKey: string) {
   if (!partial || typeof partial !== "object" || (partial as Record<string, unknown>)[validKey] !== true) return {};
   const source = partial as Record<string, unknown>;
+  // The newest JSON field can contain an unfinished string/array that still parses.
+  // Expose it only after the next field starts, or through the final complete report.
+  const newestKey = Object.keys(source).at(-1);
   const sections: Record<string, unknown> = {};
   for (const [key, validator] of Object.entries(schema.shape) as [string, z.ZodTypeAny][]) {
+    if (key === newestKey) continue;
     const result = validator.safeParse(source[key]);
     if (result.success) sections[key] = result.data;
   }

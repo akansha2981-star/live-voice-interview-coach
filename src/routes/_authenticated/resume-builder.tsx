@@ -9,6 +9,7 @@ import { analyzeResume } from "@/lib/resume.functions";
 import { CATEGORY_LABELS, RESUME_FILE_TYPES, resumeCreditsLeft, type ResumeReport } from "@/lib/resume-analysis";
 import { DocumentAnalysisWorkspace } from "@/components/document-analysis-workspace";
 import type { ReviewProgress } from "@/lib/document-progress";
+import { useDocumentPreview } from "@/hooks/use-document-preview";
 import { ScoreRing, GrowBar, AnimatedNumber } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,6 +44,7 @@ function ResumeBuilder() {
   const credits = resumeCreditsLeft(analyses);
   const done = analyses.find((a) => a.status === "completed");
   const processing = analyses.find((a) => a.status === "processing");
+  const previewUrl = useDocumentPreview("resume-analyses", processing?.file_path ?? done?.file_path);
 
   async function upload(file: File | undefined) {
     setErrorMsg(null);
@@ -90,7 +92,7 @@ function ResumeBuilder() {
       </>}
     </section>}
 
-    {(running || processing || done) && <DocumentAnalysisWorkspace kind="resume" file={file} fileName={processing?.file_name ?? done?.file_name} progress={(processing?.analysis_progress ?? done?.analysis_progress ?? (done ? {phase:"complete",sections:done.report,updatedAt:done.completed_at} : null)) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text ?? done?.extracted_text} complete={Boolean(done)} />}
+    {(running || processing || done) && <DocumentAnalysisWorkspace kind="resume" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? done?.file_name} progress={(processing?.analysis_progress ?? done?.analysis_progress ?? (done ? {phase:"complete",sections:done.report,updatedAt:done.completed_at} : null)) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text ?? done?.extracted_text} complete={Boolean(done)} />}
     {done && <Results report={done.report as unknown as Omit<ResumeReport, "improved_resume">} improved={done.improved_resume as unknown as Improved} fileName={done.file_name} />}
   </div>;
 }
