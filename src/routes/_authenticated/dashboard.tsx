@@ -99,14 +99,14 @@ function countdown(iso: string) {
 function ReadinessScale({ score }: { score: number | null }) {
   const bench = useQuery(benchmarkQuery(null));
   const b = bench.data;
-  const peer = b && b.sample_size >= MIN_COMPARISON_SAMPLE && b.avg_overall != null ? Math.round(Number(b.avg_overall)) : null;
+  const peer = b && b.avg_overall != null ? Math.round(Number(b.avg_overall)) : null;
   const diff = score != null && peer != null ? score - peer : null;
   return <section className="section-card readiness animate-reveal p-5">
     <div className="flex flex-wrap items-end justify-between gap-3">
-      <div className="min-w-0"><p className="student-eyebrow">Interview readiness</p><h2 className="mt-1 text-lg font-bold">{score == null ? "Take your first interview to see where you stand" : <>Your average: <span className="text-primary">{score}/100</span></>}</h2></div>
+      <div className="min-w-0"><p className="student-eyebrow">Interview readiness</p><h2 className="mt-1 text-lg font-bold">{score == null ? "Take your first interview to see where you stand" : <>Your average: <span className="text-primary"><AnimatedNumber value={score} suffix="/100" /></span></>}</h2></div>
       <div className="flex flex-wrap items-center gap-2 text-sm">
         {score != null && <span className={`band-pill band-${bandKey(score)}`}>{bandOf(score)}</span>}
-        {peer != null && diff != null ? <span className={`font-semibold ${diff >= 0 ? "text-success" : "text-destructive"}`}>{Math.abs(diff)} {Math.abs(diff) === 1 ? "point" : "points"} {diff >= 0 ? "above" : "below"} the all-student average ({peer})</span> : peer != null ? <span className="text-muted-foreground">All-student average: {peer}/100</span> : <span className="text-muted-foreground">All-student average appears once enough interviews are taken</span>}
+        {peer != null && diff != null ? <span className={`font-semibold ${diff >= 0 ? "text-success" : "text-destructive"}`}>{Math.abs(diff)} {Math.abs(diff) === 1 ? "point" : "points"} {diff >= 0 ? "above" : "below"} the all-student average ({peer})</span> : peer != null ? <span className="text-muted-foreground">All-student average: {peer}/100</span> : <span className="text-muted-foreground">All-student average appears after another student completes an interview</span>}
       </div>
     </div>
     <div className="relative mb-10 mt-14">
