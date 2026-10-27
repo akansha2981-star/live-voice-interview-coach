@@ -1,4 +1,7 @@
 # Admin portal
+- [ ] Connect builder-owned OpenAI securely and verify model access — awaiting secure connection approval
+- [ ] Stage direct-API interview comparison without changing the student default — depends on compatible model access and voice adapter
+- [ ] Compare full interviews, transcripts, tracking and reports — requires connected OpenAI and a live participant; baseline AI calls also consume Lovable credits
 - [x] Match admin dashboard to the light student theme and group sidebar sections; authorized admin login, slot navigation and mobile menu verified
 - [x] Fit live interview tracking, advanced observations, question and captions together without tracking scrolling; simulated layouts checked at 1280×900, 691×713, 390×844 and 390×700; real call remains pending below
 - [x] Premium student UI refresh: shared navigation, overview, analytics, booking, prep, career, profile and support sections; signed-in desktop/mobile navigation and transcript access verified
