@@ -1,3 +1,4 @@
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -20,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/prep/$section")({
 
 function PrepPage() {
   const { section } = Route.useParams();
-  const s = prepBySlug(section)!;
+  const s = prepBySlug(section);
+  if (!s) return null;
   const download = useServerFn(downloadResource); const [busy, setBusy] = useState<string | null>(null);
   const { data = [], isLoading, error } = useQuery({ queryKey: ["prep", s.category], queryFn: async () => {
     let q = supabase.from("resources").select("id, title, description, instructions, category, banner_path, pdf_path, event_at, registration_url").eq("published", true).eq("category", s.category);
@@ -37,11 +39,10 @@ function PrepPage() {
     catch (e) { toast.error(e instanceof Error ? e.message : "Download failed"); } finally { setBusy(null); }
   }
   return <div className="grid gap-6">
-    <section className="animate-reveal section-card p-6"><p className="text-xs font-semibold uppercase tracking-wider text-primary">My prep material</p><h1 className="mt-1 text-3xl font-bold">{s.label}</h1><p className="mt-1 text-sm text-muted-foreground">{s.blurb}</p>
-      <div className="mt-4 flex flex-wrap gap-2">{PREP_SECTIONS.map((x) => <Link key={x.slug} to="/prep/$section" params={{ section: x.slug }} className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${x.slug === s.slug ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-primary/40 hover:text-primary"}`}>{x.label}</Link>)}</div>
-    </section>
+    <StudentPageHeading eyebrow="Your preparation library" title={s.label} description={s.blurb}><span className="border-l-2 border-primary pl-4 text-sm font-semibold">{data.length} published {s.kind === "event" ? "events" : "resources"}</span></StudentPageHeading>
+    <nav aria-label="Preparation sections" className="flex gap-2 overflow-x-auto border-b pb-3">{PREP_SECTIONS.map((x) => <Button asChild key={x.slug} variant={x.slug === s.slug ? "secondary" : "ghost"} size="sm" className="shrink-0"><Link to="/prep/$section" params={{ section: x.slug }}>{x.label}</Link></Button>)}</nav>
     {error && <p className="text-sm text-destructive">Could not load material.</p>}
-    {isLoading ? <p className="text-sm text-muted-foreground">Loading…</p> : data.length === 0 ? <p className="section-card p-8 text-center text-sm text-muted-foreground">Nothing published here yet. Check back soon.</p> :
+    {isLoading ? <p className="text-sm text-muted-foreground">Loading…</p> : data.length === 0 ? <div className="border-y bg-card px-6 py-16 text-center"><p className="student-eyebrow">{s.label}</p><h2 className="mt-3 text-xl font-bold">Your library is taking shape</h2><p className="mt-2 text-sm text-muted-foreground">No material published yet. Check back for new additions.</p></div> :
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{data.map((r, i) => {
         const link = safeUrl(r.registration_url); const when = r.event_at ? new Date(r.event_at) : null; const past = when ? when.getTime() < Date.now() : false;
         return <article key={r.id} style={{ "--i": i } as React.CSSProperties} className="animate-reveal card-lift section-card flex flex-col overflow-hidden">

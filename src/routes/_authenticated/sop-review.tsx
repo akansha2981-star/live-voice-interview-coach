@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -68,11 +70,7 @@ function SopReview() {
   }
 
   return <div className="grid gap-6">
-    <section className="animate-reveal section-card p-6">
-      <p className="text-xs font-semibold uppercase tracking-wider text-primary">Career tools</p>
-      <h1 className="mt-1 text-3xl font-bold">AI SOP Review</h1>
-      <p className="mt-1 text-sm text-muted-foreground">College-specific feedback on your Statement of Purpose — scores, line-by-line comments and what to add, remove or strengthen, in your own voice.</p>
-    </section>
+    <StudentPageHeading eyebrow="Career tools" title="AI SOP Review" description="Make your story matter. Refine your Statement of Purpose for your target college."><div className="border-l-2 border-accent pl-4"><p className="text-3xl font-bold text-primary">{reviews.length}</p><p className="text-xs text-muted-foreground">SOP submissions</p></div></StudentPageHeading>
 
     <section className="section-card grid gap-4 p-6">
       <h2 className="text-xl font-bold">Submit your SOP</h2>
@@ -91,7 +89,7 @@ function SopReview() {
       <div className="mt-3 divide-y">{reviews.map((r) => { const label = sopStatusLabel(r); return <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
         <div className="min-w-0"><p className="truncate font-semibold">{r.college_name} · {r.file_name}</p><p className="text-xs text-muted-foreground">Submitted {new Date(r.created_at).toLocaleString()}{r.status === "under_review" ? ` · expected by ${new Date(r.expected_by).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}{r.error ? ` · ${r.error}` : ""}</p></div>
         <div className="flex items-center gap-3"><span className={`rounded-full px-3 py-1 text-xs font-semibold ${r.status === "completed" ? "bg-success/15 text-success" : r.status === "failed" ? "bg-destructive/10 text-destructive" : "animate-pulse bg-secondary text-primary"}`}>{label}</span>
-          {r.status === "completed" && <button className="text-sm font-semibold text-primary hover:underline" onClick={() => setOpenId(r.id)}>{r.overall_score}/100 · View</button>}</div>
+          {r.status === "completed" && <Button variant="ghost" size="sm" onClick={() => setOpenId(r.id)}>{r.overall_score}/100 · View</Button>}</div>
       </div>; })}</div>
     </section>}
 

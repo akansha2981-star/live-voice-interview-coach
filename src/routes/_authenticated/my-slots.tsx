@@ -1,3 +1,4 @@
+import { StudentPageHeading } from "@/components/student-page-heading";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -22,7 +23,8 @@ function MySlots() {
   const { data: detail, isLoading } = useQuery({ ...interviewQuery(open ?? ""), enabled: open !== null });
   const label: Record<string, string> = { booked: "Missed", no_show: "Missed", started: "Completed", completed: "Completed", cancelled: "Cancelled" };
   return <div className="grid gap-6">
-    <section className="animate-reveal section-card flex flex-wrap items-end justify-between gap-4 p-6"><div><p className="text-xs font-semibold uppercase tracking-wider text-primary">My interviews</p><h1 className="mt-1 text-3xl font-bold">My slots</h1><p className="mt-1 text-sm text-muted-foreground">Your camera, microphone and connection are checked right before each interview starts.</p></div><Button asChild><Link to="/slots">Book a new slot</Link></Button></section>
+    <StudentPageHeading eyebrow="My interviews" title="My slots" description="Your upcoming appointments and past interview reports, together."><Button asChild><Link to="/slots">Book a new slot</Link></Button></StudentPageHeading>
+
     <BookedInterviews />
     <section className="section-card p-5"><h2 className="text-xl font-bold">Past bookings</h2>
       {!past.length ? <p className="py-6 text-center text-sm text-muted-foreground">No past bookings yet.</p> :
