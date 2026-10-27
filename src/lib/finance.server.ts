@@ -11,7 +11,7 @@ export async function recordUsage(input: { eventKey: string; model: string; attr
     if(rateError) throw rateError;
     const priced = estimateUsage(row, (rates ?? []) as Rate[]);
     const values = {...row, estimates:priced.estimates, pricing_snapshot:priced.snapshot as never};
-    const {error} = existing ? await supabaseAdmin.from("finance_usage").update(values).eq("id",existing.id).eq("finalized",false) : await supabaseAdmin.from("finance_usage").insert(values);
+    const {error} = await supabaseAdmin.rpc("finance_record_usage",{_row:values});
     if(error && error.code!=="23505") throw error;
   } catch { console.error("Finance usage recording failed; cost coverage may be incomplete."); }
 }
