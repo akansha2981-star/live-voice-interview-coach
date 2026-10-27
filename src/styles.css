@@ -289,8 +289,16 @@
 .student-shell { background: var(--muted); }
 .student-eyebrow { color: var(--primary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
 .student-nav-link { position: relative; }
-.student-nav-link[aria-current="page"] { background: var(--secondary); box-shadow: inset 3px 0 var(--primary); }
-.student-sidebar { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.student-nav-link[aria-current="page"] { background: color-mix(in oklab, var(--primary) 9%, var(--card)); box-shadow: inset 3px 0 var(--primary); }
+.student-sidebar { scrollbar-width: thin; scrollbar-color: var(--border) transparent; background: linear-gradient(180deg, var(--card) 0%, color-mix(in oklab, var(--secondary) 45%, var(--card)) 100%); }
+.side-hero { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 8%, var(--card)), var(--card) 70%); box-shadow: var(--shadow-soft); }
+.side-group-title { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted-foreground); }
+.side-group-num { font-size: 9px; font-weight: 800; color: var(--primary); background: color-mix(in oklab, var(--primary) 10%, var(--card)); border-radius: 5px; padding: 2px 5px; }
+.nav-mark { transition: transform 200ms ease, box-shadow 200ms ease; }
+.student-nav-link:hover .nav-mark { transform: scale(1.1); box-shadow: var(--shadow-soft); }
+.nav-arrow { opacity: 0; transform: translateX(-4px); transition: opacity 200ms ease, transform 200ms ease; color: var(--primary); }
+.student-nav-link:hover .nav-arrow, .student-nav-link[aria-current="page"] .nav-arrow { opacity: 1; transform: translateX(0); }
+.side-credits { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: linear-gradient(160deg, color-mix(in oklab, var(--accent) 30%, var(--card)), var(--card) 65%); box-shadow: var(--shadow-soft); }
 .student-page-heading { padding: 0 0 8px; }
 .overview-focus { background: var(--student-focus); border-block: 1px solid var(--border); }
 .next-session { box-shadow: var(--student-shadow); }
