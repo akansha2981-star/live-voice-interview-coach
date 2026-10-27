@@ -5,7 +5,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { benchmarkQuery, myReportsQuery, myReviewsQuery } from "@/lib/queries";
-import { MIN_COMPARISON_SAMPLE, SECTIONS, compareLatest, fmtTime, journey, pctStatus, reviewItems, splitReviews, strongestWeakest, topPriorities, weakestArea, type ScoredInterview, type Status } from "@/lib/dashboard-insights";
+import { SECTIONS, compareLatest, fmtTime, journey, pctStatus, reviewItems, splitReviews, strongestWeakest, topPriorities, weakestArea, type ScoredInterview, type Status } from "@/lib/dashboard-insights";
 import type { VisionSummary } from "@/lib/vision";
 import { Button } from "@/components/ui/button";
 import { AnimatedNumber, GrowBar, ScoreRing } from "@/components/motion";
@@ -35,7 +35,7 @@ export function DashboardInsights() {
   const cats = report.category_scores ?? { resume: null, practical: null, general_knowledge: null };
   const sw = strongestWeakest(cats);
   const b = bench.data;
-  const enough = b && b.sample_size >= MIN_COMPARISON_SAMPLE && b.avg_overall != null;
+  const enough = b != null && b.avg_overall != null;
   const diff = enough ? Math.round((latest.overall_score ?? 0) - Number(b!.avg_overall)) : null;
 
   const num = (v: number | null | undefined, opts: { signed?: boolean; suffix?: string; delay?: number } = {}) => v == null ? "—" : <AnimatedNumber value={v} signed={opts.signed} suffix={opts.suffix} delay={opts.delay} />;
