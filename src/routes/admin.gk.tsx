@@ -34,7 +34,7 @@ function AdminGk() {
   const [view, setView] = useState<GkStatus>("published");
   const [form, setForm] = useState<Form | null>(null); const [preview, setPreview] = useState(false); const [busy, setBusy] = useState(false);
   const [newCat, setNewCat] = useState("");
-  const statMap = useMemo(() => new Map((stats.data ?? []).map((s: { article_id: string }) => [s.article_id, s as { views: number; unique_readers: number; completions: number; bookmarks: number }])), [stats.data]);
+  const statMap = useMemo(() => new Map((stats.data ?? []).map((s: { article_id: string }) => [s.article_id, s as unknown as { views: number; unique_readers: number; completions: number; bookmarks: number }])), [stats.data]);
   const list = (arts.data ?? []).filter((a) => effectiveStatus(a.status, a.scheduled_at) === view);
   const counts = (s: GkStatus) => (arts.data ?? []).filter((a) => effectiveStatus(a.status, a.scheduled_at) === s).length;
   const totals = (stats.data ?? []).reduce((t: number[], s: { views: number; completions: number; bookmarks: number }) => [t[0] + Number(s.views), t[1] + Number(s.completions), t[2] + Number(s.bookmarks)], [0, 0, 0]);
@@ -49,7 +49,7 @@ function AdminGk() {
     try {
       const row = {
         title: form.title.trim(), slug: slugify(form.slug || form.title) || crypto.randomUUID().slice(0, 8), category_id: form.category_id || null, subcategory: form.subcategory.trim() || null, cover_image: safeUrl(form.cover_image), author: form.author.trim() || null,
-        tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean), summary_english: form.summary_english, summary_hindi: form.summary_hindi || null, summary_hinglish: form.summary_hinglish || null, detailed_content: form.detailed_content, why_this_matters: form.why_this_matters || null,
+        tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean), summary_english: form.summary_english, summary_hindi: form.summary_hindi, summary_hinglish: form.summary_hinglish, detailed_content: form.detailed_content, why_this_matters: form.why_this_matters,
         facts: cleanList(split(form.facts).map(([heading, content]) => (content === undefined ? { heading: "", content: heading } : { heading, content })), ["content"]),
         interview_angles: cleanList(split(form.angles).map(([heading, content, talking_point]) => ({ heading, content: content ?? "", talking_point: talking_point ?? "" })), ["heading", "content"]),
         interview_questions: cleanList(split(form.questions).map(([question, answer, difficulty]) => ({ question, answer: answer ?? "", difficulty: difficulty ?? "" })), ["question", "answer"]),
