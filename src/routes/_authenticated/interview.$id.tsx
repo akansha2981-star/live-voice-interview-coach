@@ -30,7 +30,6 @@ export const Route = createFileRoute("/_authenticated/interview/$id")({
 });
 
 type Turn = { role: "user" | "assistant"; text: string; start_ms: number; end_ms: number };
-const MAX_MS = 25 * 60 * 1000;
 const LOOK_AWAY_MS = 2000;
 
 
@@ -45,6 +44,9 @@ function InterviewRoom() {
   const framesRef = useRef<VisionFrame[]>([]);
   const startedAt = useRef<number>(0);
   const endingRef = useRef(false);
+  // Admin-configured duration plus a 5-minute grace period before the interview auto-ends.
+  const maxMsRef = useRef(25 * 60 * 1000);
+  useEffect(() => { void supabase.from("interview_settings").select("duration_minutes").eq("id", 1).maybeSingle().then(({ data }) => { if (data) maxMsRef.current = (data.duration_minutes + 5) * 60 * 1000; }); }, []);
   const lookAwaySince = useRef<number | null>(null);
   const lastSpeech = useRef<{ role: Turn["role"]; at: number } | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -133,7 +135,7 @@ function InterviewRoom() {
       if (!startedAt.current) return;
       const ms = performance.now() - startedAt.current;
       setElapsed(ms);
-      if (ms > MAX_MS && !endingRef.current) void endInterview();
+      if (ms > maxMsRef.current && !endingRef.current) void endInterview();
     }, 300);
     return () => clearInterval(t);
   });
