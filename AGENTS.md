@@ -23,6 +23,8 @@
 - Dashboard transcript detail is fetched on demand; interview history reads lightweight summary metrics rather than every transcript.
 - The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
 - Interview presentation lives in a browser-safe workspace; transcript following changes only its own scroll container so caption updates never move the room.
+- Live interview uses a viewport-bounded conversation grid and compact persistent tracking band; optional alert settings open in a dialog rather than expanding tracking.
+- Admin presentation shares student surface tokens and grouped navigation while preserving the existing staff access gate and management queries.
 - tsconfig relaxes noPropertyAccessFromIndexSignature/noUncheckedIndexedAccess/exactOptionalPropertyTypes/noImplicitReturns to keep UI code readable.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function with a minimum sample size, never raw rows.

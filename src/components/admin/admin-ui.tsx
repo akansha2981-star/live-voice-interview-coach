@@ -12,9 +12,9 @@ export function PageHeader({ title, sub, children }: { title: string; sub?: stri
 }
 
 export function Stat({ label, value, note, i = 0, tone = "text-primary" }: { label: string; value: ReactNode; note?: string; i?: number; tone?: string }) {
-  return <div style={{ "--i": i } as React.CSSProperties} className="animate-reveal card-lift section-card relative overflow-hidden p-4">
-    <span className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-primary to-sky" />
-    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+  return <div style={{ "--i": i } as React.CSSProperties} className={`animate-reveal dashboard-stat ${["stat-primary", "stat-sky", "stat-success", "stat-accent"][i % 4]} relative overflow-hidden p-5`}>
+    <span className="stat-dot mb-3 block size-1.5 rounded-full" />
+    <p className="text-xs font-semibold text-muted-foreground">{label}</p>
     <p className={`mt-2 text-3xl font-bold tabular-nums ${tone}`}>{value}</p>
     {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
   </div>;

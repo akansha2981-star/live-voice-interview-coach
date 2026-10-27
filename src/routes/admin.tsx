@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState } from "react";
-import { createFileRoute, Link, Outlet, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,11 +25,13 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const NAV: { to: string; label: string }[] = [
-  { to: "/admin", label: "Dashboard" }, { to: "/admin/users", label: "Users" }, { to: "/admin/courses", label: "Courses" }, { to: "/admin/purchases", label: "Course Purchases" },
-  { to: "/admin/interviews", label: "Interview Manager" }, { to: "/admin/slots", label: "Slot Manager" }, { to: "/admin/colleges", label: "Colleges" }, { to: "/admin/training", label: "AI Training" }, { to: "/admin/resumes", label: "Resume Analyzer" }, { to: "/admin/sop-reviews", label: "SOP Review" }, { to: "/admin/credits", label: "Interview Credits" },
-  { to: "/admin/resources", label: "Prep Material" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource Downloads" }, { to: "/admin/support", label: "Support Tickets" },
-  { to: "/admin/documents", label: "User Documents" }, { to: "/admin/reports", label: "Reports & Exports" }, { to: "/admin/settings", label: "Admin Settings" }, { to: "/admin/audit", label: "Audit Logs" },
+const NAV_GROUPS = [
+  { title: "Workspace", items: [{ to: "/admin", label: "Overview" }, { to: "/admin/users", label: "Students" }, { to: "/admin/support", label: "Support tickets" }] },
+  { title: "Interviews", items: [{ to: "/admin/interviews", label: "Interview manager" }, { to: "/admin/slots", label: "Slots & schedule" }, { to: "/admin/credits", label: "Interview credits" }, { to: "/admin/reports", label: "Reports & exports" }] },
+  { title: "Courses & payments", items: [{ to: "/admin/courses", label: "Courses" }, { to: "/admin/purchases", label: "Course purchases" }] },
+  { title: "AI & career tools", items: [{ to: "/admin/colleges", label: "Colleges" }, { to: "/admin/training", label: "AI training" }, { to: "/admin/resumes", label: "Resume analyzer" }, { to: "/admin/sop-reviews", label: "SOP reviews" }] },
+  { title: "Content & resources", items: [{ to: "/admin/resources", label: "Prep material" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource downloads" }, { to: "/admin/documents", label: "Student documents" }] },
+  { title: "Administration", items: [{ to: "/admin/settings", label: "Settings" }, { to: "/admin/audit", label: "Audit logs" }] },
 ];
 
 function AdminLayout() {
@@ -49,22 +51,17 @@ function AdminShell({ name, roles }: { name: string; roles: string[] }) {
   const signOut = useSignOut();
   const [open, setOpen] = useState(false);
   const role = (roles.find((r) => r in ROLE_LABEL) ?? "admin") as StaffRole;
-  const nav = <nav className="grid gap-0.5">{NAV.map((n, i) => <Link key={n.to} to={n.to} onClick={() => setOpen(false)} activeOptions={{ exact: n.to === "/admin" }} className="flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-ink-muted transition-all hover:translate-x-0.5 hover:bg-ink-foreground/10 hover:text-ink-foreground" activeProps={{ className: "flex items-center gap-3 rounded-lg bg-ink-foreground/15 px-2.5 py-2 text-sm font-semibold text-ink-foreground shadow-[inset_3px_0_0_var(--sky)]" }}><span className="grid size-6 shrink-0 place-items-center rounded-md bg-ink-foreground/10 text-[10px] font-bold tabular-nums">{String(i + 1).padStart(2, "0")}</span><span className="truncate">{n.label}</span></Link>)}</nav>;
-  return <div className="min-h-screen bg-background">
-    <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur-md">
-      <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-6">
-        <div className="flex min-w-0 items-center gap-3"><Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setOpen(!open)}>{open ? "Close" : "Menu"}</Button><Link to="/admin"><Logo /></Link><span className="hidden rounded-full bg-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-foreground sm:inline">Admin portal</span></div>
-        <div className="flex items-center gap-3"><div className="hidden text-right text-xs leading-tight sm:block"><p className="font-semibold">{name}</p><p className="text-muted-foreground">{ROLE_LABEL[role]}</p></div><span className="grid size-9 place-items-center rounded-full bg-gradient-to-br from-ink to-primary text-xs font-bold text-primary-foreground">{name.slice(0, 1).toUpperCase()}</span><Button variant="ghost" size="sm" onClick={signOut}>Logout</Button></div>
-      </div>
-    </header>
-    <div className="flex">
-      <aside className={`${open ? "fixed inset-x-0 top-16 bottom-0 z-40 flex" : "hidden"} w-full flex-col gap-4 overflow-y-auto bg-ink p-3 text-ink-foreground lg:sticky lg:top-16 lg:flex lg:h-[calc(100dvh-4rem)] lg:w-64 lg:shrink-0`}>
-        <p className="px-2.5 pt-2 text-[10px] font-bold uppercase tracking-wider text-ink-muted">Administration</p>
-        {nav}
-        <div className="mt-auto rounded-xl bg-ink-foreground/10 p-3 text-xs text-ink-muted">Signed in as <span className="font-semibold text-ink-foreground">{ROLE_LABEL[role]}</span>. Actions are recorded in the audit log.</div>
-      </aside>
-      <main className="min-w-0 flex-1 px-4 py-6 md:px-8"><div className="mx-auto grid max-w-7xl gap-6 animate-fade"><Outlet /></div></main>
-    </div>
+  const path = useRouterState({ select: (state) => state.location.pathname });
+  const current = NAV_GROUPS.flatMap((g) => g.items).find((n) => n.to === path)?.label ?? "Administration";
+  const nav = <>{NAV_GROUPS.map((g) => <section key={g.title} className="mb-5"><h2 className="px-3 pb-2 text-[10px] font-bold uppercase text-muted-foreground">{g.title}</h2><nav aria-label={g.title} className="grid gap-1">{g.items.map((n) => <Link key={n.to} to={n.to} onClick={() => setOpen(false)} activeOptions={{ exact: n.to === "/admin" }} className="student-nav-link flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" activeProps={{ className: "student-nav-link flex items-center gap-3 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-primary" }}><span className="grid size-7 shrink-0 place-items-center rounded-md bg-secondary text-[10px] font-bold text-primary">{n.label.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()}</span><span>{n.label}</span></Link>)}</nav></section>)}</>;
+  return <div className="student-shell min-h-screen">
+    <header className="sticky top-0 z-30 border-b bg-card/95 backdrop-blur-md"><div className="flex h-[72px] items-center justify-between gap-2 px-4 md:px-7">
+      <div className="flex min-w-0 items-center gap-3"><Button variant="outline" size="sm" className="lg:hidden" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Close" : "Menu"}</Button><Link to="/admin"><Logo /></Link><span className="hidden border-l pl-3 text-xs leading-tight text-muted-foreground md:block"><span className="block font-semibold text-foreground">Administration</span>MBA Compass workspace</span></div>
+      <div className="flex items-center gap-2"><span className="hidden rounded-full border bg-secondary px-3 py-1.5 text-xs font-semibold text-primary sm:block">{ROLE_LABEL[role]}</span><span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-primary">{name.slice(0, 1).toUpperCase()}</span><span className="hidden text-xs font-semibold md:block">{name.split(" ")[0]}</span><Button variant="ghost" size="sm" onClick={signOut}>Logout</Button></div>
+    </div></header>
+    <div className="flex"><aside aria-label="Admin navigation" className={`student-sidebar ${open ? "fixed inset-x-0 top-[72px] bottom-0 z-40 flex" : "hidden"} w-full flex-col overflow-y-auto border-r bg-card px-4 py-5 lg:sticky lg:top-[72px] lg:flex lg:h-[calc(100dvh-72px)] lg:w-60 lg:shrink-0`}>
+      <div className="mb-5 border-b px-3 pb-4"><p className="student-eyebrow">Admin workspace</p><p className="mt-1 text-sm font-semibold">Manage every student journey.</p></div>{nav}<div className="mt-auto border-t px-3 pt-4 text-xs text-muted-foreground">{ROLE_LABEL[role]} access<span className="mt-1 block">MBA Compass AI Interview</span></div>
+    </aside><main className="student-content mx-auto min-w-0 max-w-[1600px] flex-1 px-4 py-6 md:px-7 xl:px-10"><div className="mb-6 flex items-center justify-between border-b pb-4 text-xs text-muted-foreground"><p>MBA Compass <span className="mx-2">/</span><span className="font-semibold text-foreground">{current}</span></p><span className="hidden sm:block">Admin workspace</span></div><div className="grid min-w-0 gap-6 animate-fade"><Outlet /></div></main></div>
   </div>;
 }
 
@@ -81,7 +78,7 @@ function AdminLogin() {
   return <div className="auth-shell grid min-h-dvh place-items-center p-4">
     <form onSubmit={submit} className="animate-reveal w-full max-w-sm rounded-2xl border bg-card p-7 shadow-soft">
       <Logo />
-      <span className="mt-5 inline-block rounded-full bg-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-foreground">Admin portal</span>
+      <span className="mt-5 inline-block rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase text-primary">Admin portal</span>
       <h1 className="mt-3 text-2xl font-bold">Administrator sign in</h1>
       <p className="mt-1 text-sm text-muted-foreground">Authorised staff only. All activity is logged.</p>
       <div className="mt-6 grid gap-4">

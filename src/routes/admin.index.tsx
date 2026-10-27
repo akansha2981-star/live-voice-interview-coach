@@ -1,12 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, DateRange, ExportButton, PageHeader, Stat, useRange } from "@/components/admin/admin-ui";
 import { dailyAverage } from "@/lib/admin-utils";
 import { AnimatedNumber } from "@/components/motion";
+import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
+export const Route = createFileRoute("/admin/")({ head: () => ({ meta: [{ title: "Administration overview — MBA Compass" }, { name: "description", content: "MBA Compass student activity, interview scheduling and platform performance." }, { property: "og:title", content: "Administration overview — MBA Compass" }, { property: "og:description", content: "Student activity, interview scheduling and platform performance overview." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: AdminDashboard });
 
 type Metrics = { users: number; new_users: number; purchases: number; booked: number; completed: number; upcoming: number; cancelled: number; no_show: number; users_with_credits: number; pending_tickets: number; downloads: number; days: number; daily: { day: string; booked: number; completed: number }[] };
 
@@ -23,6 +24,7 @@ function AdminDashboard() {
   return <>
     <PageHeader title="Dashboard" sub="Live platform metrics for the selected period"><DateRange {...r} /><ExportButton name="daily-statistics" rows={() => m?.daily ?? []} /></PageHeader>
     {error && <p className="text-sm text-destructive">Could not load metrics.</p>}
+    <section className="overview-focus grid gap-5 px-5 py-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center"><div><p className="student-eyebrow">Platform overview</p><h2 className="mt-2 text-2xl font-bold">Every student journey, in focus.</h2><p className="mt-2 text-sm text-muted-foreground">{m ? `${m.upcoming} upcoming interviews · ${m.pending_tickets} pending support tickets` : "Interview activity and student support"}</p></div><div className="flex flex-wrap gap-2"><Button asChild size="sm"><Link to="/admin/slots">Manage slots</Link></Button><Button asChild size="sm" variant="outline"><Link to="/admin/courses">Manage courses</Link></Button></div></section>
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
       <Stat i={0} label="Registered users" value={n(m?.users)} note={m ? `${m.new_users} new in period` : isLoading ? "Loading…" : ""} />
       <Stat i={1} label="Course purchases" value={n(m?.purchases)} note="Recorded purchases in period" />
