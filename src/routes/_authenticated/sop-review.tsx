@@ -82,17 +82,26 @@ function SopReview() {
   return <div className="grid gap-6">
     <StudentPageHeading eyebrow="Career tools" title="AI SOP Review" description="Make your story matter. Refine your Statement of Purpose for your target college."><div className="border-l-2 border-accent pl-4"><p className="text-3xl font-bold text-primary">{reviews.length}</p><p className="text-xs text-muted-foreground">SOP submissions</p></div></StudentPageHeading>
 
-    <section className="section-card grid gap-4 p-6">
-      <h2 className="text-xl font-bold">Submit your SOP</h2>
-      <div className="grid max-w-md gap-2"><Label>Target college</Label>
-        <Select value={college} onValueChange={setCollege}><SelectTrigger><SelectValue placeholder={colleges.length ? "Select college" : "No colleges added yet"} /></SelectTrigger><SelectContent>{colleges.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
+    <section className="section-card grid gap-6 p-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="grid min-w-0 content-start gap-4">
+        <div><p className="student-eyebrow">New review</p><h2 className="mt-1 text-xl font-bold">Submit your SOP</h2></div>
+        <div className="grid gap-2"><Label><span className="mr-2 inline-grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">1</span>Choose your target college</Label>
+          <Select value={college} onValueChange={setCollege}><SelectTrigger><SelectValue placeholder={colleges.length ? "Select college" : "No colleges added yet"} /></SelectTrigger><SelectContent>{colleges.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
+        </div>
+        <div className="grid gap-2"><Label><span className="mr-2 inline-grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">2</span>Upload your SOP</Label>
+          <label className={`grid place-items-center rounded-lg border-2 border-dashed border-primary/30 bg-secondary/40 px-6 py-7 text-center transition ${busy || !college ? "opacity-60" : "cursor-pointer hover:border-primary hover:bg-secondary"}`}>
+            <span className="text-base font-semibold text-primary">{busy ? "SOP under review…" : college ? "Choose SOP file" : "Select a college first"}</span>
+            <span className="mt-1 text-xs text-muted-foreground">PDF, DOC/DOCX, TXT or image · up to 10 MB</span>
+            <input type="file" className="sr-only" accept=".pdf,.doc,.docx,.txt,image/png,image/jpeg,image/webp" disabled={busy || !college} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
+          </label>
+        </div>
+        {err && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{err}</p>}
       </div>
-      <label className={`grid place-items-center rounded-lg border-2 border-dashed border-primary/30 bg-secondary/40 p-8 text-center transition ${busy || !college ? "opacity-60" : "cursor-pointer hover:bg-secondary"}`}>
-        <span className="text-base font-semibold text-primary">{busy ? "SOP Under Review…" : "Choose SOP file"}</span>
-        <span className="mt-1 text-xs text-muted-foreground">PDF, DOC/DOCX, TXT or image · up to 10 MB · expected turnaround within 1 hour</span>
-        <input type="file" className="sr-only" accept=".pdf,.doc,.docx,.txt,image/png,image/jpeg,image/webp" disabled={busy || !college} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
-      </label>
-      {err && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{err}</p>}
+      <aside className="rounded-lg border bg-secondary/30 p-5">
+        <p className="student-eyebrow">What you receive</p>
+        <ol className="mt-3 grid gap-3 text-sm">{[["Overall score", "Rated across 13 categories with clear reasons."], ["College fit", "How well your story matches your chosen school."], ["Line-by-line feedback", "Exact sentences to add, cut or strengthen."], ["Rewritten SOP", "An improved version in your own voice, ready to download."]].map(([t, d], i) => <li key={t} className="flex gap-3"><span className="mt-0.5 inline-grid size-6 shrink-0 place-items-center rounded-full border border-primary/30 bg-card text-xs font-bold text-primary">{i + 1}</span><div><p className="font-semibold">{t}</p><p className="text-xs text-muted-foreground">{d}</p></div></li>)}</ol>
+        <p className="mt-4 border-t pt-3 text-xs text-muted-foreground">Upload one SOP at a time — not a resume or a collection of samples.</p>
+      </aside>
     </section>
 
     {(busy || processing) && <DocumentAnalysisWorkspace kind="sop" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? null) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text} />}
