@@ -10,7 +10,6 @@ export const SECTIONS = [
 ] as const;
 export type SectionKey = (typeof SECTIONS)[number]["key"];
 
-export const MIN_COMPARISON_SAMPLE = 5;
 export const LONG_PAUSE_S = 5;
 export const FAST_WPM = 180;
 export const FILLER_FLAG = 3;
