@@ -107,7 +107,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
     }
   }
 
-  async function oauth(provider: "google" | "lovable") {
+  async function oauth(provider: "google") {
     const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin + "/auth" });
     if (result.error) toast.error(result.error.message ?? "Sign-in failed");
   }
@@ -127,7 +127,7 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
           </div>
 
           <div className="mt-5">
-            {mode !== "forgot" && <><div className="grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => oauth("google")}>Continue with Google</Button><Button variant="outline" onClick={() => oauth("lovable")}>With Lovable</Button></div><div className="my-4 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or use email<span className="h-px flex-1 bg-border" /></div></>}
+            {mode !== "forgot" && <><Button variant="outline" className="w-full" onClick={() => oauth("google")}>Continue with Google</Button><div className="my-4 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or use email<span className="h-px flex-1 bg-border" /></div></>}
             {mode !== "forgot" && (
               <div className="relative grid grid-cols-2 rounded-md bg-muted p-1 text-sm font-bold">
                 <span
