@@ -27,3 +27,4 @@
 - The admin portal is the separate top-level `/admin` route tree (own login + shell, `ssr: false`); staff permissions are enforced by RLS helper functions (`is_staff`, `can_operate`, `can_support`, `has_role`) and every sensitive admin write goes through audited SECURITY DEFINER functions.
 - Private files (resources PDFs, support attachments, resumes) are served only via short-lived signed URLs; resource PDF downloads go through the authenticated `downloadResource` server function so every download is logged.
 - Prep material sections reuse `resources` with `category` values from `src/lib/prep.ts`; announcements are staff-only posts with student likes/comments, comment author names stamped by a DB trigger so they can't be spoofed.
+- SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.

@@ -226,18 +226,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          sop_requirements: string | null
         }
         Insert: {
           active?: boolean
           created_at?: string
           id?: string
           name: string
+          sop_requirements?: string | null
         }
         Update: {
           active?: boolean
           created_at?: string
           id?: string
           name?: string
+          sop_requirements?: string | null
         }
         Relationships: []
       }
@@ -446,18 +449,21 @@ export type Database = {
         Row: {
           duration_minutes: number
           id: number
+          sop_tat_minutes: number
           updated_at: string
           updated_by: string | null
         }
         Insert: {
           duration_minutes?: number
           id?: number
+          sop_tat_minutes?: number
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
           duration_minutes?: number
           id?: number
+          sop_tat_minutes?: number
           updated_at?: string
           updated_by?: string | null
         }
@@ -779,6 +785,71 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sop_reviews: {
+        Row: {
+          college_id: string | null
+          college_name: string
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          expected_by: string
+          extracted_text: string | null
+          file_name: string
+          file_path: string
+          id: string
+          mime_type: string | null
+          overall_score: number | null
+          report: Json | null
+          samples_used: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          college_id?: string | null
+          college_name: string
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          expected_by?: string
+          extracted_text?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          mime_type?: string | null
+          overall_score?: number | null
+          report?: Json | null
+          samples_used?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          college_id?: string | null
+          college_name?: string
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          expected_by?: string
+          extracted_text?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          mime_type?: string | null
+          overall_score?: number | null
+          report?: Json | null
+          samples_used?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sop_reviews_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_tickets: {
         Row: {

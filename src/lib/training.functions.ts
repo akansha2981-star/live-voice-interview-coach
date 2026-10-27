@@ -25,7 +25,7 @@ export const processTrainingDoc = createServerFn({ method: "POST" })
     await supabaseAdmin.from("college_training_docs").update({ status: "reading", error: null }).eq("id", doc.id);
     try {
       type Part = { type: "text"; text: string } | { type: "file"; filename: string; data: string; mediaType: string } | { type: "image"; image: string; mediaType: string };
-      const content: Part[] = [{ type: "text", text: `College: ${doc.colleges?.name ?? "Unknown"}. Document type: ${doc.kind === "case" ? "case studies / case scenarios" : "interview training material"}. Title: ${doc.title}.` }];
+      const content: Part[] = [{ type: "text", text: `College: ${doc.colleges?.name ?? "Unknown"}. Document type: ${doc.kind === "case" ? "case studies / case scenarios" : doc.kind === "sop_sample" ? "a private sample SOP from an admitted student (extract what makes it work: structure, writing style, motivation and fit expectations in summary/expectations/patterns; leave questions and cases empty)" : "interview training material"}. Title: ${doc.title}.` }];
       if (data.text?.trim()) content.push({ type: "text", text: `Document text:\n${data.text}` });
       else {
         const { data: blob, error } = await supabaseAdmin.storage.from("college-training").download(doc.file_path);
