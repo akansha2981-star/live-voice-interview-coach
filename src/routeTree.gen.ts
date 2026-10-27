@@ -36,6 +36,7 @@ import { Route as AdminResourcesRouteImport } from './routes/admin.resources'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSlotsRouteImport } from './routes/admin.slots'
 import { Route as AdminSupportRouteImport } from './routes/admin.support'
+import { Route as AdminTrainingRouteImport } from './routes/admin.training'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenticated/interview.$id'
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
@@ -177,6 +178,11 @@ const AdminSupportRoute = AdminSupportRouteImport.update({
   path: '/support',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTrainingRoute = AdminTrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -232,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
   '/admin/support': typeof AdminSupportRoute
+  '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
   '/admin/support': typeof AdminSupportRoute
+  '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
   '/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -299,6 +307,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/slots': typeof AdminSlotsRoute
   '/admin/support': typeof AdminSupportRoute
+  '/admin/training': typeof AdminTrainingRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
   '/_authenticated/interview/$id': typeof AuthenticatedInterviewIdRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/slots'
     | '/admin/support'
+    | '/admin/training'
     | '/admin/users'
     | '/admin/'
     | '/interview/$id'
@@ -366,6 +376,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/slots'
     | '/admin/support'
+    | '/admin/training'
     | '/admin/users'
     | '/admin'
     | '/interview/$id'
@@ -400,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/slots'
     | '/admin/support'
+    | '/admin/training'
     | '/admin/users'
     | '/admin/'
     | '/_authenticated/interview/$id'
@@ -607,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSupportRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/training': {
+      id: '/admin/training'
+      path: '/training'
+      fullPath: '/admin/training'
+      preLoaderRoute: typeof AdminTrainingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -691,6 +710,7 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSlotsRoute: typeof AdminSlotsRoute
   AdminSupportRoute: typeof AdminSupportRoute
+  AdminTrainingRoute: typeof AdminTrainingRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -710,6 +730,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSlotsRoute: AdminSlotsRoute,
   AdminSupportRoute: AdminSupportRoute,
+  AdminTrainingRoute: AdminTrainingRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
