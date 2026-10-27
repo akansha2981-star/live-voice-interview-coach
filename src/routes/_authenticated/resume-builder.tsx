@@ -1,18 +1,21 @@
 import { StudentPageHeading } from "@/components/student-page-heading";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeResume } from "@/lib/resume.functions";
-import { ANALYSIS_STAGES, CATEGORY_LABELS, RESUME_FILE_TYPES, resumeCreditsLeft, type ResumeReport } from "@/lib/resume-analysis";
+import { CATEGORY_LABELS, RESUME_FILE_TYPES, resumeCreditsLeft, type ResumeReport } from "@/lib/resume-analysis";
+import { DocumentAnalysisWorkspace } from "@/components/document-analysis-workspace";
+import type { ReviewProgress } from "@/lib/document-progress";
 import { ScoreRing, GrowBar, AnimatedNumber } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const resumeAnalysesQuery = queryOptions({
   queryKey: ["resume-analyses"],
+  refetchInterval: (query) => query.state.data?.some((r) => r.status === "processing") ? 1500 : false,
   queryFn: async () => {
     const { data: u } = await supabase.auth.getUser();
     const { data, error } = await supabase.from("resume_analyses").select("*").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
@@ -34,17 +37,12 @@ function ResumeBuilder() {
   const qc = useQueryClient();
   const analyze = useServerFn(analyzeResume);
   const [running, setRunning] = useState(false);
-  const [stage, setStage] = useState(0);
+  const [file, setFile] = useState<File | null>(null);
+  const [sourceText, setSourceText] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const credits = resumeCreditsLeft(analyses);
   const done = analyses.find((a) => a.status === "completed");
   const processing = analyses.find((a) => a.status === "processing");
-
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => setStage((s) => Math.min(s + 1, ANALYSIS_STAGES.length - 1)), 6000);
-    return () => clearInterval(t);
-  }, [running]);
 
   async function upload(file: File | undefined) {
     setErrorMsg(null);
@@ -52,7 +50,7 @@ function ResumeBuilder() {
     if (!RESUME_FILE_TYPES.test(file.name)) return setErrorMsg("Unsupported format. Upload a PDF, Word (DOC/DOCX) or image file.");
     if (file.size === 0) return setErrorMsg("This file is empty. Please upload your full resume.");
     if (file.size > 10 * 1024 * 1024) return setErrorMsg("File is larger than 10 MB.");
-    setRunning(true); setStage(0);
+    setRunning(true); setFile(file); setSourceText(null);
     try {
       let text: string | null = null;
       let mime = file.type || "application/octet-stream";
@@ -62,15 +60,15 @@ function ResumeBuilder() {
         if (text.length < 80) throw new Error("This document looks blank or has too little text to be a resume.");
         mime = "application/msword";
       } else if (/\.pdf$/i.test(file.name)) mime = "application/pdf";
-      setStage(1);
+      setSourceText(text);
       const { data: u } = await supabase.auth.getUser();
       const path = `${u.user?.id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`;
       const { error } = await supabase.storage.from("resume-analyses").upload(path, file, { contentType: file.type || undefined });
       if (error) throw new Error(error.message);
-      setStage(2);
-      const res = await analyze({ data: { path, fileName: file.name, mimeType: mime, text } });
+      const pending = analyze({ data: { path, fileName: file.name, mimeType: mime, text } });
+      const poll = setInterval(() => void qc.invalidateQueries({ queryKey: ["resume-analyses"] }), 1500);
+      const res = await pending.finally(() => clearInterval(poll));
       if (!res.ok) throw new Error(`${res.error} Your credit was not used.`);
-      setStage(ANALYSIS_STAGES.length);
       toast.success("Resume analysis complete.");
     } catch (e) { setErrorMsg(e instanceof Error ? e.message : "Analysis failed."); }
     finally { setRunning(false); await qc.invalidateQueries({ queryKey: ["resume-analyses"] }); }
@@ -80,7 +78,7 @@ function ResumeBuilder() {
     <StudentPageHeading eyebrow="Career tools" title="Resume Builder" description="A clearer resume. A stronger first impression."><div className="border-l-2 border-success pl-4"><p className="text-3xl font-bold text-primary">{credits}</p><p className="text-xs text-muted-foreground">{credits ? "Resume credit available" : "Resume credit used"}</p></div></StudentPageHeading>
 
     {!done && <section className="section-card p-6">
-      {running || processing ? <AnalysisProgress stage={stage} waiting={!running} /> : <>
+      {running || processing ? <p className="text-sm text-primary" aria-live="polite">Resume analysis in progress</p> : <>
         <h2 className="text-xl font-bold">Upload your resume</h2>
         <p className="mt-1 text-sm text-muted-foreground">PDF, DOC/DOCX or an image, up to 10 MB. You have one analysis; invalid or unreadable files do not use it.</p>
         <label className="mt-5 grid cursor-pointer place-items-center rounded-lg border-2 border-dashed border-primary/30 bg-secondary/40 p-10 text-center transition hover:bg-secondary">
@@ -92,21 +90,8 @@ function ResumeBuilder() {
       </>}
     </section>}
 
+    {(running || processing || done) && <DocumentAnalysisWorkspace kind="resume" file={file} fileName={processing?.file_name ?? done?.file_name} progress={(processing?.analysis_progress ?? done?.analysis_progress) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text ?? done?.extracted_text} complete={Boolean(done)} />}
     {done && <Results report={done.report as unknown as Omit<ResumeReport, "improved_resume">} improved={done.improved_resume as unknown as Improved} fileName={done.file_name} />}
-  </div>;
-}
-
-function AnalysisProgress({ stage, waiting }: { stage: number; waiting: boolean }) {
-  return <div aria-live="polite">
-    <h2 className="text-xl font-bold">Analysing your resume</h2>
-    <p className="mt-1 text-sm text-muted-foreground">{waiting ? "Your analysis is still being processed. Refresh in a moment." : "This usually takes about a minute. Please keep this page open."}</p>
-    <ol className="mt-5 grid gap-3">{ANALYSIS_STAGES.map((s, i) => {
-      const state = i < stage ? "done" : i === stage ? "active" : "todo";
-      return <li key={s} className="flex items-center gap-3">
-        <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${state === "done" ? "bg-success text-primary-foreground" : state === "active" ? "animate-pulse bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i + 1}</span>
-        <span className={`text-sm ${state === "todo" ? "text-muted-foreground" : "font-semibold"}`}>{s}{state === "active" && "…"}</span>
-      </li>;
-    })}</ol>
   </div>;
 }
 
@@ -143,7 +128,7 @@ function Results({ report, improved, fileName }: { report: Omit<ResumeReport, "i
   </Tabs>;
 }
 
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
 function resumeHtml(r: Improved) {
   return `<html><head><meta charset="utf-8"><title>${esc(r.name)} - Resume</title><style>body{font-family:Calibri,Carlito,Arial,sans-serif;color:#111;max-width:780px;margin:24px auto;font-size:11pt;line-height:1.35}h1{margin:0;font-size:20pt}h2{font-size:12pt;text-transform:uppercase;border-bottom:1px solid #333;margin:14px 0 6px}.row{display:flex;justify-content:space-between}ul{margin:4px 0 8px 18px;padding:0}p{margin:2px 0}</style></head><body>
 <h1>${esc(r.name)}</h1><p>${esc(r.contact)}</p><p><b>${esc(r.headline)}</b></p>
