@@ -32,10 +32,11 @@ const MOBILE: NavItem[] = [GROUPS[0].items[0], GROUPS[1].items[1], GROUPS[2].ite
 const navKey = (n: NavItem) => n.to + (n.params?.section ?? "");
 
 function NavLink({ n }: { n: NavItem }) {
-  const base = "student-nav-link group flex min-w-0 items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all duration-200";
-  return <Link to={n.to} params={n.params as never} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} bg-secondary font-semibold text-primary shadow-[inset_3px_0_0_var(--primary)]` }}>
-    <span className={`grid size-7 shrink-0 place-items-center rounded-md bg-secondary text-[10px] font-bold text-primary`}>{n.mark}</span>
+  const base = "student-nav-link group flex min-w-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200";
+  return <Link to={n.to} params={n.params as never} className={`${base} text-muted-foreground hover:translate-x-0.5 hover:bg-secondary hover:text-foreground`} activeProps={{ className: `${base} font-semibold text-primary` }}>
+    <span className={`nav-mark grid size-7 shrink-0 place-items-center rounded-md text-[10px] font-bold ${n.tone}`}>{n.mark}</span>
     <span className="min-w-0 leading-tight">{n.label}</span>
+    <span className="nav-arrow ml-auto shrink-0 text-xs" aria-hidden>→</span>
   </Link>;
 }
 
@@ -63,13 +64,24 @@ export function AppShell() {
     </header>
     {menuOpen && <nav aria-label="Student menu" className="fixed inset-x-0 top-[72px] bottom-16 z-40 overflow-y-auto border-b bg-card p-5 md:hidden">{groups.map((g) => <div key={g.title} className="mb-5"><p className="student-eyebrow mb-2">{g.title}</p><div onClick={() => setMenuOpen(false)} className="grid gap-1">{g.items.map((n) => <NavLink key={navKey(n)} n={n} />)}</div></div>)}</nav>}
     <div className="flex">
-      <aside aria-label="Student navigation" className="student-sidebar sticky top-[72px] hidden h-[calc(100dvh-72px)] w-60 shrink-0 flex-col overflow-y-auto border-r bg-card px-4 pb-5 pt-6 md:flex">
-        <div className="mb-6 border-b px-3 pb-5"><p className="student-eyebrow">Student workspace</p><p className="mt-1 text-sm font-semibold">Your next chapter starts here.</p></div>
-        {groups.map((g, gi) => <div key={g.title} style={{ "--i": gi } as React.CSSProperties} className="animate-reveal mb-5">
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase text-muted-foreground">{g.title}</p>
+      <aside aria-label="Student navigation" className="student-sidebar sticky top-[72px] hidden h-[calc(100dvh-72px)] w-64 shrink-0 flex-col overflow-y-auto border-r px-4 pb-5 pt-5 md:flex">
+        <div className="side-hero animate-reveal mb-5">
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-sky text-xs font-bold text-primary-foreground shadow-soft">{initials}</span>
+            <div className="min-w-0"><p className="truncate text-sm font-bold">{name}</p><p className="text-[11px] text-muted-foreground">Student workspace</p></div>
+          </div>
+          <p className="mt-3 border-t border-border/60 pt-3 text-[11px] leading-relaxed text-muted-foreground">Your next chapter starts here — every session moves you closer to ready.</p>
+        </div>
+        {groups.map((g, gi) => <div key={g.title} style={{ "--i": gi + 1 } as React.CSSProperties} className="animate-reveal mb-5">
+          <p className="side-group-title px-3 pb-2"><span className="side-group-num">{String(gi + 1).padStart(2, "0")}</span>{g.title}</p>
           <nav className="grid gap-1">{g.items.map((n) => <NavLink key={navKey(n)} n={n} />)}</nav>
         </div>)}
-        <div className="mt-auto border-t px-3 pt-5"><div className="flex items-center justify-between"><p className="text-xs text-muted-foreground">Interview credits</p><p className="text-2xl font-bold text-primary">{me?.credits ?? "—"}</p></div><Button asChild size="sm" variant="outline" className="mt-3 w-full"><Link to="/slots">Explore courses</Link></Button></div>
+        <div className="side-credits mt-auto">
+          <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold text-muted-foreground">Interview credits</p><p className="text-2xl font-bold text-primary">{me?.credits ?? "—"}</p></div>
+          <div className="kpi-dots mt-2" aria-hidden>{Array.from({ length: 10 }, (_, n) => <i key={n} className={n < Math.min(me?.credits ?? 0, 10) ? "on" : ""} />)}</div>
+          <Button asChild size="sm" className="mt-3 w-full"><Link to="/slots">Book an interview</Link></Button>
+          <Button asChild size="sm" variant="outline" className="mt-2 w-full"><Link to="/slots">Explore courses</Link></Button>
+        </div>
       </aside>
       <main className="student-content mx-auto min-w-0 max-w-[1600px] flex-1 px-4 py-6 pb-28 md:px-7 md:pb-10 xl:px-10">
         <div className="mb-6 flex items-center justify-between gap-3 border-b pb-4 text-xs text-muted-foreground"><p>MBA Compass <span className="mx-2 text-border">/</span><span className="font-semibold text-foreground">{current?.label ?? "My interview"}</span></p><span className="hidden sm:block">AI Interview Suite</span></div>
