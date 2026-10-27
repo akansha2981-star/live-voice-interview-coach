@@ -1,4 +1,4 @@
-export type TranscriptTurn = { role: "user" | "assistant"; text: string; start_ms: number; end_ms: number };
+export type TranscriptTurn = { role: "user" | "assistant"; text: string; start_ms: number; end_ms: number; clarity?: number[] };
 
 export function transcriptMetrics(turns: TranscriptTurn[]) {
   const answers = turns.filter((t) => t.role === "user" && t.text.trim());
