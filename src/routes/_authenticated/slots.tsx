@@ -5,7 +5,7 @@ import { availableSlotsQuery, bookingQuery, meQuery } from "@/lib/queries";
 import { BookedInterviews, SlotPicker } from "@/components/booking-panel";
 import { CourseStore } from "@/components/course-store";
 
-export const Route = createFileRoute("/_authenticated/slots")({
+export const Route = createFileRoute("/_authenticated/slots")({ staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Interview slots — MBA Compass AI Interview" },

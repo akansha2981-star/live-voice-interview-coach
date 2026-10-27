@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export const Route = createFileRoute("/reset-password")({
+export const Route = createFileRoute("/reset-password")({ staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Set a new password — MBA Compass AI Interview" },
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/reset-password")({
       { property: "og:description", content: "Choose a new password for your MBA Compass student account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: ResetPassword,

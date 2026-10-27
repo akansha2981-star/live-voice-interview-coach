@@ -10,7 +10,7 @@ import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/admin/slots")({ component: SlotsPage });
+export const Route = createFileRoute("/admin/slots")({ staticData: { sitemap: false }, component: SlotsPage });
 
 function SlotsPage() {
   const staff = useStaff();

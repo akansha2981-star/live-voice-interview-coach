@@ -27,7 +27,7 @@ export const sopReviewsQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_authenticated/sop-review")({
+export const Route = createFileRoute("/_authenticated/sop-review")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "AI SOP Review — MBA Compass AI Interview" }, { name: "description", content: "College-specific AI review of your Statement of Purpose with scores and line-by-line feedback." }, { property: "og:title", content: "AI SOP Review — MBA Compass" }, { property: "og:description", content: "Get detailed, college-specific feedback on your SOP." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(sopReviewsQuery),
   component: SopReview,

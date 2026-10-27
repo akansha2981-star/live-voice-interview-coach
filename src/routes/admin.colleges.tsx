@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { validQuestionBudget } from "@/lib/interview-limits";
 
-export const Route = createFileRoute("/admin/colleges")({ head: () => ({ meta: [{title:"College interview configuration — MBA Compass Admin"},{name:"description",content:"Configure college interview durations, question budgets and answer windows."},{property:"og:title",content:"College interview configuration — MBA Compass"},{property:"og:description",content:"College-specific interview configuration for authorized staff."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: CollegesPage });
+export const Route = createFileRoute("/admin/colleges")({ staticData: { sitemap: false }, head: () => ({ meta: [{title:"College interview configuration — MBA Compass Admin"},{name:"description",content:"Configure college interview durations, question budgets and answer windows."},{property:"og:title",content:"College interview configuration — MBA Compass"},{property:"og:description",content:"College-specific interview configuration for authorized staff."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: CollegesPage });
 
 function CollegesPage() {
   const staff = useStaff();

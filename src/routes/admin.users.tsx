@@ -12,7 +12,7 @@ import { fmtDateTime } from "@/lib/admin-utils";
 import { balances } from "@/lib/admin-queries";
 import { CreditAdjuster } from "@/components/admin/credit-adjuster";
 
-export const Route = createFileRoute("/admin/users")({ component: UsersPage });
+export const Route = createFileRoute("/admin/users")({ staticData: { sitemap: false }, component: UsersPage });
 const PAGE = 25;
 
 async function fetchUsers(q: string, status: string, from: string, page: number, all = false) {

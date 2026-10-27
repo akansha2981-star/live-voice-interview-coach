@@ -6,7 +6,7 @@ import { Card, DataTable, DateRange, ExportButton, PageHeader, SearchBox, Stat, 
 import { peopleQuery } from "@/lib/admin-queries";
 import { fmtDateTime } from "@/lib/admin-utils";
 
-export const Route = createFileRoute("/admin/downloads")({ component: DownloadsPage });
+export const Route = createFileRoute("/admin/downloads")({ staticData: { sitemap: false }, component: DownloadsPage });
 
 function DownloadsPage() {
   const r = useRange(30); const [q, setQ] = useState("");

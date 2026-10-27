@@ -25,7 +25,7 @@ export const resumeAnalysesQuery = queryOptions({
   },
 });
 
-export const Route = createFileRoute("/_authenticated/resume-builder")({
+export const Route = createFileRoute("/_authenticated/resume-builder")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Resume Builder — MBA Compass AI Interview" }, { name: "description", content: "AI resume analysis, ATS score, SWOT and an improved ATS-friendly resume." }, { property: "og:title", content: "Resume Builder — MBA Compass" }, { property: "og:description", content: "Analyse your resume and build an ATS-friendly version." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(resumeAnalysesQuery),
   component: ResumeBuilder,

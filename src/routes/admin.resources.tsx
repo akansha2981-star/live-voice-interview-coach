@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PREP_SECTIONS, isEventCategory, prepByCategory, safeUrl } from "@/lib/prep";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/admin/resources")({ component: ResourcesPage });
+export const Route = createFileRoute("/admin/resources")({ staticData: { sitemap: false }, component: ResourcesPage });
 
 type Res = { id: string; title: string; description: string | null; instructions: string | null; category: string; banner_path: string | null; pdf_path: string | null; published: boolean; sort_order: number; created_at: string; event_at: string | null; registration_url: string | null };
 const blank = { title: "", description: "", instructions: "", category: "SOP", sort_order: 0, published: false, event_local: "", registration_url: "" };

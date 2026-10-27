@@ -10,7 +10,7 @@ import { useStaff } from "@/hooks/use-staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/admin/settings")({ component: SettingsPage });
+export const Route = createFileRoute("/admin/settings")({ staticData: { sitemap: false }, component: SettingsPage });
 
 function SettingsPage() {
   const staff = useStaff(); const qc = useQueryClient();

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/admin/announcements")({ component: AdminAnnouncements });
+export const Route = createFileRoute("/admin/announcements")({ staticData: { sitemap: false }, component: AdminAnnouncements });
 
 function AdminAnnouncements() {
   const staff = useStaff(); const qc = useQueryClient(); const { data, isLoading } = useAnnouncements();

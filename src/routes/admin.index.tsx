@@ -7,7 +7,7 @@ import { dailyAverage } from "@/lib/admin-utils";
 import { AnimatedNumber } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/admin/")({ head: () => ({ meta: [{ title: "Administration overview — MBA Compass" }, { name: "description", content: "MBA Compass student activity, interview scheduling and platform performance." }, { property: "og:title", content: "Administration overview — MBA Compass" }, { property: "og:description", content: "Student activity, interview scheduling and platform performance overview." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: AdminDashboard });
+export const Route = createFileRoute("/admin/")({ staticData: { sitemap: false }, head: () => ({ meta: [{ title: "Administration overview — MBA Compass" }, { name: "description", content: "MBA Compass student activity, interview scheduling and platform performance." }, { property: "og:title", content: "Administration overview — MBA Compass" }, { property: "og:description", content: "Student activity, interview scheduling and platform performance overview." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: AdminDashboard });
 
 type Metrics = { users: number; new_users: number; purchases: number; booked: number; completed: number; upcoming: number; cancelled: number; no_show: number; users_with_credits: number; pending_tickets: number; downloads: number; days: number; daily: { day: string; booked: number; completed: number }[] };
 

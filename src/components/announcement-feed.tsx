@@ -7,7 +7,7 @@ import { safeUrl } from "@/lib/prep";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-type Post = { id: string; body: string | null; image_path: string | null; link_url: string | null; created_at: string; image: string | null; likes: string[]; comments: { id: string; user_id: string; author_name: string; from_staff: boolean; body: string; created_at: string }[] };
+type Post = { id: string; body: string | null; image_path: string | null; link_url: string | null; created_at: string; image: string | null; likeCount: number; likedByMe: boolean; comments: { id: string; user_id: string; author_name: string; from_staff: boolean; body: string; created_at: string }[] };
 
 export const announcementsKey = ["announcements"] as const;
 export function useAnnouncements() {
@@ -17,10 +17,15 @@ export function useAnnouncements() {
       supabase.from("announcements").select("id, body, image_path, link_url, created_at, announcement_likes(user_id), announcement_comments(id, user_id, author_name, from_staff, body, created_at)").order("created_at", { ascending: false }).limit(50),
     ]);
     if (error) throw error;
+    const ids = (data ?? []).map((p) => p.id);
+    const { data: counts, error: countError } = ids.length ? await supabase.rpc("announcement_like_counts", { _ids: ids }) : { data: [], error: null };
+    if (countError) throw countError;
+    const countMap = new Map((counts ?? []).map((c) => [c.announcement_id, Number(c.likes)]));
+    const me = u.user?.id ?? null;
     const paths = (data ?? []).map((p) => p.image_path).filter(Boolean) as string[];
     const signed = paths.length ? (await supabase.storage.from("resources").createSignedUrls(paths, 3600)).data ?? [] : [];
     const urls = new Map(signed.map((s) => [s.path, s.signedUrl]));
-    return { me: u.user?.id ?? null, posts: (data ?? []).map((p) => ({ id: p.id, body: p.body, image_path: p.image_path, link_url: p.link_url, created_at: p.created_at, image: p.image_path ? urls.get(p.image_path) ?? null : null, likes: (p.announcement_likes ?? []).map((l) => l.user_id), comments: [...(p.announcement_comments ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at)) })) };
+    return { me, posts: (data ?? []).map((p) => ({ id: p.id, body: p.body, image_path: p.image_path, link_url: p.link_url, created_at: p.created_at, image: p.image_path ? urls.get(p.image_path) ?? null : null, likeCount: countMap.get(p.id) ?? 0, likedByMe: !!me && (p.announcement_likes ?? []).some((l) => l.user_id === me), comments: [...(p.announcement_comments ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at)) })) };
   } });
 }
 
@@ -32,7 +37,7 @@ function ago(iso: string) {
 
 export function AnnouncementCard({ p, me, i = 0, canModerate = false, onDelete }: { p: Post; me: string | null; i?: number; canModerate?: boolean; onDelete?: () => void }) {
   const qc = useQueryClient(); const [text, setText] = useState(""); const [open, setOpen] = useState(false); const [busy, setBusy] = useState(false);
-  const liked = !!me && p.likes.includes(me); const link = safeUrl(p.link_url);
+  const liked = p.likedByMe; const link = safeUrl(p.link_url);
   const refresh = () => qc.invalidateQueries({ queryKey: announcementsKey });
   async function toggleLike() {
     if (!me) return;
@@ -53,7 +58,7 @@ export function AnnouncementCard({ p, me, i = 0, canModerate = false, onDelete }
     {p.body && <p className="whitespace-pre-line px-4 pb-3 text-[15px] leading-relaxed">{p.body}</p>}
     {p.image && (link ? <a href={link} target="_blank" rel="noopener noreferrer"><img src={p.image} alt="" className="max-h-[520px] w-full bg-secondary object-contain" loading="lazy" /></a> : <img src={p.image} alt="" className="max-h-[520px] w-full bg-secondary object-contain" loading="lazy" />)}
     {link && <a href={link} target="_blank" rel="noopener noreferrer" className="mx-4 mt-3 block truncate rounded-lg border bg-secondary/60 px-3 py-2 text-sm font-semibold text-primary hover:border-primary/40">Open link · {new URL(link).hostname}</a>}
-    <div className="mx-4 mt-3 flex items-center justify-between border-b pb-2 text-xs text-muted-foreground"><span>{p.likes.length} {p.likes.length === 1 ? "like" : "likes"}</span><button className="hover:text-primary" onClick={() => setOpen((o) => !o)}>{p.comments.length} {p.comments.length === 1 ? "comment" : "comments"}</button></div>
+    <div className="mx-4 mt-3 flex items-center justify-between border-b pb-2 text-xs text-muted-foreground"><span>{p.likeCount} {p.likeCount === 1 ? "like" : "likes"}</span><button className="hover:text-primary" onClick={() => setOpen((o) => !o)}>{p.comments.length} {p.comments.length === 1 ? "comment" : "comments"}</button></div>
     <div className="grid grid-cols-2 gap-1 px-2 py-1">
       <Button variant="ghost" onClick={toggleLike} className={liked ? "font-bold text-primary" : "text-muted-foreground"}>{liked ? "Liked" : "Like"}</Button>
       <Button variant="ghost" onClick={() => setOpen((o) => !o)} className="text-muted-foreground">Comment</Button>

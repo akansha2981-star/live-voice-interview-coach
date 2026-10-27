@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/_authenticated/support")({
+export const Route = createFileRoute("/_authenticated/support")({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Help & Support — MBA Compass AI Interview" }, { name: "description", content: "Raise a support ticket and track replies from the MBA Compass team." }, { property: "og:title", content: "Help & Support — MBA Compass" }, { property: "og:description", content: "Get help with bookings, credits, interviews and reports." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(meQuery),
   component: SupportPage,

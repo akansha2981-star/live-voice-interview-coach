@@ -10,7 +10,7 @@ import { fmtDateTime, TICKET_CATEGORIES, TICKET_STATUS } from "@/lib/admin-utils
 import { useStaff } from "@/hooks/use-staff";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/admin/support")({ component: SupportAdmin });
+export const Route = createFileRoute("/admin/support")({ staticData: { sitemap: false }, component: SupportAdmin });
 
 function SupportAdmin() {
   const staff = useStaff(); const qc = useQueryClient();

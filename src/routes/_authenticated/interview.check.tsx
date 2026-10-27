@@ -17,7 +17,7 @@ import { InterviewDetailsForm, type DetailsState } from "@/components/interview-
 
 type SpeechResult = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
 type SpeechRecognizer = { lang: string; continuous: boolean; interimResults: boolean; onresult: ((e: SpeechResult) => void) | null; onerror: (() => void) | null; onend: (() => void) | null; start: () => void; stop: () => void };
-export const Route = createFileRoute("/_authenticated/interview/check")({
+export const Route = createFileRoute("/_authenticated/interview/check")({ staticData: { sitemap: false },
  validateSearch: z.object({ booking: z.string().optional() }),
  head: () => ({ meta: [{ title: "Equipment verification — MBA Compass AI Interview" }, { name: "description", content: "Verify connection, visible face and spoken microphone before your booked interview." }, { property: "og:title", content: "Equipment verification — MBA Compass" }, { property: "og:description", content: "Prepare for your scheduled MBA interview." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
  loader: ({ context }) => Promise.all([context.queryClient.ensureQueryData(meQuery), context.queryClient.ensureQueryData(bookingQuery)]),

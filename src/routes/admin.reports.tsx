@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, DateRange, ExportButton, PageHeader, useRange } from "@/components/admin/admin-ui";
 
-export const Route = createFileRoute("/admin/reports")({ component: ReportsPage });
+export const Route = createFileRoute("/admin/reports")({ staticData: { sitemap: false }, component: ReportsPage });
 
 function ReportsPage() {
   const r = useRange(30);

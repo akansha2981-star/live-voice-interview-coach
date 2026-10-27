@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { questionTiming, summarizeAudio, type AudioSample } from "@/lib/performance";
 import { interviewDeadline } from "@/lib/interview-limits";
 
-export const Route = createFileRoute("/_authenticated/interview/$id")({
+export const Route = createFileRoute("/_authenticated/interview/$id")({ staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Interview room — MBA Compass AI Interview" },

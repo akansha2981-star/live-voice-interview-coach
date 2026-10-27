@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { AuthScreen } from "@/components/auth-screen";
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/auth")({ staticData: { sitemap: false },
   validateSearch: z.object({ redirect: z.string().optional() }),
   head: () => ({
     meta: [

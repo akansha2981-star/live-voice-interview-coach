@@ -1228,6 +1228,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      announcement_like_counts: {
+        Args: { _ids: string[] }
+        Returns: {
+          announcement_id: string
+          likes: number
+        }[]
+      }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
       book_interview_with_details: {
         Args: {
