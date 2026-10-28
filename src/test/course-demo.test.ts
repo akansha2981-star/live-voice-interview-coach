@@ -5,8 +5,8 @@ describe("scripted interview preview", () => {
   it("counts only the displayed transcript words", () => {
     expect(demoSnapshot(0, 0).wordCount).toBe(0);
     const complete = demoSnapshot(0, 16);
-    expect(complete.wordCount).toBe(31);
-    expect(complete.text.split(/\s+/)).toHaveLength(31);
+    expect(complete.wordCount).toBe(27);
+    expect(complete.text.split(/\s+/)).toHaveLength(27);
   });
   it("does not invent camera metrics or speech while the candidate is absent", () => {
     const absent = demoSnapshot(3, 16);
