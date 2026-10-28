@@ -78,10 +78,9 @@ export function LaunchNoticeScreen({ redirect }: { redirect?: string }) {
 }
 
 /** Launch line shown directly below the prebook strip on public pages. */
-export function LaunchBand({ onPrebook }: { onPrebook: () => void }) {
+export function LaunchBand() {
   return <div className="course-launch-band"><div className="course-container">
     <b>{LAUNCH_HEADLINE}</b>
     <span className="course-launch-seats">Limited seats</span>
-    <button type="button" className="course-launch-band-btn" onClick={onPrebook}>Prebook at ₹1</button>
   </div></div>;
 }
