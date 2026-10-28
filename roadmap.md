@@ -1,4 +1,5 @@
 # Admin portal
+- [ ] Upgrade /courses interview preview with realistic candidate scenes, progressive transcripts, word count and explicit out-of-frame / recovery feedback; verify playback and mobile fit.
 - [x] Enhance /courses: labelled animated interview demo with four selectable moments, expanded report preview, sourced comparison, historical owner-supplied results and SEO. Published ₹99 mock/₹799 preparation offers; free repeat resume reviews and two locked SOP allowances including NMIMS; signed-in allowances and unpaid checkout verified, 91 tests pass. No real payment or paid AI review submitted; full fulfilment remains unverified.
 - [x] Add all six supplied college logos to a pausable /courses auto-scroller with original artwork and no affiliation claims; competitor page content reviewed, desktop/phone rendering, loaded logos, pause/resume and reduced-motion behavior verified.
 - [x] Course page visual redesign: small B School Buzz AI attribution, expanded brand header, six inspectable feature visuals, stronger report/readiness sections and floating report detail; desktop/mobile previews and FAQ interactions verified, no overflow.
