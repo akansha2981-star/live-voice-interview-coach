@@ -70,19 +70,19 @@ function ResumeBuilder() {
       const pending = analyze({ data: { path, fileName: file.name, mimeType: mime, text } });
       const poll = setInterval(() => void qc.invalidateQueries({ queryKey: ["resume-analyses"] }), 1500);
       const res = await pending.finally(() => clearInterval(poll));
-      if (!res.ok) throw new Error(`${res.error} Your credit was not used.`);
+      if (!res.ok) throw new Error(res.error ?? "Analysis failed. Please try again.");
       toast.success("Resume analysis complete.");
     } catch (e) { setErrorMsg(e instanceof Error ? e.message : "Analysis failed."); }
     finally { setRunning(false); await qc.invalidateQueries({ queryKey: ["resume-analyses"] }); }
   }
 
   return <div className="grid gap-6">
-    <StudentPageHeading eyebrow="Career tools" title="Resume Builder" description="A clearer resume. A stronger first impression."><div className="border-l-2 border-success pl-4"><p className="text-3xl font-bold text-primary">{credits}</p><p className="text-xs text-muted-foreground">{credits ? "Resume credit available" : "Resume credit used"}</p></div></StudentPageHeading>
+    <StudentPageHeading eyebrow="Career tools" title="Resume Builder" description="A clearer resume. A stronger first impression."><div className="border-l-2 border-success pl-4"><p className="text-3xl font-bold text-primary">Free</p><p className="text-xs text-muted-foreground">{credits ? "Review your resume anytime" : "Review in progress"}</p></div></StudentPageHeading>
 
-    {!done && <section className="section-card p-6">
+    <section className="section-card p-6">
       {running || processing ? <p className="text-sm text-primary" aria-live="polite">Resume analysis in progress</p> : <>
         <h2 className="text-xl font-bold">Upload your resume</h2>
-        <p className="mt-1 text-sm text-muted-foreground">PDF, DOC/DOCX or an image, up to 10 MB. You have one analysis; invalid or unreadable files do not use it.</p>
+        <p className="mt-1 text-sm text-muted-foreground">PDF, DOC/DOCX or an image, up to 10 MB. Resume analysis and your recreated resume are free. Review one file at a time.</p>
         <label className="mt-5 grid cursor-pointer place-items-center rounded-lg border-2 border-dashed border-primary/30 bg-secondary/40 p-10 text-center transition hover:bg-secondary">
           <span className="text-base font-semibold text-primary">Choose resume file</span><span className="mt-1 text-xs text-muted-foreground">Click to browse</span>
           <input type="file" className="sr-only" accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp" disabled={!credits} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
@@ -90,7 +90,7 @@ function ResumeBuilder() {
         {errorMsg && <p role="alert" className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{errorMsg}</p>}
         {analyses.filter((a) => a.status === "failed").slice(0, 3).map((a) => <p key={a.id} className="mt-2 text-xs text-muted-foreground">Earlier attempt ({a.file_name}): {a.error}</p>)}
       </>}
-    </section>}
+    </section>
 
     {(running || processing) && <DocumentAnalysisWorkspace kind="resume" file={file} previewUrl={previewUrl} fileName={processing?.file_name ?? file?.name} progress={(processing?.analysis_progress ?? null) as unknown as ReviewProgress | null} sourceText={sourceText ?? processing?.extracted_text} />}
     {done && !running && <Results report={done.report as unknown as Omit<ResumeReport, "improved_resume">} improved={done.improved_resume as unknown as Improved} fileName={done.file_name} evidence={<DocumentAnalysisWorkspace kind="resume" previewUrl={previewUrl} fileName={done.file_name} progress={(done.analysis_progress ?? { phase: "complete", sections: done.report, updatedAt: done.completed_at }) as unknown as ReviewProgress} sourceText={done.extracted_text} complete />} />}

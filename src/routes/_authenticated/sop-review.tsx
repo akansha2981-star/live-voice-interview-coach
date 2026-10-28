@@ -8,6 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { submitSop } from "@/lib/sop.functions";
+import { freeSopAllowance, availableSopSlot } from "@/lib/review-benefits";
 import { DocumentAnalysisWorkspace } from "@/components/document-analysis-workspace";
 import type { ReviewProgress } from "@/lib/document-progress";
 import { useDocumentPreview } from "@/hooks/use-document-preview";
@@ -21,7 +22,7 @@ export const sopReviewsQuery = queryOptions({
   refetchInterval: (query) => query.state.data?.some((r) => r.status === "under_review") ? 1500 : false,
   queryFn: async () => {
     const { data: u } = await supabase.auth.getUser();
-    const { data, error } = await supabase.from("sop_reviews").select("id, college_name, file_name, file_path, status, overall_score, report, samples_used, error, expected_by, created_at, completed_at, extracted_text, analysis_progress").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("sop_reviews").select("id, college_name, file_name, file_path, status, overall_score, report, samples_used, error, expected_by, created_at, completed_at, extracted_text, analysis_progress, free_credit_slot").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
     if (error) throw error;
     return data;
   },
@@ -46,12 +47,16 @@ function SopReview() {
   const [openId, setOpenId] = useState<string | null>(null);
   const selected = reviews.find((r) => r.id === openId) ?? reviews.find((r) => r.status === "completed");
   const processing = reviews.find((r) => r.status === "under_review");
+  const allowance = freeSopAllowance(reviews);
+  const selectedCollege = colleges.find(c => c.id === college);
+  const canReview = Boolean(selectedCollege && availableSopSlot(allowance, selectedCollege.name));
   const previewUrl = useDocumentPreview("sop-reviews", processing?.file_path ?? selected?.file_path);
 
   async function upload(file: File | undefined) {
     setErr(null);
     if (!file) return;
     if (!college) return setErr("Select your target college first.");
+    if (!canReview) return setErr(allowance.nmims ? "Your remaining free review is reserved for NMIMS." : "Both free SOP credits have been used.");
     if (!SOP_FILE_TYPES.test(file.name)) return setErr("Unsupported format. Upload a PDF, DOC/DOCX, TXT or image file.");
     if (!file.size) return setErr("This file is empty.");
     if (file.size > 10 * 1024 * 1024) return setErr("File is larger than 10 MB.");
@@ -80,7 +85,7 @@ function SopReview() {
   }
 
   return <div className="grid gap-6">
-    <StudentPageHeading eyebrow="Career tools" title="AI SOP Review" description="Make your story matter. Refine your Statement of Purpose for your target college."><div className="border-l-2 border-accent pl-4"><p className="text-3xl font-bold text-primary">{reviews.length}</p><p className="text-xs text-muted-foreground">SOP submissions</p></div></StudentPageHeading>
+    <StudentPageHeading eyebrow="Career tools" title="AI SOP Review" description="Make your story matter. Refine your Statement of Purpose for your target college."><div className="border-l-2 border-accent pl-4"><p className="text-3xl font-bold text-primary">{allowance.total}</p><p className="text-xs text-muted-foreground">Free SOP credits remaining</p></div></StudentPageHeading>
 
     <section className="section-card grid gap-6 p-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="grid min-w-0 content-start gap-4">
@@ -92,7 +97,7 @@ function SopReview() {
           <label className={`grid place-items-center rounded-lg border-2 border-dashed border-primary/30 bg-secondary/40 px-6 py-7 text-center transition ${busy || !college ? "opacity-60" : "cursor-pointer hover:border-primary hover:bg-secondary"}`}>
             <span className="text-base font-semibold text-primary">{busy ? "SOP under review…" : college ? "Choose SOP file" : "Select a college first"}</span>
             <span className="mt-1 text-xs text-muted-foreground">PDF, DOC/DOCX, TXT or image · up to 10 MB</span>
-            <input type="file" className="sr-only" accept=".pdf,.doc,.docx,.txt,image/png,image/jpeg,image/webp" disabled={busy || !college} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
+            <input type="file" className="sr-only" accept=".pdf,.doc,.docx,.txt,image/png,image/jpeg,image/webp" disabled={busy || Boolean(processing) || !canReview} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
           </label>
         </div>
         {err && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{err}</p>}
@@ -100,7 +105,7 @@ function SopReview() {
       <aside className="rounded-lg border bg-secondary/30 p-5">
         <p className="student-eyebrow">What you receive</p>
         <ol className="mt-3 grid gap-3 text-sm">{[["Overall score", "Rated across 13 categories with clear reasons."], ["College fit", "How well your story matches your chosen school."], ["Line-by-line feedback", "Exact sentences to add, cut or strengthen."], ["Rewritten SOP", "An improved version in your own voice, ready to download."]].map(([t, d], i) => <li key={t} className="flex gap-3"><span className="mt-0.5 inline-grid size-6 shrink-0 place-items-center rounded-full border border-primary/30 bg-card text-xs font-bold text-primary">{i + 1}</span><div><p className="font-semibold">{t}</p><p className="text-xs text-muted-foreground">{d}</p></div></li>)}</ol>
-        <p className="mt-4 border-t pt-3 text-xs text-muted-foreground">Upload one SOP at a time — not a resume or a collection of samples.</p>
+        <p className="mt-4 border-t pt-3 text-xs text-muted-foreground">Two free reviews per student: one for any available college and one reserved for NMIMS. Failed reviews do not use a credit. {allowance.general} general · {allowance.nmims} NMIMS remaining.</p>
       </aside>
     </section>
 
