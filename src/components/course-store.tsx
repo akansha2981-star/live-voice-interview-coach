@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { PENDING_COURSE_KEY } from "@/components/course-launch-extras";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -49,6 +50,19 @@ export function CourseStore({ email, name }: { email?: string | null; name?: str
     } catch (e) { toast.error(e instanceof Error ? e.message : "Could not start payment."); }
     finally { setBusy(null); }
   }
+
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (autoStarted.current || !courses.length) return;
+    autoStarted.current = true;
+    try {
+      const raw = localStorage.getItem(PENDING_COURSE_KEY);
+      localStorage.removeItem(PENDING_COURSE_KEY);
+      const pending = raw ? JSON.parse(raw) as { id?: string; at?: number } : null;
+      // Only resume a purchase chosen in the last 2 hours, and only for a course that is still live.
+      if (pending?.id && Date.now() - (pending.at ?? 0) < 2 * 3600_000 && courses.some(c => c.id === pending.id)) void buy(pending.id);
+    } catch { /* ignore */ }
+  }, [courses]);
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading courses…</p>;
   if (!courses.length) return <p className="rounded-lg border bg-card p-6 text-center text-sm text-muted-foreground">No courses are available right now.</p>;
