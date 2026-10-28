@@ -786,3 +786,10 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .demo-transcript-log { min-height: 52px; max-height: 62px; }
   .course-demo-band .demo-footnote, .course-demo-band .demo-tracking-heading { display: none; }
 }
+@media (max-width: 767px) and (max-height: 660px) {
+  .course-demo-band .course-section-heading h2 { font-size: 17px; }
+  .course-demo-band .demo-camera-real { height: 96px; }
+  .course-demo-band .demo-answer { padding: 6px 10px; }
+  .course-demo-band .demo-playback button, .course-demo-band .demo-scenes button { height: 22px; font-size: 10px; }
+  .course-demo-band .demo-transcript-log { min-height: 46px; max-height: 56px; }
+}
