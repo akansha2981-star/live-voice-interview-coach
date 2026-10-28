@@ -11,6 +11,7 @@ import { CourseInterviewDemo } from "@/components/course-interview-demo";
 import { CourseHistoricalResults, CourseApproachComparison } from "@/components/course-evidence-sections";
 import { CourseReportPreview, CourseReadinessPreview } from "@/components/course-previews";
 import { LaunchBand } from "@/components/course-launch-notice";
+import { CourseHeroTracker } from "@/components/course-hero-tracker";
 import { getPublicCourses } from "@/lib/public-courses.functions";
 import interviewPhoto from "@/assets/courses-interview.jpg";
 
