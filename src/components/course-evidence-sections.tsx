@@ -1,4 +1,5 @@
 import { AnimatedNumber } from "@/components/motion";
+import { BuyMockButton } from "@/components/course-buy-mock";
 
 export function CourseHistoricalResults() {
   return <section className="course-results"><div className="course-container grid items-center gap-8 md:grid-cols-[1.2fr_1fr]"><div><p className="course-eyebrow">LAST YEAR’S COMMUNITY. THIS YEAR’S NEXT CHAPTER.</p><h2 className="mt-3 text-3xl font-bold">Trusted by 3,000+ aspirants.<br />Now more advanced than ever.</h2><p className="mt-4 text-muted-foreground">An expanded preparation experience with AI-powered interview analysis, detailed reports and a clearer view of your progress.</p></div><div className="grid grid-cols-2 gap-5"><div className="course-result-stat"><strong aria-label="Over 3000 users last year"><AnimatedNumber value={3000} suffix="+" /></strong><p>Users last year</p></div><div className="course-result-stat"><strong>4.2<span>/5</span></strong><p>Last year’s average rating</p></div><p className="col-span-2 text-xs text-muted-foreground">Historical figures supplied by MBA Compass. Not a live user count or independently verified rating.</p></div></div></section>;
