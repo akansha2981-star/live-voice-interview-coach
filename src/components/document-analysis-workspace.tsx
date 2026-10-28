@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { evidenceFacts, exactQuoteRange, type ReviewProgress } from "@/lib/document-progress";
 import { Button } from "@/components/ui/button";
 import { ScoreRing } from "@/components/motion";
+import { DocumentAnalysisActivity } from "@/components/document-analysis-activity";
 
 type Stage = { label: string; detail: string; done: boolean };
 
@@ -59,13 +60,13 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
   const pdf = /\.pdf$/i.test(file?.name ?? fileName ?? "");
   const scanning = !complete && !failed;
 
-  return <section className="section-card grid min-w-0 gap-6 overflow-hidden p-0 animate-reveal" aria-label={`${kind === "resume" ? "Resume" : "SOP"} analysis`}>
+  return <section className={`section-card grid min-w-0 gap-6 overflow-hidden p-0 animate-reveal ${kind === "resume" && scanning ? "resume-analysis-active" : ""}`} aria-label={`${kind === "resume" ? "Resume" : "SOP"} analysis`} aria-busy={scanning}>
     {!complete && <header className="bg-gradient-panel border-b px-6 py-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-widest text-primary">AI {kind === "resume" ? "resume" : "SOP"} analysis</p>
           <h2 className="mt-1 text-2xl font-bold">{failed ? "Analysis stopped" : activeStage >= 0 ? <span className={scanning ? "text-shimmer" : ""}>{stages[activeStage].label}…</span> : "Finishing up…"}</h2>
           <p className="mt-1 truncate text-sm text-muted-foreground">{failed ? "Something went wrong. Your credit was not used." : activeStage >= 0 ? stages[activeStage].detail : ""} · {fileName || file?.name}</p></div>
-        <p className="text-4xl font-bold tabular-nums text-primary">{pct}<span className="text-lg">%</span></p>
+        <div className="text-right"><p className="text-4xl font-bold tabular-nums text-primary">{doneCount}<span className="text-lg text-muted-foreground"> / {stages.length}</span></p><p className="text-xs text-muted-foreground">steps complete</p></div>
       </div>
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary"><div className={`h-full rounded-full transition-all duration-700 ${failed ? "bg-destructive" : "bg-primary"}`} style={{ width: `${Math.max(pct, 4)}%` }} /></div>
     </header>}
@@ -83,11 +84,12 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
       </article>
 
       <div className="grid min-w-0 content-start gap-5">
+        {kind === "resume" && scanning && <DocumentAnalysisActivity stage={activeStage >= 0 ? stages[activeStage].label : "Finalising your report"} detail={activeStage >= 0 ? stages[activeStage].detail : "Preparing your results"} facts={evidence?.facts.length ?? 0} sections={Object.keys(sections).length} fixes={fixes?.length ?? 0} />}
         {!complete && <ol className="grid gap-1" aria-live="polite">{stages.map((stage, i) => {
           const active = i === activeStage;
           return <li key={stage.label} className={`flex items-center gap-3 rounded-md px-3 py-2 transition-colors ${active ? "bg-secondary" : ""}`}>
             <span className={`relative grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold transition-all ${stage.done ? "bg-success text-primary-foreground" : active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-              {stage.done ? "✓" : i + 1}{active && <span className="absolute inset-0 rounded-full ring-2 ring-primary/40 motion-safe:animate-ping" />}
+              {String(i + 1).padStart(2, "0")}{active && <span className="absolute inset-0 rounded-full ring-2 ring-primary/40 motion-safe:animate-ping" />}
             </span>
             <span className="min-w-0 flex-1"><span className={`block text-sm font-semibold ${stage.done || active ? "" : "text-muted-foreground"}`}>{stage.label}</span>{active && <span className="block truncate text-xs text-muted-foreground">{stage.detail}</span>}</span>
             <span className={`text-xs font-semibold ${stage.done ? "text-success" : active ? "text-primary" : "text-muted-foreground"}`}>{stage.done ? "Done" : failed ? "Stopped" : active ? "Working" : "Queued"}</span>
