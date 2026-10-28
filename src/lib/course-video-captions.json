@@ -1,0 +1,380 @@
+[
+  {
+    "text": "Why",
+    "start": 0.78,
+    "end": 1.5,
+    "speaker": "Aria"
+  },
+  {
+    "text": "do",
+    "start": 1.5,
+    "end": 1.6,
+    "speaker": "Aria"
+  },
+  {
+    "text": "you",
+    "start": 1.6,
+    "end": 1.72,
+    "speaker": "Aria"
+  },
+  {
+    "text": "want",
+    "start": 1.72,
+    "end": 1.84,
+    "speaker": "Aria"
+  },
+  {
+    "text": "to",
+    "start": 1.84,
+    "end": 2.2,
+    "speaker": "Aria"
+  },
+  {
+    "text": "pursue",
+    "start": 2.2,
+    "end": 2.2,
+    "speaker": "Aria"
+  },
+  {
+    "text": "an",
+    "start": 2.2,
+    "end": 2.58,
+    "speaker": "Aria"
+  },
+  {
+    "text": "MBA?",
+    "start": 2.58,
+    "end": 2.7,
+    "speaker": "Aria"
+  },
+  {
+    "text": "During",
+    "start": 4.42,
+    "end": 4.6,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "my",
+    "start": 4.6,
+    "end": 5.0,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "internship,",
+    "start": 5.0,
+    "end": 5.3,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "I",
+    "start": 5.78,
+    "end": 6.4,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "analyzed",
+    "start": 6.4,
+    "end": 6.4,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "customer",
+    "start": 6.4,
+    "end": 6.86,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "feedback",
+    "start": 6.86,
+    "end": 7.36,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "and",
+    "start": 7.36,
+    "end": 7.72,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "shared",
+    "start": 7.72,
+    "end": 7.98,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "recommendations",
+    "start": 7.98,
+    "end": 8.58,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "with",
+    "start": 8.58,
+    "end": 8.9,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "the",
+    "start": 8.9,
+    "end": 9.14,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "product",
+    "start": 9.14,
+    "end": 9.32,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "team.",
+    "start": 9.32,
+    "end": 9.66,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "An",
+    "start": 10.26,
+    "end": 10.82,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "MBA",
+    "start": 10.82,
+    "end": 10.82,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "will",
+    "start": 10.82,
+    "end": 11.2,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "help",
+    "start": 11.2,
+    "end": 11.36,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "me",
+    "start": 11.36,
+    "end": 11.62,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "turn",
+    "start": 11.62,
+    "end": 11.76,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "those",
+    "start": 11.76,
+    "end": 12.48,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "insights",
+    "start": 12.48,
+    "end": 12.48,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "into",
+    "start": 12.48,
+    "end": 12.8,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "business",
+    "start": 12.8,
+    "end": 13.2,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "decisions.",
+    "start": 13.2,
+    "end": 13.66,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "I",
+    "start": 14.24,
+    "end": 14.9,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "want",
+    "start": 14.9,
+    "end": 15.04,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "to",
+    "start": 15.04,
+    "end": 15.46,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "strengthen",
+    "start": 15.46,
+    "end": 15.46,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "my",
+    "start": 15.46,
+    "end": 15.94,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "understanding",
+    "start": 15.94,
+    "end": 16.22,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "of",
+    "start": 16.22,
+    "end": 16.62,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "finance",
+    "start": 16.62,
+    "end": 16.86,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "and",
+    "start": 16.86,
+    "end": 17.64,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "strategy.",
+    "start": 17.64,
+    "end": 17.64,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "Thank",
+    "start": 22.38,
+    "end": 23.1,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "you.",
+    "start": 23.1,
+    "end": 23.3,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "I",
+    "start": 23.48,
+    "end": 23.68,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "am",
+    "start": 23.68,
+    "end": 23.82,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "back.",
+    "start": 23.82,
+    "end": 24.18,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "My",
+    "start": 24.92,
+    "end": 25.14,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "goal",
+    "start": 25.14,
+    "end": 25.36,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "is",
+    "start": 25.36,
+    "end": 25.56,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "a",
+    "start": 25.56,
+    "end": 26.1,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "strategy",
+    "start": 26.1,
+    "end": 26.1,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "role",
+    "start": 26.1,
+    "end": 26.46,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "where",
+    "start": 26.46,
+    "end": 26.76,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "I",
+    "start": 26.76,
+    "end": 26.9,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "can",
+    "start": 26.9,
+    "end": 27.14,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "connect",
+    "start": 27.14,
+    "end": 27.42,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "analytical",
+    "start": 27.42,
+    "end": 27.94,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "thinking",
+    "start": 27.94,
+    "end": 28.38,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "with",
+    "start": 28.38,
+    "end": 28.78,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "practical",
+    "start": 28.78,
+    "end": 29.18,
+    "speaker": "Candidate"
+  },
+  {
+    "text": "management.",
+    "start": 29.18,
+    "end": 29.6,
+    "speaker": "Candidate"
+  }
+]
