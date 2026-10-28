@@ -1,0 +1,3 @@
+export function verifiedCapturedPayment(order: { amount: number; amount_paid: number; currency: string; status: string; notes?: { user_id?: string } }, payment: { order_id?: string; amount?: number; currency?: string; status?: string }, userId: string, orderId: string) {
+  return order.notes?.user_id === userId && Number.isInteger(order.amount) && order.amount > 0 && order.amount_paid >= order.amount && order.status === "paid" && order.currency === "INR" && payment.order_id === orderId && payment.amount === order.amount && payment.currency === "INR" && payment.status === "captured";
+}
