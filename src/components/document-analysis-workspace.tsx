@@ -72,7 +72,17 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
     </header>}
 
     <div className="grid min-w-0 gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] [&:first-child]:pt-6">
-      <article className="relative min-w-0 overflow-hidden rounded-lg border bg-card shadow-soft">
+      {kind === "resume" && !complete ? <div className="min-w-0">
+        {scanning && <DocumentAnalysisActivity stage={activeStage >= 0 ? stages[activeStage].label : "Finalising your report"} detail={activeStage >= 0 ? stages[activeStage].detail : "Preparing your results"} facts={evidence?.facts.length ?? 0} sections={Object.keys(sections).length} fixes={fixes?.length ?? 0} />}
+        <div className="mt-6 border-t pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold">Resume assessment</h3><span className="text-xs font-semibold text-muted-foreground">Provisional · not final</span></div>
+          {typeof sections.overall_score === "number" ? <div className="mt-4 grid gap-5 sm:grid-cols-[120px_minmax(0,1fr)] sm:items-center animate-reveal">
+            <ScoreRing value={sections.overall_score} size={112} label="Out of 100" tone="primary" />
+            <div className="min-w-0"><p className="text-sm font-semibold text-primary">Initial resume score</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{typeof sections.summary === "string" ? sections.summary : "Your initial score has arrived. Detailed findings are still being prepared."}</p><p className="mt-3 text-xs text-muted-foreground">The completed report will contain your final assessment.</p></div>
+          </div> : <div className="mt-4 border-l-2 border-primary pl-4"><p className="font-semibold">Assessment pending</p><p className="mt-1 text-sm text-muted-foreground">Your score will appear when the analysis returns it.</p></div>}
+        </div>
+        {quote && <div className="mt-6 border-t pt-4"><div className="flex items-center justify-between gap-3"><h3 className="font-semibold">Source evidence</h3><Button size="sm" variant="ghost" onClick={() => setQuote("")}>Clear selection</Button></div><blockquote className="mt-3 break-words border-l-2 border-primary pl-4 text-sm leading-relaxed">{range ? text.slice(range.start, range.end) : "This quote could not be located in the source."}</blockquote></div>}
+      </div> : <article className="relative min-w-0 overflow-hidden rounded-lg border bg-card shadow-soft">
         <div className="flex items-center justify-between border-b px-4 py-3"><h3 className="text-sm font-semibold">{quote ? "Source evidence" : "Your document"}</h3>{quote && <Button size="sm" variant="ghost" onClick={() => setQuote("")}>Clear selection</Button>}</div>
         <div className="relative h-[28rem] overflow-auto overscroll-contain p-5 [scrollbar-gutter:stable]">
           {quote || (!mediaUrl && text) || (mediaUrl && !image && !pdf && text) ? <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{range ? <>{text.slice(0, range.start)}<mark className="bg-accent/30 text-foreground">{text.slice(range.start, range.end)}</mark>{text.slice(range.end)}</> : text}</p>
@@ -81,10 +91,9 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
             : <div className="grid h-full content-center gap-3 text-center"><p className="font-semibold">{failed ? "No results available" : complete ? "Preview unavailable" : "Preparing preview"}</p></div>}
         </div>
         {scanning && <div aria-hidden className="pointer-events-none absolute inset-x-0 top-12 bottom-0 overflow-hidden"><div className="animate-scan h-16 w-full bg-gradient-to-b from-transparent via-primary/15 to-transparent" /></div>}
-      </article>
+      </article>}
 
       <div className="grid min-w-0 content-start gap-5">
-        {kind === "resume" && scanning && <DocumentAnalysisActivity stage={activeStage >= 0 ? stages[activeStage].label : "Finalising your report"} detail={activeStage >= 0 ? stages[activeStage].detail : "Preparing your results"} facts={evidence?.facts.length ?? 0} sections={Object.keys(sections).length} fixes={fixes?.length ?? 0} />}
         {!complete && <ol className="grid gap-1" aria-live="polite">{stages.map((stage, i) => {
           const active = i === activeStage;
           return <li key={stage.label} className={`flex items-center gap-3 rounded-md px-3 py-2 transition-colors ${active ? "bg-secondary" : ""}`}>
@@ -95,7 +104,7 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
             <span className={`text-xs font-semibold ${stage.done ? "text-success" : active ? "text-primary" : "text-muted-foreground"}`}>{stage.done ? "Done" : failed ? "Stopped" : active ? "Working" : "Queued"}</span>
           </li>;
         })}</ol>}
-        {typeof sections.overall_score === "number" && !complete && <div className="flex items-center gap-5 rounded-lg border p-4 animate-reveal"><ScoreRing value={sections.overall_score} size={80} label="Early score" tone="primary" /><p className="text-sm text-muted-foreground">{typeof sections.summary === "string" ? sections.summary : "Detailed feedback on the way."}</p></div>}
+        {kind !== "resume" && typeof sections.overall_score === "number" && !complete && <div className="flex items-center gap-5 rounded-lg border p-4 animate-reveal"><ScoreRing value={sections.overall_score} size={80} label="Early score" tone="primary" /><p className="text-sm text-muted-foreground">{typeof sections.summary === "string" ? sections.summary : "Detailed feedback on the way."}</p></div>}
         <div><h3 className="text-base font-bold">Extracted from your {kind === "resume" ? "resume" : "SOP"}</h3>{evidence ? <div className="mt-3 grid gap-2 sm:grid-cols-2">{evidence.facts.map((fact, i) => <Button key={`${fact.label}-${i}`} variant="outline" onClick={() => setQuote(fact.quote)} className="h-auto min-w-0 flex-col items-start gap-1 whitespace-normal p-3 text-left animate-reveal"><span className="text-xs text-muted-foreground">{fact.label}</span><span className="max-w-full break-words text-sm font-semibold">{fact.value}</span></Button>)}{!evidence.facts.length && <p className="text-sm text-muted-foreground">No facts found.</p>}</div> : <p className="mt-2 text-sm text-muted-foreground">{complete ? "Source evidence was not saved with this review." : "Facts will appear here as soon as they are extracted."}</p>}</div>
       </div>
     </div>
