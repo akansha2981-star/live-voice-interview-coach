@@ -825,3 +825,13 @@ a:hover .career-arrow { transform: translateX(5px); }
 }
 @media (max-width: 380px) { .course-brand > span { display: none; } }
 @media (prefers-reduced-motion: reduce) { .course-tab-timer, .course-preview-body { animation: none; } .cmp-card, .course-buy-btn { transition: none; } }
+.prebook-pill { margin-left: 10px; border-radius: 999px; padding: 3px 12px; background: var(--primary-foreground); color: var(--primary); font-weight: 700; font-size: 12px; animation: prebook-pulse 2.2s ease-in-out infinite; }
+@keyframes prebook-pulse { 0%,100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary-foreground) 60%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+.prebook-hero-btn { font-weight: 700; border: 1px dashed var(--primary); }
+.prebook-steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; font-size: 12px; color: var(--muted-foreground); }
+.prebook-steps li { display: flex; align-items: center; gap: 6px; }
+.prebook-steps span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; border: 1px solid var(--border); font-weight: 700; flex-shrink: 0; }
+.prebook-steps li.is-on { color: var(--foreground); font-weight: 700; }
+.prebook-steps li.is-on span { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+@media (max-width: 639px) { .prebook-pill { margin: 4px 0 0; } }
+@media (prefers-reduced-motion: reduce) { .prebook-pill { animation: none; } }
