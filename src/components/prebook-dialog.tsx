@@ -33,6 +33,8 @@ export function PrebookDialog({ open, onOpenChange }: { open: boolean; onOpenCha
   const [masked, setMasked] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [emailStatus, setEmailStatus] = useState<string>('pending');
+  const [receipt, setReceipt] = useState<{ prebookId: string; orderId: string; paymentId: string; signature: string }>();
 
   const msg = (e: unknown) => setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
 
@@ -56,7 +58,7 @@ export function PrebookDialog({ open, onOpenChange }: { open: boolean; onOpenCha
         key: order.keyId, order_id: order.orderId, amount: order.amount, currency: "INR", name: "MBA Compass", description: "Early-bird pre-booking",
         prefill: { name: order.name, email: order.email, contact: `+91${order.phone}` },
         handler: async (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
-          try { await confirm({ data: { prebookId, orderId: r.razorpay_order_id, paymentId: r.razorpay_payment_id, signature: r.razorpay_signature } }); setStep("done"); }
+          try { const payment = { prebookId, orderId: r.razorpay_order_id, paymentId: r.razorpay_payment_id, signature: r.razorpay_signature }; setReceipt(payment); const result = await confirm({ data: payment }); setEmailStatus(result.emailStatus); setBusy(false); setStep("done"); }
           catch (e) { msg(e); }
         },
         modal: { ondismiss: () => setBusy(false) },
@@ -88,7 +90,12 @@ export function PrebookDialog({ open, onOpenChange }: { open: boolean; onOpenCha
         <Button type="submit" className="w-full" size="lg" disabled={busy}>{busy ? "Please wait…" : "Verify & pay ₹1"}</Button>
         <div className="flex justify-between text-sm"><button type="button" className="text-primary underline" onClick={() => { setStep("details"); setError(""); }}>Change details</button><button type="button" className="text-primary underline" disabled={busy} onClick={() => void requestOtp()}>Resend OTP</button></div>
       </form>}
-      {step === "done" && <Button className="w-full" size="lg" onClick={() => onOpenChange(false)}>Done</Button>}
+      {step === 'done' && <div className="space-y-3">
+        <p role="status" className="text-sm text-muted-foreground">{emailStatus === 'sent' ? `Your confirmation email has been sent to ${form.email}.` : emailStatus === 'pending' ? 'Your payment is confirmed. The confirmation email could not be sent yet; you do not need to pay again.' : 'Your payment is confirmed. Email notifications are unavailable for this address.'}</p>
+        {emailStatus === 'pending' && receipt && <Button variant="secondary" className="w-full" disabled={busy} onClick={async () => { setBusy(true); try { const result = await confirm({ data: receipt }); setEmailStatus(result.emailStatus); } catch (e) { msg(e); } finally { setBusy(false); } }}>{busy ? 'Please wait…' : 'Retry confirmation email'}</Button>}
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <Button className="w-full" size="lg" onClick={() => onOpenChange(false)}>Done</Button>
+      </div>}
       <p className="text-xs text-muted-foreground">₹1 reserves an early-bird spot only. It does not include interview credits.</p>
     </DialogContent>
   </Dialog>;
