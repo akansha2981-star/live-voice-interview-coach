@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://mbacompass.online/sitemap.xml
+Sitemap: https://live-voice-interview-coach.lovable.app/sitemap.xml
