@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzeResume } from "@/lib/resume.functions";
-import { CATEGORY_LABELS, RESUME_FILE_TYPES, resumeCreditsLeft, type ResumeReport } from "@/lib/resume-analysis";
+import { CATEGORY_LABELS, RESUME_FILE_TYPES, isStalled, resumeCreditsLeft, type ResumeReport } from "@/lib/resume-analysis";
 import { DocumentAnalysisWorkspace } from "@/components/document-analysis-workspace";
 import type { ReviewProgress } from "@/lib/document-progress";
 import { useDocumentPreview } from "@/hooks/use-document-preview";
@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const resumeAnalysesQuery = queryOptions({
   queryKey: ["resume-analyses"],
-  refetchInterval: (query) => query.state.data?.some((r) => r.status === "processing") ? 1500 : false,
+  refetchInterval: (query) => query.state.data?.some((r) => r.status === "processing" && !isStalled(r)) ? 1500 : false,
   queryFn: async () => {
     const { data: u } = await supabase.auth.getUser();
     const { data, error } = await supabase.from("resume_analyses").select("*").eq("user_id", u.user?.id ?? "").order("created_at", { ascending: false });
@@ -40,7 +40,7 @@ function ResumeBuilder() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const credits = resumeCreditsLeft(analyses);
   const done = analyses.find((a) => a.status === "completed");
-  const processing = analyses.find((a) => a.status === "processing");
+  const processing = analyses.find((a) => a.status === "processing" && !isStalled(a));
   const previewUrl = useDocumentPreview("resume-analyses", processing?.file_path ?? done?.file_path);
 
   async function upload(file: File | undefined) {
