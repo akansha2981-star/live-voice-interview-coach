@@ -746,7 +746,7 @@ a:hover .career-arrow { transform: translateX(5px); }
 .course-demo-band .demo-scenes { flex: 0 0 auto; padding: 4px 12px; flex-wrap: nowrap; overflow-x: auto; }
 .course-demo-band .demo-footnote { flex: 0 0 auto; margin-top: 8px; font-size: 11px; color: var(--muted-foreground); }
 @media (max-width: 767px) {
-  .course-demo-band.course-section { padding-block: 10px; min-height: 470px; }
+  .course-demo-band.course-section { padding-block: 10px; height: auto; min-height: calc(100dvh - var(--demo-chrome, 80px)); }
   .course-demo-band .course-section-heading { margin-bottom: 8px; }
   .course-demo-band .course-section-heading h2 { font-size: 19px; }
   .course-demo-band .course-section-heading > p:last-child:not(:first-child) { display: none; }
@@ -757,7 +757,7 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .demo-playback button { height: 26px; padding-inline: 8px; font-size: 11px; }
   .course-demo-band .demo-video-seek { padding: 1px 10px; }
   .course-demo-band .demo-conversation { flex: 0 0 auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
-  .course-demo-band .demo-camera-real { height: 132px; }
+  .course-demo-band .demo-camera-real { height: 124px; }
   .course-demo-band .demo-answer { padding: 8px 12px; justify-content: flex-start; }
   .course-demo-band .demo-aria-heading, .course-demo-band .demo-answer .course-eyebrow, .course-demo-band .demo-signal-status { display: none; }
   .course-demo-band .demo-answer h3 { margin-top: 0; font-size: 15px; }
@@ -769,7 +769,7 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .demo-enhanced .demo-tracking strong { font-size: 12px; }
   .course-demo-band .demo-enhanced .demo-tracking progress { display: none; }
   .course-demo-band .demo-transcript-workspace { padding: 7px 10px 8px; }
-  .course-demo-band .demo-transcript-log { min-height: 40px; }
+  .course-demo-band .demo-transcript-log { min-height: 62px; }
   .course-demo-band .demo-scenes { padding: 2px 6px; }
   .course-demo-band .demo-footnote { display: none; }
 }
