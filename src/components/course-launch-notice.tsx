@@ -29,6 +29,7 @@ export function LaunchNoticeScreen({ redirect }: { redirect?: string }) {
   const navigate = useNavigate();
   const [prebookOpen, setPrebookOpen] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
   const [days, setDays] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -36,11 +37,12 @@ export function LaunchNoticeScreen({ redirect }: { redirect?: string }) {
     setDays(daysToLaunch());
     setProgress(Math.round(prebookProgress() * 100));
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: safeRedirect(redirect), replace: true });
-      else setChecking(false);
+      // Signed-in visitors stay here: the workspace gate decides who may enter before launch.
+      setSignedIn(!!data.session);
+      setChecking(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) navigate({ to: safeRedirect(redirect), replace: true });
+      if (event === "SIGNED_IN" && session && redirect) navigate({ to: safeRedirect(redirect), replace: true });
     });
     return () => sub.subscription.unsubscribe();
   }, [navigate, redirect]);
@@ -57,6 +59,7 @@ export function LaunchNoticeScreen({ redirect }: { redirect?: string }) {
         <p className="launch-notice-badge"><span className="course-live-dot" /> Pre-launch · Limited seats</p>
         <h1>We will be live on<br /><em>{LAUNCH_LABEL}.</em></h1>
         <p className="launch-notice-copy">Student sign-in opens with the first batch on {LAUNCH_LABEL}. Reserve your seat now for ₹1 and we will email you the moment your dashboard is ready.</p>
+        {signedIn && <p className="launch-notice-copy">You're signed in. Your dashboard opens once you've bought a full course, or on {LAUNCH_LABEL}. <button type="button" className="underline" onClick={async () => { await supabase.auth.signOut(); setSignedIn(false); }}>Sign out</button></p>}
         <div className="launch-notice-actions">
           <Button size="lg" onClick={() => setPrebookOpen(true)}>Prebook now at just ₹1</Button>
           <Button size="lg" variant="outline" asChild><Link to="/courses">See how it works</Link></Button>
