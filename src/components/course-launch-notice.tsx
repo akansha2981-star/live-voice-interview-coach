@@ -62,7 +62,7 @@ export function LaunchNoticeScreen({ redirect }: { redirect?: string }) {
         {signedIn && <p className="launch-notice-copy">You're signed in. Your dashboard opens once you've bought a full course, or on {LAUNCH_LABEL}. <button type="button" className="underline" onClick={async () => { await supabase.auth.signOut(); setSignedIn(false); }}>Sign out</button></p>}
         <div className="launch-notice-actions">
           <Button size="lg" onClick={() => setPrebookOpen(true)}>Prebook now at just ₹1</Button>
-          <Button size="lg" variant="outline" asChild><Link to="/courses">See how it works</Link></Button>
+          <Button size="lg" variant="outline" asChild><Link to="/">See how it works</Link></Button>
         </div>
         <div className="launch-notice-meta"><span>{days} days to launch</span><span>Real voice interviews with Aria</span><span>Detailed report after every mock</span></div>
       </div>
@@ -85,5 +85,25 @@ export function LaunchBand() {
   return <div className="course-launch-band"><div className="course-container">
     <b>{LAUNCH_HEADLINE}</b>
     <span className="course-launch-seats">Limited seats</span>
+  </div></div>;
+}
+
+/**
+ * Shown on the public page to a student who is signed in but still locked out of the workspace
+ * (no full course bought before launch). Only renders when the gate sent them here with ?locked.
+ */
+export function SignedInLockedNotice() {
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("locked")) return;
+    supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+  }, []);
+
+  if (!email) return null;
+  return <div className="course-lock-notice"><div className="course-container">
+    <b>You’re signed in as {email}.</b>
+    <span>Your dashboard opens with a full course, or on {LAUNCH_LABEL}.</span>
+    <button type="button" onClick={async () => { await supabase.auth.signOut(); setEmail(null); }}>Sign out</button>
   </div></div>;
 }
