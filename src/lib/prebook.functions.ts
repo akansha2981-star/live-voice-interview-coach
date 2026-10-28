@@ -109,13 +109,18 @@ export const confirmPrebookPayment = createServerFn({ method: "POST" })
     const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
     const { data: row } = await db.from("prebookings").select("id, status, razorpay_order_id").eq("id", data.prebookId).maybeSingle();
     if (!row || row.razorpay_order_id !== data.orderId) throw new Error("Payment could not be verified.");
-    if (row.status === "paid") return { ok: true };
+    if (row.status === "paid") {
+      const { sendPaymentConfirmation } = await import('./payment-emails.server');
+      return { ok: true, emailStatus: await sendPaymentConfirmation(db, 'prebook', row.id) };
+    }
     const oRes = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(data.orderId)}`, { headers: { Authorization: k.auth } });
     const order = await oRes.json() as { amount: number; amount_paid: number; currency: string; status: string; notes?: { prebook_id?: string; user_id?: string } };
     if (!oRes.ok || order.notes?.prebook_id !== row.id || order.status !== "paid" || order.amount !== PREBOOK_AMOUNT_RUPEES * 100) throw new Error("Payment could not be verified.");
     const pRes = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(data.paymentId)}`, { headers: { Authorization: k.auth } });
     const payment = await pRes.json() as { order_id?: string; amount?: number; currency?: string; status?: string };
     if (!pRes.ok || !verifiedCapturedPayment({ ...order, notes: { ...order.notes, user_id: row.id } }, payment, row.id, data.orderId)) throw new Error("Payment capture could not be verified.");
-    await db.from("prebookings").update({ status: "paid", razorpay_payment_id: data.paymentId, amount: order.amount / 100, paid_at: new Date().toISOString() }).eq("id", row.id).neq("status", "paid");
-    return { ok: true };
+    const { error } = await db.from("prebookings").update({ status: "paid", razorpay_payment_id: data.paymentId, amount: order.amount / 100, paid_at: new Date().toISOString() }).eq("id", row.id).neq("status", "paid");
+    if (error) throw new Error('Could not record payment. Please retry confirmation; do not pay again.');
+    const { sendPaymentConfirmation } = await import('./payment-emails.server');
+    return { ok: true, emailStatus: await sendPaymentConfirmation(db, 'prebook', row.id) };
   });

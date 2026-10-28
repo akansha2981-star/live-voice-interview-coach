@@ -9,7 +9,8 @@ export const EMAIL_PLACEHOLDERS: Record<string, string[]> = {
   "interview-feedback": ["name", "score", "interview_date"],
   "resume-report": ["name", "file_name", "ats_score"],
   "sop-review": ["name", "score", "college_line"],
-  "course-confirmation": ["name", "course", "amount", "credits", "order_id"],
+  "course-confirmation": ["name", "email", "course", "amount", "credits", "order_id", "dashboard_url"],
+  "prebook-confirmation": ["name", "email", "amount", "booking_id", "order_id", "payment_id"],
 };
 
 /** Replaces {{key}} with values; unknown placeholders become empty text. */

@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EMAIL_PLACEHOLDERS, fillPlaceholders } from "@/lib/email-content";
+import { useServerFn } from '@tanstack/react-start';
+import { savePaymentEmailTemplate } from '@/lib/payment-email-settings.functions';
+import { PREBOOK_CONFIRMATION_TEMPLATE, COURSE_CONFIRMATION_TEMPLATE } from '@/lib/payment-email-content';
 
 export const Route = createFileRoute("/admin/emails")({
   staticData: { sitemap: false },
@@ -19,12 +22,12 @@ export const Route = createFileRoute("/admin/emails")({
 
 type Tpl = { key: string; name: string; subject: string; heading: string; body: string; button_label: string; enabled: boolean; updated_at: string };
 
-const SAMPLE: Record<string, string> = { name: "Asha", slot_time: "27 Oct 2026, 4:30 pm", college_line: " for IIM Ahmedabad", score: "78", interview_date: "27 Oct 2026, 4:30 pm", file_name: "Asha_Resume.pdf", ats_score: "81", course: "GDPI Pro Pack", amount: "₹999.00", credits: "10", order_id: "order_ABC123" };
+const SAMPLE: Record<string, string> = { name: "Asha", email: 'asha@example.com', booking_id: 'sample-booking', payment_id: 'pay_SAMPLE', dashboard_url: 'https://mbacompass.online/dashboard', slot_time: "27 Oct 2026, 4:30 pm", college_line: " for IIM Ahmedabad", score: "78", interview_date: "27 Oct 2026, 4:30 pm", file_name: "Asha_Resume.pdf", ats_score: "81", course: "GDPI Pro Pack", amount: "₹1.00", credits: "10", order_id: "order_ABC123" };
 
 function EmailsPage() {
   const staff = useStaff();
   const qc = useQueryClient();
-  const { data = [] } = useQuery({ queryKey: ["admin", "email-templates"], queryFn: async () => { const { data, error } = await supabase.from("email_templates").select("*").order("key"); if (error) throw error; return data as Tpl[]; } });
+  const { data = [] } = useQuery({ queryKey: ["admin", "email-templates"], queryFn: async () => { const { data, error } = await supabase.from("email_templates").select("*").order("key"); if (error) throw error; const rows = data as Tpl[]; return [...rows, ...[PREBOOK_CONFIRMATION_TEMPLATE, COURSE_CONFIRMATION_TEMPLATE].filter(t => !rows.some(r => r.key === t.key)).map(t => ({ ...t, updated_at: '' }))]; } });
   const [openKey, setOpenKey] = useState<string | null>(null);
   return <>
     <PageHeader title="Email notifications" sub="Automated emails sent from no-reply@notify.mbacompass.online. Edit wording, turn alerts on or off." />
@@ -41,12 +44,21 @@ function EmailsPage() {
 }
 
 function Editor({ tpl, canEdit, onSaved }: { tpl: Tpl; canEdit: boolean; onSaved: () => void }) {
+  const savePayment = useServerFn(savePaymentEmailTemplate);
   const [f, setF] = useState(tpl);
   const [saving, setSaving] = useState(false);
   const set = (k: keyof Tpl) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
   async function save() {
     if (!f.subject.trim() || !f.heading.trim() || !f.body.trim()) return toast.error("Subject, heading and message are required.");
     setSaving(true);
+    if (tpl.key === 'prebook-confirmation' || tpl.key === 'course-confirmation') {
+      try {
+        await savePayment({ data: { key: tpl.key, subject: f.subject, heading: f.heading, body: f.body, button_label: f.button_label, enabled: f.enabled } });
+        toast.success('Email saved.'); onSaved();
+      } catch { toast.error('Could not save email.'); }
+      finally { setSaving(false); }
+      return;
+    }
     const { data: u } = await supabase.auth.getUser();
     const { error } = await supabase.from("email_templates").update({ subject: f.subject.trim(), heading: f.heading.trim(), body: f.body.trim(), button_label: f.button_label.trim(), enabled: f.enabled, updated_at: new Date().toISOString(), updated_by: u.user?.id ?? null }).eq("key", tpl.key);
     setSaving(false);

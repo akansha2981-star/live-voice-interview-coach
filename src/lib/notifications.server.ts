@@ -20,7 +20,7 @@ export async function runEmailAlerts() {
       const { data } = await db.from("profiles").select("email, full_name").eq("id", userId).maybeSingle();
       profileCache.set(userId, { email: data?.email ?? null, name: data?.full_name?.split(" ")[0] || "there" });
     }
-    return profileCache.get(userId)!;
+    return profileCache.get(userId) ?? { email: null, name: 'there' };
   }
 
   /** Atomically claims the event, sends it, and releases the claim if sending fails so it retries next run. */
@@ -82,11 +82,13 @@ export async function runEmailAlerts() {
   }
 
   // Course purchases
-  const { data: purchases } = await db.from("course_purchases").select("id, user_id, course_name, amount, currency, interview_credits, order_id")
-    .eq("payment_status", "paid").is("email_sent_at", null).gte("created_at", new Date(now - 2 * DAY).toISOString());
+  const { sendPaymentConfirmation } = await import('./payment-emails.server');
+  const { data: purchases } = await db.from("course_purchases").select("id")
+    .eq("payment_status", "paid").is("email_sent_at", null).order('created_at').limit(100);
   for (const c of purchases ?? []) {
-    const amount = new Intl.NumberFormat("en-IN", { style: "currency", currency: c.currency || "INR" }).format(Number(c.amount));
-    await deliver("course_purchases", "email_sent_at", c.id, "course-confirmation", c.user_id, { course: c.course_name, amount, credits: c.interview_credits ?? 0, order_id: c.order_id ?? "" }, "/dashboard");
+    const status = await sendPaymentConfirmation(db, 'course', c.id);
+    if (status === 'sent') results['course-confirmation'] = (results['course-confirmation'] ?? 0) + 1;
+    if (status === 'pending') break;
   }
 
   return results;

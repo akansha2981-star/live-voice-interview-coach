@@ -1,4 +1,6 @@
 # Admin portal
+- [x] Add verified course-payment and ₹1 prebooking confirmation emails with editable wording, event duplicate protection and prebook email retry; 17 focused tests pass, both emails render and build is clean.
+- [ ] Verify confirmation arrives after a real payment — no paid prebooking exists for Khushi; requires a completed payment, not simulated proof.
 - [x] Courses page phone polish, Buy AI Mock buttons (header, hero, sections, phone bar), top "India’s First and Only" highlight, comparison cards, report tabs auto-rotate every 1.5s
 - [x] Sample courses live; Buy remembers course through sign-in and opens Razorpay; purchase email shows login email + dashboard link (password never emailed). Real payment not tested.
 - [x] ₹1 Prebook (name, email, HSPSMS OTP-verified mobile, Razorpay ₹1) saved as early-bird lead; real SMS and payment not yet tested

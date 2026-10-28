@@ -49,6 +49,7 @@ export const notificationTemplates = {
   'resume-report': entry('Resume report', { subject: 'Your resume report is ready', heading: 'Your resume review is complete', body: 'Hi Asha,\n\nYour ATS score is 81/100.', buttonLabel: 'View report', buttonUrl: 'https://mbacompass.online/resume-builder' }),
   'sop-review': entry('SOP review', { subject: 'Your SOP review is ready', heading: 'Your SOP has been reviewed', body: 'Hi Asha,\n\nYour overall score is 74/100.', buttonLabel: 'View SOP review', buttonUrl: 'https://mbacompass.online/sop-review' }),
   'course-confirmation': entry('Course confirmation', { subject: 'Purchase confirmed', heading: 'Thank you for your purchase', body: 'Hi Asha,\n\nYour payment was successful.', buttonLabel: 'Go to dashboard', buttonUrl: 'https://mbacompass.online/dashboard' }),
+  'prebook-confirmation': entry('₹1 prebooking confirmation', { subject: 'Your prebooking is confirmed', heading: 'Your early-bird spot is reserved', body: 'Hi Asha,\n\nYour ₹1 payment is confirmed. Your early-bird spot is reserved for the launch on 29th November 2026.', buttonLabel: 'Visit MBA Compass', buttonUrl: 'https://mbacompass.online/' }),
 } satisfies Record<string, TemplateEntry>
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Calibri, Carlito, Arial, sans-serif' }
