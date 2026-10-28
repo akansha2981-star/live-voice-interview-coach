@@ -1,4 +1,5 @@
 # Admin portal
+- [ ] Add verified course-payment and ₹1 prebooking confirmation emails, editable wording and duplicate protection; verify tests and sending.
 - [x] Courses page phone polish, Buy AI Mock buttons (header, hero, sections, phone bar), top "India’s First and Only" highlight, comparison cards, report tabs auto-rotate every 1.5s
 - [x] Sample courses live; Buy remembers course through sign-in and opens Razorpay; purchase email shows login email + dashboard link (password never emailed). Real payment not tested.
 - [x] ₹1 Prebook (name, email, HSPSMS OTP-verified mobile, Razorpay ₹1) saved as early-bird lead; real SMS and payment not yet tested

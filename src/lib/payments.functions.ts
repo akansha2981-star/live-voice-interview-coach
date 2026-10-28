@@ -45,12 +45,13 @@ export const verifyCoursePayment = createServerFn({ method: "POST" })
     if (!paymentRes.ok || !verifiedCapturedPayment(order, payment, context.userId, data.orderId)) throw new Error("Payment capture could not be verified.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin.from("course_purchases").select("id").eq("order_id", data.orderId).maybeSingle();
-    if (existing) return { ok: true };
+    const { sendPaymentConfirmation } = await import('./payment-emails.server');
+    if (existing) return { ok: true, emailStatus: await sendPaymentConfirmation(supabaseAdmin, 'course', existing.id) };
     const { data: course } = await supabaseAdmin.from("courses").select("id, name, credits").eq("id", order.notes?.course_id ?? "").maybeSingle();
     if (!course) throw new Error("Course not found. Contact support with your payment ID.");
     const credits = order.notes?.interview_credits == null ? course.credits : Number(order.notes.interview_credits);
     if (!Number.isInteger(credits) || credits < 0) throw new Error("Invalid course entitlement.");
-    const { error } = await supabaseAdmin.rpc("complete_course_payment", { _user_id: context.userId, _course_id: course.id, _order_id: data.orderId, _payment_id: data.paymentId, _amount: order.amount / 100, _currency: order.currency, _credits: credits, _course_name: order.notes?.course_name ?? course.name });
+    const { data: purchaseId, error } = await supabaseAdmin.rpc("complete_course_payment", { _user_id: context.userId, _course_id: course.id, _order_id: data.orderId, _payment_id: data.paymentId, _amount: order.amount / 100, _currency: order.currency, _credits: credits, _course_name: order.notes?.course_name ?? course.name });
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, emailStatus: await sendPaymentConfirmation(supabaseAdmin, 'course', purchaseId) };
   });
