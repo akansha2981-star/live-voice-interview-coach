@@ -879,3 +879,12 @@ a:hover .career-arrow { transform: translateX(5px); }
 .course-launch-band b { font-weight: 800; }
 .course-launch-seats { border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
 @media (max-width: 639px) { .course-launch-band { font-size: 12px; } .launch-notice-actions button { width: 100%; } }
+
+/* Layered scroll parallax on the courses page */
+.course-parallax-layer { --layer-y: 0px; translate: 0 var(--layer-y); will-change: translate; }
+.course-scroll-reveal { opacity: 0; transform: translateY(28px); }
+.course-scroll-reveal.is-revealed { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .course-parallax-layer { translate: none; }
+  .course-scroll-reveal { opacity: 1; transform: none; }
+}

@@ -42,10 +42,30 @@ function CoursesPage() {
     if (!root) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
+    // Layered parallax: each element drifts at its own speed relative to the viewport centre.
+    const layers: [string, number][] = [
+      [".course-section-heading", 0.06], [".section-index", 0.14], [".hero-sample-ticket", -0.18], [".course-live-note", -0.1],
+      [".course-hero-copy", 0.08], [".course-feature", 0.05], [".course-step", 0.07], [".course-readiness-demo", -0.06],
+      [".course-plan", 0.04], [".course-final h2", 0.1], [".course-report-band .course-container > :not(.course-section-heading)", -0.03],
+    ];
+    const parallaxEls: { el: HTMLElement; speed: number }[] = [];
+    layers.forEach(([sel, speed]) => root.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
+      el.classList.add("course-parallax-layer");
+      parallaxEls.push({ el, speed: speed * (1 + (i % 3) * 0.25) });
+    }));
     const update = () => {
       frame = 0;
-      const enabled = !reduced.matches && window.innerWidth >= 768;
-      root.style.setProperty("--course-parallax", `${enabled ? Math.min(window.scrollY * 0.13, 80) : 0}px`);
+      const enabled = !reduced.matches;
+      const factor = window.innerWidth >= 768 ? 1 : 0.5;
+      root.style.setProperty("--course-parallax", `${enabled ? Math.min(window.scrollY * 0.13 * factor, 80) : 0}px`);
+      const mid = window.innerHeight / 2;
+      parallaxEls.forEach(({ el, speed }) => {
+        if (!enabled) { el.style.setProperty("--layer-y", "0px"); return; }
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > window.innerHeight + 200) return;
+        const offset = Math.max(-70, Math.min(70, (r.top + r.height / 2 - mid) * speed * factor));
+        el.style.setProperty("--layer-y", `${offset.toFixed(1)}px`);
+      });
     };
     const scroll = () => { if (!frame) frame = requestAnimationFrame(update); };
     window.addEventListener("scroll", scroll, { passive: true });
@@ -54,7 +74,7 @@ function CoursesPage() {
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
       if (entry.isIntersecting) { entry.target.classList.add("is-revealed"); observer.unobserve(entry.target); }
     }), { threshold: 0.08 });
-    root.querySelectorAll(".course-section-heading, .course-feature, .course-step, .course-readiness-demo").forEach(el => {
+    root.querySelectorAll(".course-section-heading, .course-feature, .course-step, .course-readiness-demo, .course-plan").forEach(el => {
       el.classList.add("course-scroll-reveal"); observer.observe(el);
     });
     update();
