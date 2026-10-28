@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LaunchNoticeScreen } from "@/components/course-launch-notice";
+import { siteUrl } from "@/lib/site";
 
 const description = "MBA Compass AI mock interviews open on 29th November 2026. Prebook your early-bird seat for ₹1 and meet Aria, your AI interviewer.";
 

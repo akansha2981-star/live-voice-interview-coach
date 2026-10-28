@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { siteUrl } from "@/lib/site";
 export const Route = createFileRoute("/privacy")({ staticData: { sitemap: true }, head: () => ({ meta: [
   { title: "Privacy & Advertising Choices — MBA Compass" }, { name: "description", content: "How MBA Compass handles interview, document, payment and advertising data." },
   { property: "og:title", content: "Privacy & Advertising Choices — MBA Compass" }, { property: "og:description", content: "Understand your student data and advertising choices." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
