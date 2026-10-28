@@ -750,21 +750,21 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .course-section-heading { margin-bottom: 8px; }
   .course-demo-band .course-section-heading h2 { font-size: 19px; }
   .course-demo-band .course-section-heading > p:last-child:not(:first-child) { display: none; }
-  .course-demo-band .demo-toolbar { padding: 5px 10px; }
+  .course-demo-band .demo-toolbar { padding: 4px 10px; }
   .course-demo-band .demo-toolbar > div { gap: 6px; font-size: 11px; }
   .course-demo-band .demo-session-label { display: none; }
   .course-demo-band .demo-clock { font-size: 11px; }
   .course-demo-band .demo-playback button { height: 26px; padding-inline: 8px; font-size: 11px; }
-  .course-demo-band .demo-video-seek { padding: 2px 10px; }
+  .course-demo-band .demo-video-seek { padding: 1px 10px; }
   .course-demo-band .demo-conversation { flex: 0 0 auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
-  .course-demo-band .demo-camera-real { height: 140px; }
+  .course-demo-band .demo-camera-real { height: 132px; }
   .course-demo-band .demo-answer { padding: 8px 12px; justify-content: flex-start; }
   .course-demo-band .demo-aria-heading, .course-demo-band .demo-answer .course-eyebrow, .course-demo-band .demo-signal-status { display: none; }
   .course-demo-band .demo-answer h3 { margin-top: 0; font-size: 15px; }
   .course-demo-band .demo-enhanced .demo-coaching { margin-top: 7px; padding: 6px; font-size: 11px; }
   .course-demo-band .demo-tracking-heading { padding: 3px 10px; font-size: 8px; }
   .course-demo-band .demo-enhanced.demo-video .demo-tracking { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .course-demo-band .demo-tracking > div { padding: 4px 6px; }
+  .course-demo-band .demo-tracking > div { padding: 3px 6px; }
   .course-demo-band .demo-tracking p { font-size: 8px; }
   .course-demo-band .demo-enhanced .demo-tracking strong { font-size: 12px; }
   .course-demo-band .demo-enhanced .demo-tracking progress { display: none; }
