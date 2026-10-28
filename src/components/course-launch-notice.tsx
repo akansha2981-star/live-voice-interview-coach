@@ -9,7 +9,7 @@ import { LAUNCH_HEADLINE, LAUNCH_LABEL, LAUNCH_SHORT_LABEL, daysToLaunch, preboo
 const OFFERINGS = [
   ["01", "A live interview with Aria", "Real voice questions, follow-ups and college-specific practice — everything visible on screen."],
   ["02", "A report you can act on", "Answer-level analysis, full transcript, communication observations and a seven-day practice plan."],
-  ["03", "Your documents, stronger", "ATS-focused resume review with a recreated resume, plus detailed section-level SOP feedback."],
+  ["03", "Your documents, stronger", "ATS-focused resume analysis with line-by-line feedback, plus detailed section-level SOP feedback."],
 ];
 
 function safeRedirect(r?: string) {

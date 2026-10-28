@@ -25,14 +25,6 @@ export const resumeReportSchema = z.object({
   line_improvements: z.array(z.object({ section: z.string(), original: z.string(), improved: z.string(), why: z.string(), keywords: z.array(z.string()) })),
   keywords: z.array(z.object({ section: z.string(), keywords: z.array(z.string()), where_to_add: z.string() })),
   recommendations: z.array(z.string()),
-  improved_resume: z.object({
-    name: z.string(),
-    contact: z.string(),
-    headline: z.string(),
-    summary: z.string(),
-    sections: z.array(z.object({ title: z.string(), entries: z.array(z.object({ heading: z.string(), subheading: z.string(), dates: z.string(), bullets: z.array(z.string()) })) })),
-    skills: z.array(z.object({ group: z.string(), items: z.array(z.string()) })),
-  }),
 });
 export type ResumeReport = z.infer<typeof resumeReportSchema>;
 
@@ -42,7 +34,7 @@ export const CATEGORY_LABELS: Record<keyof ResumeReport["categories"], string> =
   grammar_spelling: "Grammar & spelling", keyword_relevance: "Keyword relevance", measurable_impact: "Measurable achievements",
 };
 
-export const ANALYSIS_STAGES = ["Validating file", "Extracting resume content", "Analyzing experience & skills", "Checking ATS compatibility", "Identifying unnecessary points", "Evaluating keywords", "Generating SWOT analysis", "Building your ATS-friendly resume"];
+export const ANALYSIS_STAGES = ["Validating file", "Extracting resume content", "Analyzing experience & skills", "Checking ATS compatibility", "Identifying unnecessary points", "Evaluating keywords", "Generating SWOT analysis"];
 
 export const RESUME_FILE_TYPES = /\.(pdf|docx?|png|jpe?g|webp)$/i;
 
