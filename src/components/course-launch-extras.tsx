@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { comparisonRows } from "@/lib/course-comparison";
 import type { PublicCourse } from "@/lib/public-courses.functions";
 
+export const PENDING_COURSE_KEY = "mbac-pending-course";
 export function CoursePrebookButton({ onPrebook, className = "", label = "Prebook now at just ₹1" }: { onPrebook: () => void; className?: string; label?: string }) {
   return <Button className={className} onClick={onPrebook}>{label}</Button>;
 }
