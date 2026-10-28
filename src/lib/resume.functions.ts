@@ -24,10 +24,10 @@ export const analyzeResume = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     if (!data.path.startsWith(`${context.userId}/`)) throw new Error("Not allowed");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // Free a credit stuck by a crashed run.
+    // Release a processing lock left by a crashed free review.
     await supabaseAdmin.from("resume_analyses").update({ status: "failed", error: "Analysis timed out. Please try again." }).eq("user_id", context.userId).eq("status", "processing").lt("created_at", new Date(Date.now() - 15 * 60 * 1000).toISOString());
     const { data: row, error: insErr } = await supabaseAdmin.from("resume_analyses").insert({ user_id: context.userId, file_path: data.path, file_name: data.fileName, mime_type: data.mimeType, extracted_text: data.text ?? null }).select("id").single();
-    if (insErr) throw new Error(insErr.code === "23505" ? "Your resume credit has already been used." : insErr.message);
+    if (insErr) throw new Error(insErr.code === "23505" ? "A resume review is already in progress. Please wait for it to finish." : insErr.message);
     let sections: Record<string, unknown> = {};
     let lastProgress = "";
     let lastSavedAt = 0;
@@ -66,6 +66,6 @@ export const analyzeResume = createServerFn({ method: "POST" })
       if (savedError) throw new Error("Could not save the completed resume analysis.");
       return { id: row.id, ok: true as const, error: null };
     } catch (e) {
-      return await fail(e instanceof Error ? e.message : "Analysis failed. Your credit was not used.");
+      return await fail(e instanceof Error ? e.message : "Analysis failed. Please try again — resume reviews are free.");
     }
   });

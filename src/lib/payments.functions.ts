@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifiedCapturedPayment } from "./payment-validation";
 
 function keys() {
   const id = process.env.RAZORPAY_KEY_ID;
@@ -19,12 +20,12 @@ export const createCourseOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => z.object({ courseId: z.string().uuid() }).parse(i))
   .handler(async ({ data, context }) => {
-    const { data: course, error } = await context.supabase.from("courses").select("id, name, final_price, status").eq("id", data.courseId).eq("status", "live").maybeSingle();
+    const { data: course, error } = await context.supabase.from("courses").select("id, name, credits, final_price, status").eq("id", data.courseId).eq("status", "live").maybeSingle();
     if (error) throw new Error(error.message);
     if (!course) throw new Error("This course is not available.");
     const k = keys();
     const amount = Math.round(Number(course.final_price) * 100);
-    const res = await fetch("https://api.razorpay.com/v1/orders", { method: "POST", headers: { Authorization: k.auth, "Content-Type": "application/json" }, body: JSON.stringify({ amount, currency: "INR", receipt: `c_${Date.now()}`, notes: { course_id: course.id, user_id: context.userId } }) });
+    const res = await fetch("https://api.razorpay.com/v1/orders", { method: "POST", headers: { Authorization: k.auth, "Content-Type": "application/json" }, body: JSON.stringify({ amount, currency: "INR", receipt: `c_${Date.now()}`, notes: { course_id: course.id, user_id: context.userId, interview_credits: String(course.credits), course_name: course.name } }) });
     const order = (await res.json()) as { id?: string; error?: { description?: string } };
     if (!res.ok || !order.id) throw new Error(order.error?.description ?? "Could not start payment.");
     return { orderId: order.id, amount, keyId: k.id, courseName: course.name };
@@ -37,18 +38,19 @@ export const verifyCoursePayment = createServerFn({ method: "POST" })
     const k = keys();
     if ((await hmacHex(k.secret, `${data.orderId}|${data.paymentId}`)) !== data.signature) throw new Error("Payment could not be verified.");
     const res = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(data.orderId)}`, { headers: { Authorization: k.auth } });
-    const order = (await res.json()) as { amount: number; amount_paid: number; currency: string; status: string; notes?: { course_id?: string; user_id?: string } };
-    if (!res.ok || order.notes?.user_id !== context.userId || order.amount_paid < order.amount) throw new Error("Payment could not be verified.");
+    const order = (await res.json()) as { amount: number; amount_paid: number; currency: string; status: string; notes?: { course_id?: string; user_id?: string; interview_credits?: string; course_name?: string } };
+    if (!res.ok || order.notes?.user_id !== context.userId || order.amount_paid < order.amount || order.status !== "paid" || order.currency !== "INR") throw new Error("Payment could not be verified.");
+    const paymentRes = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(data.paymentId)}`, { headers: { Authorization: k.auth } });
+    const payment = await paymentRes.json() as { order_id?: string; amount?: number; currency?: string; status?: string };
+    if (!paymentRes.ok || !verifiedCapturedPayment(order, payment, context.userId, data.orderId)) throw new Error("Payment capture could not be verified.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin.from("course_purchases").select("id").eq("order_id", data.orderId).maybeSingle();
     if (existing) return { ok: true };
     const { data: course } = await supabaseAdmin.from("courses").select("id, name, credits").eq("id", order.notes?.course_id ?? "").maybeSingle();
     if (!course) throw new Error("Course not found. Contact support with your payment ID.");
-    const { error } = await supabaseAdmin.from("course_purchases").insert({ user_id: context.userId, course_id: course.id, course_name: course.name, order_id: data.orderId, amount: order.amount / 100, currency: order.currency, payment_status: "paid", source: "razorpay", interview_credits: course.credits });
-    if (error) { if (error.code === "23505") return { ok: true }; throw new Error(error.message); }
-    if (course.credits > 0) {
-      const { error: ce } = await supabaseAdmin.from("credit_ledger").insert({ user_id: context.userId, delta: course.credits, reason: `Purchase: ${course.name} (${data.paymentId})` });
-      if (ce) throw new Error(ce.message);
-    }
+    const credits = order.notes?.interview_credits == null ? course.credits : Number(order.notes.interview_credits);
+    if (!Number.isInteger(credits) || credits < 0) throw new Error("Invalid course entitlement.");
+    const { error } = await supabaseAdmin.rpc("complete_course_payment", { _user_id: context.userId, _course_id: course.id, _order_id: data.orderId, _payment_id: data.paymentId, _amount: order.amount / 100, _currency: order.currency, _credits: credits, _course_name: order.notes?.course_name ?? course.name });
+    if (error) throw new Error(error.message);
     return { ok: true };
   });

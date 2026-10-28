@@ -27,6 +27,7 @@ export const submitSop = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: college } = await supabaseAdmin.from("colleges").select("id, name, sop_requirements, active").eq("id", data.collegeId).maybeSingle();
     if (!college?.active) throw new Error("Please choose a college from the list.");
+    await supabaseAdmin.from("sop_reviews").update({ status: "failed", error: "Review timed out. Your free credit is available again." }).eq("user_id", context.userId).eq("status", "under_review").lt("created_at", new Date(Date.now() - 20 * 60 * 1000).toISOString());
     const { count } = await supabaseAdmin.from("sop_reviews").select("id", { count: "exact", head: true }).eq("user_id", context.userId).eq("status", "under_review").gt("created_at", new Date(Date.now() - 20 * 60 * 1000).toISOString());
     if (count) throw new Error("You already have an SOP under review. Please wait for it to finish.");
     const { data: settings } = await supabaseAdmin.from("interview_settings").select("sop_tat_minutes").eq("id", 1).maybeSingle();

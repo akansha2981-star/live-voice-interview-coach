@@ -1287,6 +1287,7 @@ export type Database = {
           extracted_text: string | null
           file_name: string
           file_path: string
+          free_credit_slot: string | null
           id: string
           mime_type: string | null
           overall_score: number | null
@@ -1307,6 +1308,7 @@ export type Database = {
           extracted_text?: string | null
           file_name: string
           file_path: string
+          free_credit_slot?: string | null
           id?: string
           mime_type?: string | null
           overall_score?: number | null
@@ -1327,6 +1329,7 @@ export type Database = {
           extracted_text?: string | null
           file_name?: string
           file_path?: string
+          free_credit_slot?: string | null
           id?: string
           mime_type?: string | null
           overall_score?: number | null
@@ -1508,6 +1511,19 @@ export type Database = {
       cancel_interview_booking: {
         Args: { _booking_id: string }
         Returns: undefined
+      }
+      complete_course_payment: {
+        Args: {
+          _amount: number
+          _course_id: string
+          _course_name: string
+          _credits: number
+          _currency: string
+          _order_id: string
+          _payment_id: string
+          _user_id: string
+        }
+        Returns: string
       }
       credit_balance: { Args: { _user_id: string }; Returns: number }
       finance_record_usage: { Args: { _row: Json }; Returns: undefined }

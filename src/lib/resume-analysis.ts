@@ -46,7 +46,7 @@ export const ANALYSIS_STAGES = ["Validating file", "Extracting resume content", 
 
 export const RESUME_FILE_TYPES = /\.(pdf|docx?|png|jpe?g|webp)$/i;
 
-/** One lifetime credit: used once an analysis is processing or completed; failed analyses don't consume it. */
+/** Free resume reviews remain available after completion; one can run at a time. */
 export function resumeCreditsLeft(analyses: { status: string }[]) {
-  return analyses.some((a) => a.status === "processing" || a.status === "completed") ? 0 : 1;
+  return analyses.some((a) => a.status === "processing") ? 0 : 1;
 }
