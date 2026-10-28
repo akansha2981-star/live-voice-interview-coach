@@ -15,14 +15,13 @@
 - Document analysis uses schema-validated provisional sections from the same model stream persisted under owner-only reads; timers may poll progress but never invent stage completion, and only exact source quotes qualify as evidence.
 - College limits are snapshotted on atomic interview creation; relay and UI use the absolute deadline across reconnects, while live question-count guidance must never be represented as exact playback enforcement without a supported audio gate.
 - Finance usage is a server-written idempotent ledger attributed to product and transaction; estimates retain effective-rate snapshots, invoice reconciliation excludes covered estimates, and finance writes use audited staff-only database functions so costs never depend on client assertions.
-- Student presentation uses shared StudentPageHeading and student-scoped surface tokens; keep visual redesigns independent of payment, booking and assessment logic.
+- Student and admin presentation share student surface tokens, StudentPageHeading and grouped navigation; keep visual redesigns independent of payment, booking and assessment logic, and preserve the existing staff access gate and management queries.
 - Detailed reports render through a browser-safe report workspace and evidence helpers shared with PDF export; transcript timestamps are turn-level and camera timelines stay aggregated, never inferred frame-level events.
 - All AI (text in `src/lib/ai.server.ts`, live voice via OpenAI Realtime WebRTC calls + sideband control socket) uses the owner's `OPENAI_API_KEY` directly so usage bills to their OpenAI account, not Lovable credits.
 - Live voice interviews go through `src/lib/live-relay.server.ts` (dispatched at `/api/live` in `src/server.ts`, dev via `live-vite-plugin.ts`); the relay verifies the Supabase token + interview ownership in `interview-session.server.ts` before opening a paid session.
 - Interview credits are a ledger (`credit_ledger`); spending happens only in the `start_interview()` SQL function so it stays atomic.
 - `interviews` is read-only to clients; all writes (transcript, report) go through server functions in `src/lib/interview.functions.ts` using the admin client after an ownership check.
-- Webcam analysis runs only in the browser (`src/lib/vision.ts`); only aggregated metrics are stored, never video.
-- Microphone signal analysis reuses the existing voice stream and cleans up with the call; only aggregated energy metrics are saved, never recordings.
+- Camera (`src/lib/vision.ts`) and microphone analysis run only in the browser, reusing the existing voice stream and cleaning up with the call; only aggregated metrics are stored, never video or recordings.
 - Report schema and rubric calculations are browser-safe pure modules; deterministic weighted ability scoring excludes camera-derived coaching.
 - Slot availability and booking use database functions with row locks; equipment checks are recorded through authenticated server functions before the atomic start_interview credit spend.
 - Fetch slot availability in ordered pages so dense schedules are not truncated by the Data API row limit.
@@ -30,7 +29,6 @@
 - The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
 - Interview presentation lives in a browser-safe workspace; transcript following changes only its own scroll container so caption updates never move the room.
 - Live interview uses a viewport-bounded conversation grid and compact persistent tracking band; optional alert settings open in a dialog rather than expanding tracking.
-- Admin presentation shares student surface tokens and grouped navigation while preserving the existing staff access gate and management queries.
 - tsconfig relaxes the strict index/optional/return checks to keep UI code readable.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function, never raw rows; per the owner's decision the average is shown however small the sample.
@@ -40,3 +38,4 @@
 - SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.
 - Student email alerts are sent only by the minutely scheduled job in `src/lib/notifications.server.ts`, which claims a per-record sent-at column before sending, so each alert goes out once and features never send email inline; wording comes from the staff-edited `email_templates` table.
 - Pre-launch gating lives in browser-safe `src/lib/launch.ts`; while closed, `/` and `/auth` show the prebook notice instead of sign-in and public pages carry no purchase buttons — `/admin` keeps its own staff login.
+- Single address: canonicals and sitemap use `SITE_URL`/`siteUrl()` from `src/lib/site.ts`; `signedOutTarget()` sends signed-out visitors to the public side.

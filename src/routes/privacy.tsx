@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { siteUrl } from "@/lib/site";
 export const Route = createFileRoute("/privacy")({ staticData: { sitemap: true }, head: () => ({ meta: [
   { title: "Privacy & Advertising Choices — MBA Compass" }, { name: "description", content: "How MBA Compass handles interview, document, payment and advertising data." },
   { property: "og:title", content: "Privacy & Advertising Choices — MBA Compass" }, { property: "og:description", content: "Understand your student data and advertising choices." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
-  { property: "og:url", content: "https://live-voice-interview-coach.lovable.app/privacy" },
-], links: [{ rel: "canonical", href: "https://live-voice-interview-coach.lovable.app/privacy" }] }), component: PrivacyPage });
+  { property: "og:url", content: siteUrl("/privacy") },
+], links: [{ rel: "canonical", href: siteUrl("/privacy") }] }), component: PrivacyPage });
 function PrivacyPage() { return <main className="mx-auto max-w-3xl px-6 py-12"><Button variant="link" asChild><Link to="/courses">Back to courses</Link></Button><h1 className="mt-8 text-4xl font-bold">Privacy & your choices</h1><p className="mt-3 text-muted-foreground">MBA Compass · Updated 28 October 2026</p><div className="mt-8 space-y-8 leading-relaxed">
   <section><h2 className="text-2xl font-bold">Your student workspace</h2><p className="mt-3">We process your account and profile details, bookings, interview transcripts, performance reports and documents you submit to provide interview practice, reviews and student support. AI processing uses OpenAI. Account data and private files are held in Lovable Cloud, and purchases use Razorpay. Transactional emails are sent through Lovable’s email service.</p></section>
   <section><h2 className="text-2xl font-bold">Camera and microphone</h2><p className="mt-3">Live audio is sent to OpenAI for the conversation and transcription. Camera analysis runs in your browser; aggregated observations are saved, not webcam video. Microphone signal analysis saves aggregated measurements, not recordings. Camera observations are not used to infer personality, honesty or emotions.</p></section>

@@ -14,6 +14,7 @@ import { LaunchBand } from "@/components/course-launch-notice";
 import { CourseHeroTracker } from "@/components/course-hero-tracker";
 import { getPublicCourses } from "@/lib/public-courses.functions";
 import interviewPhoto from "@/assets/courses-interview.jpg";
+import { siteUrl } from "@/lib/site";
 
 const catalogQuery = queryOptions({ queryKey: ["public-course-catalog"], queryFn: () => getPublicCourses(), staleTime: 30_000, refetchInterval: 30_000 });
 const description = "MBA Compass AI mock interviews launch on 29th November 2026. Prebook your seat for ₹1: live AI interviews with Aria, detailed reports, ATS Resume Builder and SOP reviews.";
@@ -25,9 +26,9 @@ export const Route = createFileRoute("/courses")({
     { property: "og:title", content: "AI MBA Mock Interviews — MBA Compass" },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
-    { property: "og:url", content: "https://live-voice-interview-coach.lovable.app/courses" },
+    { property: "og:url", content: siteUrl("/courses") },
     { name: "twitter:card", content: "summary_large_image" },
-  ], links: [{ rel: "canonical", href: "https://live-voice-interview-coach.lovable.app/courses" }], scripts: [{ type: "application/ld+json", children: JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", name: "MBA Compass AI Mock Interview Courses", description, url: "https://live-voice-interview-coach.lovable.app/courses" }) }] }),
+  ], links: [{ rel: "canonical", href: siteUrl("/courses") }], scripts: [{ type: "application/ld+json", children: JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", name: "MBA Compass AI Mock Interview Courses", description, url: siteUrl("/courses") }) }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQuery),
   component: CoursesPage,
 });
