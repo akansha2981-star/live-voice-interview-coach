@@ -30,7 +30,7 @@ export async function runEmailAlerts() {
     const claim = await (db.from(table as never) as any).update({ [column]: new Date().toISOString() }).eq("id", id).is(column, null).select("id");
     if (!claim.data?.length) return;
     if (!tpl?.enabled || !p.email) return; // disabled or no address: mark handled, send nothing
-    const v = { name: p.name, ...values };
+    const v = { name: p.name, email: p.email, dashboard_url: `${EMAIL_SITE_URL}/dashboard`, ...values };
     try {
       await sendTemplateEmail(key, p.email, {
         idempotencyKey: `${key}-${id}`,
