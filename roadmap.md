@@ -1,5 +1,6 @@
 # Admin portal
-- [ ] Public /courses launch page: animated sample reports, readiness scale, live course offers and search metadata; Meta Pixel blocked until connection/Pixel selection (connection declined).
+- [x] Public /courses launch page: animated sample reports, readiness scale, live-only course catalog, privacy page and search metadata; previews and signup links verified at desktop/tablet/phone widths. No live courses currently published.
+- [ ] /courses Meta Pixel and chosen regional banner activation — connection declined; requires connected and selected Pixel. No ad tracking currently installed.
 - [x] Add Finance & Costing dashboard: audited expense/rate/balance records, usage instrumentation, product/model/date reports, reconciliation and CSV; authorised expense save/read-back/void/export and mobile fit verified; student read/write denied
 - [ ] Verify live finance usage ingestion against next explicitly started AI task — no paid task started for this dashboard; historical costs and automatic OpenAI billing access remain unavailable
 - [x] Link created OpenAI connection and check model listing — Khushi's OpenAI linked; GET models returned HTTP 200; actual generation/realtime access still needs testing
