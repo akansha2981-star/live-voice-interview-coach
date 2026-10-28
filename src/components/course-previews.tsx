@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const previews = ["Overview", "Answer review", "Communication", "Presentation", "Practice plan"] as const;
 
 export function CourseReportPreview() {
   const [tab, setTab] = useState<(typeof previews)[number]>("Overview");
-  return <div className="course-report">
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setTab(t => previews[(previews.indexOf(t) + 1) % previews.length]), 1500);
+    return () => window.clearInterval(id);
+  }, [paused]);
+  return <div className="course-report" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)}>
     <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-5"><div><p className="text-xs font-bold text-primary">MBA COMPASS · PERFORMANCE REPORT</p><h3 className="mt-2 text-2xl font-bold">A clearer picture of your potential.</h3></div><span className="text-xs text-muted-foreground">Illustrative sample · not student data</span></div>
-    <div role="tablist" aria-label="Sample report" className="flex flex-wrap gap-1 border-b py-3">{previews.map(p => <Button role="tab" aria-selected={tab === p} key={p} variant={tab === p ? "secondary" : "ghost"} onClick={() => setTab(p)}>{p}</Button>)}</div>
+    <div role="tablist" aria-label="Sample report" className="course-report-tabs flex gap-1 border-b py-3">{previews.map(p => <Button role="tab" aria-selected={tab === p} key={p} variant={tab === p ? "secondary" : "ghost"} onClick={() => { setTab(p); setPaused(true); }} className="course-report-tab">{p}{tab === p && !paused && <i className="course-tab-timer" aria-hidden="true" />}</Button>)}</div>
     <div role="tabpanel" aria-label={tab} className="course-preview-body" key={tab}>
       {tab === "Overview" && <div className="grid gap-8 md:grid-cols-[.7fr_1.3fr]"><div className="text-center"><div className="course-score-ring"><span><strong>78</strong><small>Overall / 100</small></span></div><p className="mt-4 font-bold text-success">Good · Keep progressing</p><p className="mt-2 text-sm text-muted-foreground">A structured answer. A stronger closing statement will make it more memorable.</p></div><div><p className="mb-4 font-bold">Your strengths, made visible</p>{[["Answer quality", "82"], ["Reasoning", "76"], ["Communication", "80"], ["Speech delivery", "74"]].map(([label, value]) => <div className="mb-5" key={label}><div className="mb-2 flex justify-between text-sm"><span>{label}</span><b>{value}/100</b></div><progress className="course-progress" value={value} max="100" /></div>)}</div></div>}
       {tab === "Answer review" && <div className="grid gap-6 md:grid-cols-2"><div><p className="text-xs font-bold text-primary">QUESTION 02 · WHY MBA?</p><h4 className="mt-3 text-xl font-bold">Connect your experience to your next step.</h4><p className="mt-4 border-l-2 border-primary pl-4 text-muted-foreground">“I want to move from analysing customer behaviour to shaping the strategy behind those decisions.”</p></div><div className="space-y-4"><p><b className="text-success">What worked</b><br />Clear motivation linked to a real professional goal.</p><p><b className="text-primary">Make it stronger</b><br />Add one concrete project, its result, and the skill you want to develop.</p></div></div>}
