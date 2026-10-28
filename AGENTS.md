@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Public course offers use an anonymous security-invoker catalog of live courses only; keep preview metrics labelled illustrative and checkout behind existing student sign-in so public presentation never exposes private reports or changes payment logic.
+- Public course offers and comparison share the anonymous live-only catalog; keep sample metrics and review placeholders labelled, motion reduced-motion-aware, and checkout behind existing student sign-in to preserve private data and payment logic.
 - Document analysis uses schema-validated provisional sections from the same model stream persisted under owner-only reads; timers may poll progress but never invent stage completion, and only exact source quotes qualify as evidence.
 - College limits are snapshotted on atomic interview creation; relay and UI use the absolute deadline across reconnects, while live question-count guidance must never be represented as exact playback enforcement without a supported audio gate.
 - Finance usage is a server-written idempotent ledger attributed to product and transaction; estimates retain effective-rate snapshots, invoice reconciliation excludes covered estimates, and finance writes use audited staff-only database functions so costs never depend on client assertions.

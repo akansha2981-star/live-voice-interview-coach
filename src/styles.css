@@ -524,6 +524,40 @@ a:hover .career-arrow { transform: translateX(5px); }
 .course-step > span { display: inline-block; border-bottom: 2px solid var(--success); color: var(--success); font-size: 28px; padding-bottom: 5px; font-weight: 700; }
 .course-plan { padding: 28px; border: 1px solid var(--course-border); border-radius: 8px; display: flex; flex-direction: column; }
 .course-plan > a { margin-top: auto; }
+.course-page { --course-parallax: 0px; }
+.course-header { position: sticky; top: 0; z-index: 30; box-shadow: var(--student-shadow); }
+.course-hero-photo { transform: translateY(var(--course-parallax)) scale(1.06); }
+.course-section { scroll-margin-top: 105px; }
+.course-scroll-reveal { opacity: 0; transform: translateY(18px); transition: opacity 650ms ease, transform 650ms ease; }
+.course-scroll-reveal.is-revealed { opacity: 1; transform: translateY(0); }
+.course-feature { position: relative; overflow: hidden; }
+.course-feature::after { content: ""; position: absolute; bottom: 0; left: 0; width: 0; height: 3px; background: var(--primary); transition: width 350ms ease; }
+.course-feature:hover::after { width: 100%; }
+.course-comparison { margin-top: 40px; padding-top: 30px; border-top: 2px solid var(--course-border); }
+.course-comparison input { accent-color: var(--primary); width: 16px; height: 16px; }
+.course-comparison-scroll { overflow: auto; border: 1px solid var(--course-border); border-radius: 8px; }
+.course-comparison table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.course-comparison th, .course-comparison td { padding: 18px 22px; text-align: left; min-width: 185px; max-width: 280px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+.course-comparison thead { background: var(--secondary); }
+.course-comparison th:first-child { background: var(--card); position: sticky; left: 0; z-index: 1; min-width: 150px; }
+.course-comparison tbody tr:last-child > * { border-bottom: 0; }
+.course-testimonial-section { padding-block: 70px; background: var(--course-process-bg); border-block: 1px solid var(--border); }
+.course-testimonial-window { overflow: hidden; margin-top: 32px; mask-image: linear-gradient(90deg, transparent, var(--foreground) 5%, var(--foreground) 95%, transparent); }
+.course-testimonial-track { display: flex; width: max-content; animation: course-marquee 42s linear infinite; }
+.course-testimonial-set { display: flex; gap: 20px; padding-right: 20px; }
+.course-testimonial-window:hover .course-testimonial-track, .course-testimonial-window:focus-within .course-testimonial-track, .course-testimonial-window.is-paused .course-testimonial-track { animation-play-state: paused; }
+.course-review { width: 345px; padding: 25px; border: 1px solid var(--course-border); border-radius: 8px; background: var(--card); }
+.course-review-number { font-size: 23px; font-weight: 700; color: var(--primary); }
+@keyframes course-marquee { to { transform: translateX(-50%); } }
+.course-faq summary { display: flex; align-items: baseline; gap: 14px; list-style: none; }
+.course-faq summary::-webkit-details-marker { display: none; }
+.course-faq-number { font-size: 12px; color: var(--primary); flex-shrink: 0; }
+.course-faq-state { margin-left: auto; font-size: 11px; font-weight: 400; color: var(--muted-foreground); }
+.course-faq[open] { background: var(--secondary); padding-inline: 18px; border-radius: 6px; }
+.course-faq[open] .course-faq-state { display: none; }
+.course-faq p { margin-bottom: 12px; line-height: 1.6; }
+@media (max-width: 767px) { .course-hero-photo { transform: none; }.course-review { width: 300px; }.course-testimonial-section { padding-block: 48px; }.course-comparison th, .course-comparison td { padding: 14px; min-width: 170px; }.course-comparison th:first-child { min-width: 115px; }.course-faq summary { font-size: 16px; gap: 9px; } }
+@media (prefers-reduced-motion: reduce) { .course-scroll-reveal { opacity: 1; transform: none; transition: none; }.course-hero-photo { transform: none; }.course-testimonial-track { animation: none; }.course-testimonial-window { overflow-x: auto; mask-image: none; }.course-testimonial-set[aria-hidden="true"] { display: none; } }
 .course-launch { border-block: 1px solid var(--course-border); background: var(--secondary); padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
 .course-launch > div { max-width: 650px; }
 .course-faq { border-bottom: 1px solid var(--border); padding-block: 20px; }
