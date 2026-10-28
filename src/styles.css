@@ -775,3 +775,8 @@ a:hover .career-arrow { transform: translateX(5px); }
 }
 
 /* demo-fit tune */
+@media (min-width: 768px) and (max-height: 660px) {
+  .course-demo-band.course-section { height: auto; min-height: calc(100dvh - var(--demo-chrome, 80px)); }
+  .course-demo-band .demo-conversation { flex: 0 0 190px; }
+  .course-demo-band .demo-transcript-log { min-height: 56px; }
+}
