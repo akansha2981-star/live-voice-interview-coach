@@ -92,13 +92,13 @@ export function LaunchBand() {
  * Shown on the public page to a student who is signed in but still locked out of the workspace
  * (no full course bought before launch). Only renders when the gate sent them here with ?locked.
  */
-export function SignedInLockedNotice() {
+export function SignedInLockedNotice({ locked }: { locked: boolean }) {
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!new URLSearchParams(window.location.search).has("locked")) return;
+    if (!locked) return;
     supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
-  }, []);
+  }, [locked]);
 
   if (!email) return null;
   return <div className="course-lock-notice"><div className="course-container">

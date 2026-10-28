@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { PrebookDialog } from "@/components/prebook-dialog";
 import { CourseComparison, CourseTestimonials, CourseFAQs } from "@/components/course-launch-extras";
