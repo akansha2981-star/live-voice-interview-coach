@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({ staticData: { sitemap: true },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://live-voice-interview-coach.lovable.app/" }],
+    links: [{ rel: "canonical", href: siteUrl("/") }],
   }),
   component: () => <LaunchNoticeScreen />,
 });

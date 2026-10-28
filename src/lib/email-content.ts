@@ -1,5 +1,7 @@
 // Browser-safe helpers shared by the email sender and the admin editor preview.
-export const EMAIL_SITE_URL = "https://mbacompass.online";
+import { SITE_URL } from "@/lib/site";
+
+export const EMAIL_SITE_URL = SITE_URL;
 
 export const EMAIL_PLACEHOLDERS: Record<string, string[]> = {
   "slot-reminder-10": ["name", "slot_time", "college_line"],

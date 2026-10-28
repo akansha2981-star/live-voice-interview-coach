@@ -25,3 +25,12 @@ export function prebookProgress(now: Date = new Date()) {
   const remaining = Math.max(0, Math.min(PREBOOK_WINDOW_DAYS, (LAUNCH_AT - now.getTime()) / DAY_MS));
   return 1 - remaining / PREBOOK_WINDOW_DAYS;
 }
+
+/**
+ * Where a signed-out visitor of the student workspace is sent.
+ * Before launch the workspace has no sign-in, so they go to the public holding page;
+ * once live they go to sign-in, which returns them to the page they asked for.
+ */
+export function signedOutTarget(live: boolean) {
+  return live ? "/auth" : "/";
+}
