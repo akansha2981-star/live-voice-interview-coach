@@ -38,7 +38,19 @@ export const ANALYSIS_STAGES = ["Validating file", "Extracting resume content", 
 
 export const RESUME_FILE_TYPES = /\.(pdf|docx?|png|jpe?g|webp)$/i;
 
+/** A review that stopped reporting progress is released, exactly as the server releases it, so the student is never stranded on "finalising". */
+export const STALLED_AFTER_MS = 15 * 60 * 1000;
+
+type ReviewRow = { status: string | null; created_at?: string | null; analysis_progress?: unknown };
+
+export function isStalled(analysis: ReviewRow, now = Date.now()) {
+  if (analysis.status !== "processing") return false;
+  const reported = (analysis.analysis_progress as { updatedAt?: string } | null | undefined)?.updatedAt ?? analysis.created_at;
+  const at = reported ? Date.parse(reported) : NaN;
+  return Number.isFinite(at) && now - at > STALLED_AFTER_MS;
+}
+
 /** Free resume reviews remain available after completion; one can run at a time. */
-export function resumeCreditsLeft(analyses: { status: string }[]) {
-  return analyses.some((a) => a.status === "processing") ? 0 : 1;
+export function resumeCreditsLeft(analyses: ReviewRow[]) {
+  return analyses.some((a) => a.status === "processing" && !isStalled(a)) ? 0 : 1;
 }
