@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated")({ staticData: { sitemap:
         supabase.from("course_purchases").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.rpc("is_staff", { _user_id: user.id }),
       ]);
-      if (!staff && !count) throw redirect({ to: "/", search: { locked: 1 } as never });
+      if (!staff && !count) throw redirect({ to: "/", search: { locked: 1 } });
     }
     return { user };
   },
