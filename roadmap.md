@@ -1,5 +1,5 @@
 # Admin portal
-- [ ] Enhance /courses with scrolling review placeholders, expanded FAQs, live-course comparison and reduced-motion-aware parallax; preserve authenticated checkout.
+- [x] Enhance /courses: pausable scrolling review placeholders, 11 categorised FAQs, selectable live-course comparison, automatic catalog refresh and reduced-motion-aware parallax; desktop/mobile flows and rule tests passed. Real testimonials await user-supplied reviews; no live courses exist to verify a real comparison/purchase.
 - [x] Public /courses launch page: animated sample reports, readiness scale, live-only course catalog, privacy page and search metadata; previews and signup links verified at desktop/tablet/phone widths. No live courses currently published.
 - [ ] /courses Meta Pixel and chosen regional banner activation — connection declined; requires connected and selected Pixel. No ad tracking currently installed.
 - [x] Add Finance & Costing dashboard: audited expense/rate/balance records, usage instrumentation, product/model/date reports, reconciliation and CSV; authorised expense save/read-back/void/export and mobile fit verified; student read/write denied
