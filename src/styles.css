@@ -765,6 +765,7 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .demo-tracking-heading { padding: 3px 10px; font-size: 8px; }
   .course-demo-band .demo-enhanced.demo-video .demo-tracking { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .course-demo-band .demo-tracking > div { padding: 2px 5px; }
+  .course-demo-band .demo-video .demo-tracking > div:last-child { grid-column: auto; }
   .course-demo-band .demo-tracking p { font-size: 8px; }
   .course-demo-band .demo-enhanced .demo-tracking strong { font-size: 11px; }
   .course-demo-band .demo-enhanced .demo-tracking progress { display: none; }
@@ -782,5 +783,6 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-demo-band .course-section-heading h2 { font-size: 24px; }
   .course-demo-band .course-section-heading > p:last-child:not(:first-child) { display: none; }
   .course-demo-band .demo-conversation { flex: 0 0 175px; }
-  .course-demo-band .demo-transcript-log { min-height: 52px; max-height: 74px; }
+  .course-demo-band .demo-transcript-log { min-height: 52px; max-height: 62px; }
+  .course-demo-band .demo-footnote, .course-demo-band .demo-tracking-heading { display: none; }
 }
