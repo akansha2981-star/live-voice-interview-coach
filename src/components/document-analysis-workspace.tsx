@@ -23,7 +23,6 @@ function buildStages(kind: "resume" | "sop", progress: ReviewProgress | null | u
     { label: "Checking issues", detail: "Finding gaps and unnecessary points", done: has("remove_content") },
     { label: "Rewriting weak lines", detail: "Action verbs, structure and clarity", done: has("line_improvements") },
     { label: "Evaluating keywords", detail: "ATS keywords for each section", done: has("keywords") },
-    { label: "Building ATS-friendly resume", detail: "A clean, professional recreated resume", done: complete },
   ];
   return [...common,
     { label: "Scoring 13 categories", detail: "Clarity, storytelling, motivation, goals and fit", done: has("categories") },

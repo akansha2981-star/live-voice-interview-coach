@@ -120,5 +120,5 @@ function ReadinessScale({ score }: { score: number | null }) {
 function ResumeCreditCard() {
   const { data = [] } = useQuery(resumeAnalysesQuery);
   const left = resumeCreditsLeft(data);
-  return <Link to="/resume-builder" className="career-tile career-resume"><span className="student-eyebrow">01 · Career tools</span><h2 className="mt-2 text-lg font-bold">Resume Builder</h2><p className="mt-1 text-xs text-muted-foreground">{left ? "Free ATS analysis and recreated resume" : "Your free review is in progress"}</p><span className="career-cta">{left ? "Analyse my resume" : "View my analysis"}<span className="career-arrow">→</span></span></Link>;
+  return <Link to="/resume-builder" className="career-tile career-resume"><span className="student-eyebrow">01 · Career tools</span><h2 className="mt-2 text-lg font-bold">Resume Builder</h2><p className="mt-1 text-xs text-muted-foreground">{left ? "Free ATS analysis and detailed feedback" : "Your free review is in progress"}</p><span className="career-cta">{left ? "Analyse my resume" : "View my analysis"}<span className="career-arrow">→</span></span></Link>;
 }
