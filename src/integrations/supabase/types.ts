@@ -1032,6 +1032,63 @@ export type Database = {
         }
         Relationships: []
       }
+      prebookings: {
+        Row: {
+          amount: number | null
+          created_at: string
+          email: string
+          id: string
+          last_otp_sent_at: string | null
+          name: string
+          otp_attempts: number
+          otp_expires_at: string | null
+          otp_hash: string | null
+          otp_sent_count: number
+          paid_at: string | null
+          phone: string
+          phone_verified_at: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          status: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          email: string
+          id?: string
+          last_otp_sent_at?: string | null
+          name: string
+          otp_attempts?: number
+          otp_expires_at?: string | null
+          otp_hash?: string | null
+          otp_sent_count?: number
+          paid_at?: string | null
+          phone: string
+          phone_verified_at?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          email?: string
+          id?: string
+          last_otp_sent_at?: string | null
+          name?: string
+          otp_attempts?: number
+          otp_expires_at?: string | null
+          otp_hash?: string | null
+          otp_sent_count?: number
+          paid_at?: string | null
+          phone?: string
+          phone_verified_at?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           accessibility: string | null
