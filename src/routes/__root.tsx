@@ -128,12 +128,20 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      // Never start session-reading route guards or fetchers inside the auth client's lock.
+      if (timer !== undefined) clearTimeout(timer);
+      timer = setTimeout(() => {
+        void router.invalidate();
+        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+      }, 0);
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      if (timer !== undefined) clearTimeout(timer);
+      data.subscription.unsubscribe();
+    };
   }, [router, queryClient]);
 
   return (

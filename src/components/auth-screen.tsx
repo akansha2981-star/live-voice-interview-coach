@@ -68,14 +68,31 @@ export function AuthScreen({ redirect }: { redirect?: string }) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: safeRedirect(redirect), replace: true });
-      else setChecking(false);
-    });
+    let active = true;
+    let navigationScheduled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const finishSignIn = () => {
+      if (!active || navigationScheduled) return;
+      navigationScheduled = true;
+      // Auth events run while the client's session lock is held. Let storage finish before
+      // navigation runs the workspace guard (which reads the session again).
+      timer = setTimeout(() => {
+        if (active) void navigate({ to: safeRedirect(redirect), replace: true });
+      }, 0);
+    };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) navigate({ to: safeRedirect(redirect), replace: true });
+      if (event === "SIGNED_IN" && session) finishSignIn();
     });
-    return () => data.subscription.unsubscribe();
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      if (data.session) finishSignIn();
+      else if (!navigationScheduled) setChecking(false);
+    }).catch(() => { if (active && !navigationScheduled) setChecking(false); });
+    return () => {
+      active = false;
+      if (timer !== undefined) clearTimeout(timer);
+      data.subscription.unsubscribe();
+    };
   }, [navigate, redirect]);
 
   async function submit(e: React.FormEvent) {
