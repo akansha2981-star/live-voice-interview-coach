@@ -38,6 +38,7 @@ import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminGkRouteImport } from './routes/admin.gk'
 import { Route as AdminInterviewsRouteImport } from './routes/admin.interviews'
+import { Route as AdminPrebookingsRouteImport } from './routes/admin.prebookings'
 import { Route as AdminPurchasesRouteImport } from './routes/admin.purchases'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminResourcesRouteImport } from './routes/admin.resources'
@@ -203,6 +204,11 @@ const AdminInterviewsRoute = AdminInterviewsRouteImport.update({
   path: '/interviews',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPrebookingsRoute = AdminPrebookingsRouteImport.update({
+  id: '/prebookings',
+  path: '/prebookings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPurchasesRoute = AdminPurchasesRouteImport.update({
   id: '/purchases',
   path: '/purchases',
@@ -327,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/prebookings': typeof AdminPrebookingsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/resources': typeof AdminResourcesRoute
@@ -374,6 +381,7 @@ export interface FileRoutesByTo {
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/prebookings': typeof AdminPrebookingsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/resources': typeof AdminResourcesRoute
@@ -424,6 +432,7 @@ export interface FileRoutesById {
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/gk': typeof AdminGkRoute
   '/admin/interviews': typeof AdminInterviewsRoute
+  '/admin/prebookings': typeof AdminPrebookingsRoute
   '/admin/purchases': typeof AdminPurchasesRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/resources': typeof AdminResourcesRoute
@@ -474,6 +483,7 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/gk'
     | '/admin/interviews'
+    | '/admin/prebookings'
     | '/admin/purchases'
     | '/admin/reports'
     | '/admin/resources'
@@ -521,6 +531,7 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/gk'
     | '/admin/interviews'
+    | '/admin/prebookings'
     | '/admin/purchases'
     | '/admin/reports'
     | '/admin/resources'
@@ -570,6 +581,7 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/gk'
     | '/admin/interviews'
+    | '/admin/prebookings'
     | '/admin/purchases'
     | '/admin/reports'
     | '/admin/resources'
@@ -809,6 +821,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInterviewsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/prebookings': {
+      id: '/admin/prebookings'
+      path: '/prebookings'
+      fullPath: '/admin/prebookings'
+      preLoaderRoute: typeof AdminPrebookingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/purchases': {
       id: '/admin/purchases'
       path: '/purchases'
@@ -989,6 +1008,7 @@ interface AdminRouteChildren {
   AdminFinanceRoute: typeof AdminFinanceRoute
   AdminGkRoute: typeof AdminGkRoute
   AdminInterviewsRoute: typeof AdminInterviewsRoute
+  AdminPrebookingsRoute: typeof AdminPrebookingsRoute
   AdminPurchasesRoute: typeof AdminPurchasesRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminResourcesRoute: typeof AdminResourcesRoute
@@ -1014,6 +1034,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFinanceRoute: AdminFinanceRoute,
   AdminGkRoute: AdminGkRoute,
   AdminInterviewsRoute: AdminInterviewsRoute,
+  AdminPrebookingsRoute: AdminPrebookingsRoute,
   AdminPurchasesRoute: AdminPurchasesRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminResourcesRoute: AdminResourcesRoute,
