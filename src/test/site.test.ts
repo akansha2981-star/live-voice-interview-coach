@@ -17,7 +17,7 @@ describe("Public address", () => {
 
 describe("Wrong-side hand-off", () => {
   it("sends a signed-out workspace visitor to the public holding page before launch", () => {
-    expect(signedOutTarget(false)).toBe("/");
+    expect(signedOutTarget(false)).toBe("/auth");
   });
 
   it("sends them to sign-in once the workspace is live", () => {
