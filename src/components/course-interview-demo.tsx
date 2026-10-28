@@ -18,11 +18,10 @@ export function CourseInterviewDemo() {
   useEffect(() => {
     const element = section.current;
     if (!element) return;
-    // Load the clip near the section, but never start speech without user action.
+    // Never start speech without user action, and pause when leaving the section.
     const observer = new IntersectionObserver(([entry]) => {
       const media = video.current;
       if (!media) return;
-      if (entry.isIntersecting && media.preload !== "auto") { media.preload = "auto"; media.load(); }
       if (!entry.isIntersecting) media.pause();
     }, { rootMargin: "150px" });
     observer.observe(element);
@@ -66,7 +65,7 @@ export function CourseInterviewDemo() {
         {error && <p className="demo-video-error" role="alert">{error}</p>}
         <div className="demo-conversation">
           <div className={`demo-camera-real ${snapshot.face ? "" : "demo-face-missing"}`}>
-            <video ref={video} src={videoAsset.url} poster={posterAsset.url} playsInline muted={muted} preload="none" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
+            <video ref={video} src={videoAsset.url} poster={posterAsset.url} playsInline muted={muted} preload="metadata" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
               <track kind="captions" src={videoDemoCaptions} srcLang="en" label="English" />
             </video>
             <div className="demo-camera-top"><span>AI-generated candidate</span><span>{snapshot.face ? "Face in frame" : "Face out of frame"}</span></div>
