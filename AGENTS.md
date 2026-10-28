@@ -27,8 +27,7 @@
 - Fetch slot availability in ordered pages so dense schedules are not truncated by the Data API row limit.
 - Dashboard transcript detail is fetched on demand; interview history reads lightweight summary metrics rather than every transcript.
 - The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
-- Interview presentation lives in a browser-safe workspace; transcript following changes only its own scroll container so caption updates never move the room.
-- Live interview uses a viewport-bounded conversation grid and compact persistent tracking band; optional alert settings open in a dialog rather than expanding tracking.
+- Live interview is a viewport-bounded workspace: conversation grid plus compact persistent tracking band, alert settings in a dialog, and transcript following that scrolls only its own container so caption updates never move the room.
 - tsconfig relaxes the strict index/optional/return checks to keep UI code readable.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function, never raw rows; per the owner's decision the average is shown however small the sample.
@@ -37,5 +36,5 @@
 - Prep material sections reuse `resources` with `category` values from `src/lib/prep.ts`; announcements are staff-only posts with student likes/comments, comment author names stamped by a DB trigger so they can't be spoofed.
 - SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.
 - Student email alerts are sent only by the minutely scheduled job in `src/lib/notifications.server.ts`, which claims a per-record sent-at column before sending, so each alert goes out once and features never send email inline; wording comes from the staff-edited `email_templates` table.
-- Pre-launch gating lives in browser-safe `src/lib/launch.ts`; while closed, `/` and `/auth` show the prebook notice instead of sign-in and public pages carry no purchase buttons — `/admin` keeps its own staff login.
+- Pre-launch gating lives in browser-safe `src/lib/launch.ts`; the public page sits at `/` (`/courses` redirects there), locked students return to it with `?locked`, and public pages carry no purchase buttons — `/admin` keeps its own staff login.
 - Single address: canonicals and sitemap use `SITE_URL`/`siteUrl()` from `src/lib/site.ts`; `signedOutTarget()` sends signed-out visitors to the public side.
