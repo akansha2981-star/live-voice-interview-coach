@@ -15,4 +15,13 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("lists the marketing page at / and never at /courses", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const paths = sitemapStaticPaths(router);
+
+    expect(paths).toContain("/");
+    expect(paths).not.toContain("/courses");
+  });
 });
