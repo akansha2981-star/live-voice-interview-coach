@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- The public college-logo strip is a browser-safe component backed by uploaded asset pointers; preserve original artwork and label it without affiliation claims so marketing presentation cannot imply endorsements.
 - Public course offers and comparison share the anonymous live-only catalog; keep sample metrics and review placeholders labelled, motion reduced-motion-aware, and checkout behind existing student sign-in to preserve private data and payment logic.
 - Document analysis uses schema-validated provisional sections from the same model stream persisted under owner-only reads; timers may poll progress but never invent stage completion, and only exact source quotes qualify as evidence.
 - College limits are snapshotted on atomic interview creation; relay and UI use the absolute deadline across reconnects, while live question-count guidance must never be represented as exact playback enforcement without a supported audio gate.
