@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { evidenceFacts, exactQuoteRange, type ReviewProgress } from "@/lib/document-progress";
+import { CATEGORY_LABELS } from "@/lib/resume-analysis";
 import { Button } from "@/components/ui/button";
 import { ScoreRing } from "@/components/motion";
 import { DocumentAnalysisActivity } from "@/components/document-analysis-activity";
+
+const RESUME_SECTION_LABELS: Array<[string, string]> = [
+  ["document_evidence", "Document facts"], ["overall_score", "Initial score"], ["categories", "Category scores"],
+  ["swot", "SWOT analysis"], ["remove_content", "Content to remove"], ["line_improvements", "Line improvements"],
+  ["keywords", "ATS keywords"], ["recommendations", "Recommendations"],
+];
 
 type Stage = { label: string; detail: string; done: boolean };
 
@@ -79,6 +86,32 @@ export function DocumentAnalysisWorkspace({ kind, file, fileName, previewUrl, pr
             <ScoreRing value={sections.overall_score} size={112} label="Out of 100" tone="primary" />
             <div className="min-w-0"><p className="text-sm font-semibold text-primary">Initial resume score</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{typeof sections.summary === "string" ? sections.summary : "Your initial score has arrived. Detailed findings are still being prepared."}</p><p className="mt-3 text-xs text-muted-foreground">The completed report will contain your final assessment.</p></div>
           </div> : <div className="mt-4 border-l-2 border-primary pl-4"><p className="font-semibold">Assessment pending</p><p className="mt-1 text-sm text-muted-foreground">Your score will appear when the analysis returns it.</p></div>}
+        </div>
+        <div className="mt-6 border-t pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-lg font-bold">What we're checking</h3><span className="text-xs font-semibold text-muted-foreground">12 categories</span></div>
+          <p className="mt-1 text-xs text-muted-foreground">Each category is scored out of 100. Scores appear here the moment they are ready.</p>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2" aria-label="Scoring categories">
+            {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
+              const catScore = (sections.categories as Record<string, { score?: number }> | undefined)?.[key]?.score;
+              return <li key={key} className={`flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${typeof catScore === "number" ? "border-primary/30 bg-secondary" : "text-muted-foreground"}`}>
+                <span className="min-w-0 truncate font-medium">{label}</span>
+                {typeof catScore === "number" ? <span className="shrink-0 text-sm font-bold tabular-nums text-primary animate-reveal">{catScore}</span> : <span className="shrink-0 text-xs">{scanning ? "Queued" : "—"}</span>}
+              </li>;
+            })}
+          </ul>
+        </div>
+        <div className="mt-6 border-t pt-5">
+          <h3 className="text-lg font-bold">Report sections received</h3>
+          <ul className="mt-3 grid gap-1.5" aria-live="polite">
+            {RESUME_SECTION_LABELS.map(([key, label]) => {
+              const arrived = complete || sections[key] !== undefined;
+              return <li key={key} className="flex items-center gap-2.5 text-sm">
+                <span className={`grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold ${arrived ? "bg-success text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{arrived ? "✓" : "·"}</span>
+                <span className={arrived ? "font-medium" : "text-muted-foreground"}>{label}</span>
+                {!arrived && scanning && <span className="text-xs text-muted-foreground">waiting</span>}
+              </li>;
+            })}
+          </ul>
         </div>
         {quote && <div className="mt-6 border-t pt-4"><div className="flex items-center justify-between gap-3"><h3 className="font-semibold">Source evidence</h3><Button size="sm" variant="ghost" onClick={() => setQuote("")}>Clear selection</Button></div><blockquote className="mt-3 break-words border-l-2 border-primary pl-4 text-sm leading-relaxed">{range ? text.slice(range.start, range.end) : "This quote could not be located in the source."}</blockquote></div>}
       </div> : <article className="relative min-w-0 overflow-hidden rounded-lg border bg-card shadow-soft">
