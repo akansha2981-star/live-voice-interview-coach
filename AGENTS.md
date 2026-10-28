@@ -31,7 +31,7 @@
 - Interview presentation lives in a browser-safe workspace; transcript following changes only its own scroll container so caption updates never move the room.
 - Live interview uses a viewport-bounded conversation grid and compact persistent tracking band; optional alert settings open in a dialog rather than expanding tracking.
 - Admin presentation shares student surface tokens and grouped navigation while preserving the existing staff access gate and management queries.
-- tsconfig relaxes noPropertyAccessFromIndexSignature/noUncheckedIndexedAccess/exactOptionalPropertyTypes/noImplicitReturns to keep UI code readable.
+- tsconfig relaxes the strict index/optional/return checks to keep UI code readable.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function, never raw rows; per the owner's decision the average is shown however small the sample.
 - The admin portal is the separate top-level `/admin` route tree (own login + shell, `ssr: false`); staff permissions are enforced by RLS helper functions (`is_staff`, `can_operate`, `can_support`, `has_role`) and every sensitive admin write goes through audited SECURITY DEFINER functions.
@@ -39,3 +39,4 @@
 - Prep material sections reuse `resources` with `category` values from `src/lib/prep.ts`; announcements are staff-only posts with student likes/comments, comment author names stamped by a DB trigger so they can't be spoofed.
 - SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.
 - Student email alerts are sent only by the minutely scheduled job in `src/lib/notifications.server.ts`, which claims a per-record sent-at column before sending, so each alert goes out once and features never send email inline; wording comes from the staff-edited `email_templates` table.
+- Pre-launch gating lives in browser-safe `src/lib/launch.ts`; while closed, `/` and `/auth` show the prebook notice instead of sign-in and public pages carry no purchase buttons — `/admin` keeps its own staff login.

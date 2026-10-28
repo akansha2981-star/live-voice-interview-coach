@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { comparisonRows, coursePurchaseDestination } from "@/lib/course-comparison";
+import { comparisonRows } from "@/lib/course-comparison";
 import type { PublicCourse } from "@/lib/public-courses.functions";
 
 export const PENDING_COURSE_KEY = "mbac-pending-course";
-export function CoursePurchaseLink({ signedIn, courseId, className = "" }: { signedIn: boolean; courseId?: string; className?: string }) {
-  const destination = coursePurchaseDestination(signedIn);
-  const remember = () => { if (courseId) try { localStorage.setItem(PENDING_COURSE_KEY, JSON.stringify({ id: courseId, at: Date.now() })); } catch { /* storage unavailable */ } };
-  return <Button asChild className={className} onClick={remember}>{destination === "/slots" ? <Link to="/slots">Buy now</Link> : <Link to="/auth" search={{ redirect: "/slots" }}>Buy now · sign in first</Link>}</Button>;
+export function CoursePrebookButton({ onPrebook, className = "", label = "Prebook now at just ₹1" }: { onPrebook: () => void; className?: string; label?: string }) {
+  return <Button className={className} onClick={onPrebook}>{label}</Button>;
 }
 
-export function CourseComparison({ courses, signedIn }: { courses: PublicCourse[]; signedIn: boolean }) {
+export function CourseComparison({ courses, onPrebook }: { courses: PublicCourse[]; onPrebook: () => void }) {
   const [excluded, setExcluded] = useState<string[]>([]);
   const [differencesOnly, setDifferencesOnly] = useState(false);
   const selected = courses.filter(c => !excluded.includes(c.id));
   const rows = comparisonRows(selected).filter(row => !differencesOnly || new Set(row.values).size > 1);
   return <div className="course-comparison"><div className="flex flex-wrap justify-between gap-4"><div><p className="course-eyebrow">SIDE BY SIDE. NOTHING HIDDEN.</p><h3 className="mt-2 text-2xl font-bold">Find the right fit.</h3></div><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={differencesOnly} onChange={e => setDifferencesOnly(e.target.checked)} />Only show different deliverables</label></div>
-    {courses.length === 0 ? <p className="mt-5 text-muted-foreground">Compare prices, interview credits and included deliverables here as soon as courses go live.</p> : <><div className="my-5 flex flex-wrap gap-4">{courses.map(c => <label key={c.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!excluded.includes(c.id)} onChange={e => setExcluded(prev => e.target.checked ? prev.filter(id => id !== c.id) : [...prev, c.id])} />{c.name}</label>)}</div>{selected.length > 0 ? <div className="course-comparison-scroll" tabIndex={0} role="region" aria-label="Course comparison table"><table><caption className="sr-only">Published course prices, interview credits and deliverables</caption><thead><tr><th scope="col">Your course</th>{selected.map(c => <th scope="col" key={c.id}>{c.name}</th>)}</tr></thead><tbody><tr><th scope="row">Current price</th>{selected.map(c => <td key={c.id} className="font-bold text-primary">₹{Number(c.final_price).toLocaleString("en-IN")}</td>)}</tr><tr><th scope="row">Interview credits</th>{selected.map(c => <td key={c.id}>{c.credits}</td>)}</tr>{rows.map(row => <tr key={row.label}><th scope="row">{row.label}</th>{row.values.map((value, i) => <td key={i}>{value}</td>)}</tr>)}<tr><th scope="row">Enrolment</th>{selected.map(c => <td key={c.id}><CoursePurchaseLink signedIn={signedIn} courseId={c.id} /></td>)}</tr></tbody></table></div> : <p className="py-6 text-muted-foreground">Select a course above to compare.</p>}<p className="mt-4 text-xs text-muted-foreground">“Not listed” means that inclusion has not been specified in the published course details.</p></>}
+    {courses.length === 0 ? <p className="mt-5 text-muted-foreground">Compare prices, interview credits and included deliverables here as soon as courses go live.</p> : <><div className="my-5 flex flex-wrap gap-4">{courses.map(c => <label key={c.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!excluded.includes(c.id)} onChange={e => setExcluded(prev => e.target.checked ? prev.filter(id => id !== c.id) : [...prev, c.id])} />{c.name}</label>)}</div>{selected.length > 0 ? <div className="course-comparison-scroll" tabIndex={0} role="region" aria-label="Course comparison table"><table><caption className="sr-only">Published course prices, interview credits and deliverables</caption><thead><tr><th scope="col">Your course</th>{selected.map(c => <th scope="col" key={c.id}>{c.name}</th>)}</tr></thead><tbody><tr><th scope="row">Current price</th>{selected.map(c => <td key={c.id} className="font-bold text-primary">₹{Number(c.final_price).toLocaleString("en-IN")}</td>)}</tr><tr><th scope="row">Interview credits</th>{selected.map(c => <td key={c.id}>{c.credits}</td>)}</tr>{rows.map(row => <tr key={row.label}><th scope="row">{row.label}</th>{row.values.map((value, i) => <td key={i}>{value}</td>)}</tr>)}<tr><th scope="row">Prebook</th>{selected.map(c => <td key={c.id}><CoursePrebookButton onPrebook={onPrebook} label="Prebook at ₹1" /></td>)}</tr></tbody></table></div> : <p className="py-6 text-muted-foreground">Select a course above to compare.</p>}<p className="mt-4 text-xs text-muted-foreground">“Not listed” means that inclusion has not been specified in the published course details.</p></>}
   </div>;
 }
 
