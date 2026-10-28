@@ -38,3 +38,4 @@
 - SOP reviews live in `sop_reviews` (read-only to clients, written by `src/lib/sop.functions.ts` with the admin client); college sample SOPs reuse `college_training_docs` with kind `sop_sample`, which interviews must exclude.
 - Student email alerts are sent only by the minutely scheduled job in `src/lib/notifications.server.ts`, which claims a per-record sent-at column before sending, so each alert goes out once and features never send email inline; wording comes from the staff-edited `email_templates` table.
 - Pre-launch gating lives in browser-safe `src/lib/launch.ts`; while closed, `/` and `/auth` show the prebook notice instead of sign-in and public pages carry no purchase buttons — `/admin` keeps its own staff login.
+- Single address: canonicals and sitemap use `SITE_URL`/`siteUrl()` from `src/lib/site.ts`; `signedOutTarget()` sends signed-out visitors to the public side.
