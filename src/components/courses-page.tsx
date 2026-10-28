@@ -18,6 +18,7 @@ import interviewPhoto from "@/assets/courses-interview.jpg";
 export const catalogQuery = queryOptions({ queryKey: ["public-course-catalog"], queryFn: () => getPublicCourses(), staleTime: 30_000, refetchInterval: 30_000 });
 export const coursePageDescription = "MBA Compass AI mock interviews launch on 29th November 2026. Prebook your seat for ₹1: live AI interviews with Aria, detailed reports, ATS Resume Builder and SOP reviews.";
 export function CoursesPage() {
+  const { locked } = useSearch({ from: "/" });
   const { data } = useSuspenseQuery(catalogQuery);
   const pageRef = useRef<HTMLDivElement>(null);
   const [prebookOpen, setPrebookOpen] = useState(false);
@@ -69,7 +70,7 @@ export function CoursesPage() {
   return <div className="course-page" ref={pageRef}>
     <div className="course-first-banner"><div className="course-container"><span className="course-live-dot" /><b>India’s First and Only</b><span> AI Mock Interview Preparation</span><button type="button" className="prebook-pill" onClick={() => setPrebookOpen(true)}>Prebook now at just ₹1</button></div></div>
     <PrebookDialog open={prebookOpen} onOpenChange={setPrebookOpen} />
-    <SignedInLockedNotice />
+    <SignedInLockedNotice locked={locked === 1} />
     <LaunchBand />
     <header className="course-header"><div className="course-container flex items-center justify-between gap-4"><Link to="/" aria-label="MBA Compass courses"><span className="course-brand"><FullLogo className="h-14 w-20 object-contain" /><span><b>MBA Compass</b><small>THE AI INTERVIEW EXPERIENCE</small></span></span></Link><nav aria-label="Course navigation" className="hidden items-center gap-1 md:flex"><Button variant="ghost" onClick={() => scrollTo("experience")}>The experience</Button><Button variant="ghost" onClick={() => scrollTo("report")}>Your report</Button><Button variant="ghost" onClick={() => scrollTo("plans")}>Courses</Button><Button variant="ghost" onClick={() => scrollTo("faqs")}>FAQs</Button></nav><div className="flex shrink-0 items-center gap-2"><Button size="sm" className="course-header-buy" onClick={prebook}>Prebook at ₹1</Button></div></div></header>
     <main>
