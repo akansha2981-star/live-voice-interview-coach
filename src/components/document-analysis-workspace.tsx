@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { evidenceFacts, exactQuoteRange, type ReviewProgress } from "@/lib/document-progress";
+import { CATEGORY_LABELS } from "@/lib/resume-analysis";
 import { Button } from "@/components/ui/button";
 import { ScoreRing } from "@/components/motion";
 import { DocumentAnalysisActivity } from "@/components/document-analysis-activity";
+
+const RESUME_SECTION_LABELS: Array<[string, string]> = [
+  ["document_evidence", "Document facts"], ["overall_score", "Initial score"], ["categories", "Category scores"],
+  ["swot", "SWOT analysis"], ["remove_content", "Content to remove"], ["line_improvements", "Line improvements"],
+  ["keywords", "ATS keywords"], ["recommendations", "Recommendations"],
+];
 
 type Stage = { label: string; detail: string; done: boolean };
 
