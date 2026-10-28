@@ -805,7 +805,6 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-hero h1 { font-size: 36px; }
   .course-hero .course-eyebrow { margin-bottom: 16px; }
   .course-section-heading h2 { font-size: 28px; }
-  .course-section-heading h2 br { display: none; }
   .course-section { padding-block: 40px; }
   .cmp-summary { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
   .cmp-summary > div { padding: 12px 10px; }
