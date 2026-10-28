@@ -32,5 +32,6 @@ export function prebookProgress(now: Date = new Date()) {
  * once live they go to sign-in, which returns them to the page they asked for.
  */
 export function signedOutTarget(live: boolean) {
-  return live ? "/auth" : "/";
+  void live;
+  return "/auth";
 }
