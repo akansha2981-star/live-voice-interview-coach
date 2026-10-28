@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifiedCapturedPayment } from "./payment-validation";
 
 function keys() {
   const id = process.env.RAZORPAY_KEY_ID;
@@ -41,7 +42,7 @@ export const verifyCoursePayment = createServerFn({ method: "POST" })
     if (!res.ok || order.notes?.user_id !== context.userId || order.amount_paid < order.amount || order.status !== "paid" || order.currency !== "INR") throw new Error("Payment could not be verified.");
     const paymentRes = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(data.paymentId)}`, { headers: { Authorization: k.auth } });
     const payment = await paymentRes.json() as { order_id?: string; amount?: number; currency?: string; status?: string };
-    if (!paymentRes.ok || payment.order_id !== data.orderId || payment.status !== "captured" || payment.amount !== order.amount || payment.currency !== "INR") throw new Error("Payment capture could not be verified.");
+    if (!paymentRes.ok || !verifiedCapturedPayment(order, payment, context.userId, data.orderId)) throw new Error("Payment capture could not be verified.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin.from("course_purchases").select("id").eq("order_id", data.orderId).maybeSingle();
     if (existing) return { ok: true };
