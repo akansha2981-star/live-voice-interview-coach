@@ -197,6 +197,13 @@
       "when": 1793164284071,
       "tag": "0027_public_course_catalog",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793166475758,
+      "tag": "0028_launch_review_benefits",
+      "breakpoints": true
     }
   ]
 }

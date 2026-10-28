@@ -35,9 +35,10 @@ describe("interview time split", () => {
 
 import { resumeCreditsLeft } from "@/lib/resume-analysis";
 describe("resume credit", () => {
-  it("each student has exactly one credit; failed attempts don't use it", () => {
+  it("free reviews can be repeated after completion but not during processing", () => {
     expect(resumeCreditsLeft([])).toBe(1);
     expect(resumeCreditsLeft([{ status: "failed" }])).toBe(1);
-    expect(resumeCreditsLeft([{ status: "completed" }])).toBe(0);
+    expect(resumeCreditsLeft([{ status: "completed" }])).toBe(1);
+    expect(resumeCreditsLeft([{ status: "processing" }])).toBe(0);
   });
 });
