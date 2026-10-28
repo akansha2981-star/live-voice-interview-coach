@@ -1,4 +1,5 @@
 # Admin portal
+- [ ] Enhance /courses from the full uploaded brief: scripted interactive interview demo, detailed sample reports, truthful comparison, historical owner-supplied results and SEO; reconcile new advertised prices/free benefits with current checkout before release.
 - [x] Add all six supplied college logos to a pausable /courses auto-scroller with original artwork and no affiliation claims; competitor page content reviewed, desktop/phone rendering, loaded logos, pause/resume and reduced-motion behavior verified.
 - [x] Course page visual redesign: small B School Buzz AI attribution, expanded brand header, six inspectable feature visuals, stronger report/readiness sections and floating report detail; desktop/mobile previews and FAQ interactions verified, no overflow.
 - [x] Enhance /courses: pausable scrolling review placeholders, 11 categorised FAQs, selectable live-course comparison, automatic catalog refresh and reduced-motion-aware parallax; desktop/mobile flows and rule tests passed. Real testimonials await user-supplied reviews; no live courses exist to verify a real comparison/purchase.
