@@ -877,6 +877,11 @@ a:hover .career-arrow { transform: translateX(5px); }
 .course-launch-band { border-bottom: 1px solid var(--course-border); background: var(--card); padding-block: 9px; font-size: 13px; }
 .course-launch-band .course-container { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .course-launch-band b { font-weight: 800; }
+.course-lock-notice { background: color-mix(in oklab, var(--primary) 7%, var(--card)); border-bottom: 1px solid var(--course-border); font-size: 13px; padding-block: 10px; }
+.course-lock-notice .course-container { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.course-lock-notice b { font-weight: 800; }
+.course-lock-notice button { font-weight: 700; text-decoration: underline; }
+@media (max-width: 639px) { .course-lock-notice { font-size: 12px; } .course-lock-notice .course-container { gap: 6px; } }
 .course-launch-seats { border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
 @media (max-width: 639px) { .course-launch-band { font-size: 12px; } .launch-notice-actions button { width: 100%; } }
 
