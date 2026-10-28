@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import videoAsset from "@/assets/interview-demo-speaking.mp4.asset.json";
+import webVideoAsset from "@/assets/interview-demo-speaking.webm.asset.json";
 import posterAsset from "@/assets/interview-demo-start.jpg.asset.json";
 import { VIDEO_DEMO_DURATION, videoDemoCaptions, videoDemoMoments, videoDemoQuestion, videoDemoSnapshot } from "@/lib/course-video-demo";
 
@@ -65,7 +66,9 @@ export function CourseInterviewDemo() {
         {error && <p className="demo-video-error" role="alert">{error}</p>}
         <div className="demo-conversation">
           <div className={`demo-camera-real ${snapshot.face ? "" : "demo-face-missing"}`}>
-            <video ref={video} src={videoAsset.url} poster={posterAsset.url} playsInline muted={muted} preload="metadata" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
+            <video ref={video} poster={posterAsset.url} playsInline muted={muted} preload="metadata" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
+              <source src={videoAsset.url} type="video/mp4" />
+              <source src={webVideoAsset.url} type="video/webm" />
               <track kind="captions" src={videoDemoCaptions} srcLang="en" label="English" />
             </video>
             <div className="demo-camera-top"><span>AI-generated candidate</span><span>{snapshot.face ? "Face in frame" : "Face out of frame"}</span></div>
