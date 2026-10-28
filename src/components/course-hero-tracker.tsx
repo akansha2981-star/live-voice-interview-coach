@@ -45,7 +45,7 @@ export function CourseHeroTracker() {
           <span key={word} className="course-hero-tracker-word">{word}</span>
         </span>
       )}
-      <span className="course-hero-tracker-more">+ more, every answer</span>
+      <span className="course-hero-tracker-more">+ more<span className="tracker-more-long">, every answer</span></span>
       <span className="sr-only">Every interview tracks your posture, communication, topic-wise understanding, dressing, eye contact, speech clarity, speaking pace, word count and filler words.</span>
     </p>
   );
