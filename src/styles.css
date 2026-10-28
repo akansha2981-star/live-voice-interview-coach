@@ -884,7 +884,6 @@ a:hover .career-arrow { transform: translateX(5px); }
 .course-parallax-layer { --layer-y: 0px; translate: 0 var(--layer-y); will-change: translate; }
 .course-scroll-reveal { opacity: 0; transform: translateY(28px); }
 .course-scroll-reveal.is-revealed { opacity: 1; transform: translateY(0); }
-.course-hero-photo { transform: translateY(var(--course-parallax)) scale(calc(1.06 + var(--course-parallax) / 1600px)); }
 @media (prefers-reduced-motion: reduce) {
   .course-parallax-layer { translate: none; }
   .course-scroll-reveal { opacity: 1; transform: none; }
