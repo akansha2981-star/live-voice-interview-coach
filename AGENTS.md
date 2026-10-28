@@ -28,7 +28,7 @@
 - Dashboard transcript detail is fetched on demand; interview history reads lightweight summary metrics rather than every transcript.
 - The interview route uses a full-viewport accessible dialog while keeping the existing voice hook and transport lifecycle unchanged.
 - Live interview is a viewport-bounded workspace: conversation grid plus compact persistent tracking band, alert settings in a dialog, and transcript following that scrolls only its own container so caption updates never move the room.
-- Defer auth-event navigation and invalidation until the session lock releases; deduplicate sign-in redirects to prevent races.
+- Defer/deduplicate auth redirects until session locks release; dashboard exceptions use service-written `prelaunch_dashboard_access`, not staff roles.
 - Dashboard insights are computed by the browser-safe `src/lib/dashboard-insights.ts`; category scores and measured moments are added deterministically to the stored report at generation time so the dashboard never needs transcripts.
 - Answer review state lives in `answer_reviews` (owner-only RLS); cross-student averages come only from the `score_benchmark()` aggregate function, never raw rows; per the owner's decision the average is shown however small the sample.
 - The admin portal is the separate top-level `/admin` route tree (own login + shell, `ssr: false`); staff permissions are enforced by RLS helper functions (`is_staff`, `can_operate`, `can_support`, `has_role`) and every sensitive admin write goes through audited SECURITY DEFINER functions.
