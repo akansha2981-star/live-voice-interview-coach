@@ -1552,6 +1552,7 @@ export type Database = {
         Args: { _booking_id: string }
         Returns: undefined
       }
+      public_course_catalog: { Args: never; Returns: Json }
       reopen_ticket: { Args: { _ticket_id: string }; Returns: undefined }
       score_benchmark: {
         Args: { _category: string }
