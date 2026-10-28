@@ -55,6 +55,23 @@ export function CourseInterviewDemo() {
     await start(withSound);
   };
 
+  // Browsers (iOS Safari, Chrome Android, Firefox, Edge) block sound until the visitor touches the page.
+  // Start silently, then switch sound on at the very first tap, click or key press anywhere.
+  useEffect(() => {
+    const unlock = () => {
+      const media = video.current;
+      if (!media || !wantSound.current || !media.muted) return;
+      media.muted = false;
+      setMuted(false);
+      setSoundBlocked(false);
+      if (media.paused && section.current && section.current.getBoundingClientRect().top < window.innerHeight) void media.play().catch(() => undefined);
+      events.forEach(name => window.removeEventListener(name, unlock, true));
+    };
+    const events = ["pointerdown", "touchend", "keydown", "click"] as const;
+    events.forEach(name => window.addEventListener(name, unlock, { capture: true, passive: true }));
+    return () => events.forEach(name => window.removeEventListener(name, unlock, true));
+  }, []);
+
   // Auto-play from the beginning while the panel is on screen, stop as soon as it leaves.
   useEffect(() => {
     const element = section.current;
@@ -62,9 +79,9 @@ export function CourseInterviewDemo() {
     const observer = new IntersectionObserver(([entry]) => {
       const media = video.current;
       if (!media) return;
-      if (!entry.isIntersecting) { media.pause(); return; }
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.05) { media.pause(); return; }
       if (media.paused) { media.currentTime = 0; setSeconds(0); void start(wantSound.current); }
-    }, { rootMargin: "-25% 0px -25% 0px" });
+    }, { threshold: [0, 0.2], rootMargin: "-10% 0px -10% 0px" });
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
@@ -107,7 +124,7 @@ export function CourseInterviewDemo() {
         {error && <p className="demo-video-error" role="alert">{error}</p>}
         <div className="demo-conversation">
           <div className={`demo-camera-real ${snapshot.face ? "" : "demo-face-missing"}`}>
-            <video ref={video} poster={posterAsset.url} playsInline muted={muted} loop preload="metadata" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
+            <video ref={video} poster={posterAsset.url} playsInline autoPlay={false} muted={muted} loop preload="auto" webkit-playsinline="true" x5-playsinline="true" aria-label="AI-generated candidate answering an MBA interview" onTimeUpdate={event => setSeconds(event.currentTarget.currentTime)} onSeeked={event => setSeconds(event.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setError("The interview video couldn’t load. Please reload the page.")}>
               <source src={videoAsset.url} type="video/mp4" />
               <source src={webVideoAsset.url} type="video/webm" />
               <track kind="captions" src={videoDemoCaptions} srcLang="en" label="English" />
