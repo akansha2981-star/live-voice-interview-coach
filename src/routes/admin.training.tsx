@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, PageHeader } from "@/components/admin/admin-ui";
 import { useStaff } from "@/hooks/use-staff";
-import { processTrainingDoc, type CollegeKnowledge } from "@/lib/training.functions";
+import { processTrainingDoc, autoSortTrainingDoc, type CollegeKnowledge } from "@/lib/training.functions";
 import { sectionMinutes } from "@/lib/interview-structure";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +73,7 @@ function TrainingPage() {
   return <>
     <PageHeader title="AI Training" sub="Private college-wise training documents. Only admins can see these files; students never see them." />
     <DurationSettings canEdit={staff.canOperate} userId={staff.id} />
+    <AutoSort canOperate={staff.canOperate} onDone={(id) => { setCollege(id); void refresh(); }} colleges={colleges} />
     <Card title="Upload training material">
       <div className="grid gap-4 md:grid-cols-3">
         <div className="grid gap-2"><Label>College</Label><Select value={college} onValueChange={setCollege}><SelectTrigger><SelectValue placeholder={colleges.length ? "Select college" : "Add colleges first"} /></SelectTrigger><SelectContent>{colleges.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
@@ -110,5 +111,53 @@ function DurationSettings({ canEdit, userId }: { canEdit: boolean; userId: strin
       {canEdit && <Button onClick={save} disabled={val === null}>Save</Button>}
       <table className="text-sm"><tbody><tr className="text-muted-foreground"><td className="pr-6">Resume-based</td><td className="pr-6">College intelligence</td><td>Case-based</td></tr><tr className="font-bold text-primary"><td>{s.resume} min</td><td>{s.college} min</td><td>{s.case} min</td></tr></tbody></table>
     </div>
+  </Card>;
+}
+
+type SortRow = { name: string; state: "reading" | "saved" | "unmatched" | "failed"; note?: string };
+const KIND_LABEL: Record<string, string> = { training: "Training", case: "Case scenarios", sop_sample: "Sample SOP" };
+
+function AutoSort({ canOperate, onDone, colleges }: { canOperate: boolean; onDone: (collegeId: string) => void; colleges: { id: string; name: string }[] }) {
+  const sort = useServerFn(autoSortTrainingDoc);
+  const [rows, setRows] = useState<SortRow[]>([]);
+  const [busy, setBusy] = useState(false);
+  const set = (i: number, r: Partial<SortRow>) => setRows((all) => all.map((x, j) => (j === i ? { ...x, ...r } : x)));
+
+  async function run(files: FileList | null) {
+    if (!files?.length) return;
+    const list = [...files];
+    const start = rows.length;
+    setRows((r) => [...r, ...list.map((f) => ({ name: f.name, state: "reading" as const }))]);
+    setBusy(true);
+    for (let n = 0; n < list.length; n++) {
+      const f = list[n]; const i = start + n;
+      try {
+        if (f.size > 20 * 1024 * 1024) throw new Error("Over 20 MB.");
+        let text: string | null = null;
+        if (/\.docx?$/i.test(f.name)) { const mammoth = await import("mammoth"); text = (await mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() })).value.slice(0, 120000); }
+        else if (/\.(txt|md|csv|json)$/i.test(f.name)) text = (await f.text()).slice(0, 120000);
+        const path = `auto/${crypto.randomUUID()}-${f.name.replace(/[^\w.-]/g, "_")}`;
+        const { error } = await supabase.storage.from("college-training").upload(path, f, { contentType: f.type || undefined });
+        if (error) throw new Error(error.message);
+        const res = await sort({ data: { path, title: f.name, mime: f.type || null, text } });
+        if (!res.ok) set(i, { state: "unmatched", note: `No matching college found. ${res.reason}` });
+        else {
+          set(i, { state: "saved", note: `${res.college} · ${KIND_LABEL[res.kind]} · ${res.questions} questions · ${res.cases} cases` });
+          const c = colleges.find((x) => x.name === res.college); if (c) onDone(c.id);
+        }
+      } catch (e) { set(i, { state: "failed", note: e instanceof Error ? e.message : "Failed" }); }
+    }
+    setBusy(false);
+  }
+
+  const badge: Record<SortRow["state"], string> = { reading: "animate-pulse bg-secondary text-primary", saved: "bg-success/15 text-success", unmatched: "bg-warning/15 text-warning-foreground", failed: "bg-destructive/10 text-destructive" };
+  const label: Record<SortRow["state"], string> = { reading: "AI is reading", saved: "Saved", unmatched: "Not matched", failed: "Could not read" };
+  return <Card title="Smart upload" sub="Just drop documents. AI reads each one, works out which college and type it is, and saves it to that college's knowledge automatically.">
+    <div className="grid gap-2 md:max-w-md"><Label htmlFor="auto-files">Documents</Label>
+      <Input id="auto-files" type="file" multiple accept=".pdf,.doc,.docx,.txt,.md,.csv,.json,image/*" disabled={!canOperate || busy || !colleges.length} onChange={(e) => { void run(e.target.files); e.target.value = ""; }} />
+      <p className="text-xs text-muted-foreground">{colleges.length ? "PDF, Word, text or images · up to 20 MB each · several at once" : "Add colleges first"}</p></div>
+    {!!rows.length && <div className="mt-4 divide-y">{rows.map((r, i) => <div key={i} className="flex flex-wrap items-center justify-between gap-3 py-3">
+      <div className="min-w-0"><p className="truncate font-semibold">{r.name}</p>{r.note && <p className="text-xs text-muted-foreground">{r.note}</p>}</div>
+      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge[r.state]}`}>{label[r.state]}</span></div>)}</div>}
   </Card>;
 }
