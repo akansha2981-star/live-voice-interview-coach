@@ -150,7 +150,7 @@ function AutoSort({ canOperate, onDone, colleges }: { canOperate: boolean; onDon
     setBusy(false);
   }
 
-  const badge: Record<SortRow["state"], string> = { reading: "animate-pulse bg-secondary text-primary", saved: "bg-success/15 text-success", unmatched: "bg-warning/15 text-warning-foreground", failed: "bg-destructive/10 text-destructive" };
+  const badge: Record<SortRow["state"], string> = { reading: "animate-pulse bg-secondary text-primary", saved: "bg-success/15 text-success", unmatched: "bg-warning/15 text-foreground", failed: "bg-destructive/10 text-destructive" };
   const label: Record<SortRow["state"], string> = { reading: "AI is reading", saved: "Saved", unmatched: "Not matched", failed: "Could not read" };
   return <Card title="Smart upload" sub="Just drop documents. AI reads each one, works out which college and type it is, and saves it to that college's knowledge automatically.">
     <div className="grid gap-2 md:max-w-md"><Label htmlFor="auto-files">Documents</Label>
