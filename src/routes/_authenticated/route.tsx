@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { isLive, signedOutTarget } from "@/lib/launch";
-import { canEnterWorkspace } from "@/lib/workspace-access";
+import { canEnterWorkspace, WORKSPACE_OPEN_BEFORE_LAUNCH } from "@/lib/workspace-access";
 
 export const Route = createFileRoute("/_authenticated")({ staticData: { sitemap: "exclude-subtree" },
   ssr: false,
@@ -16,8 +16,8 @@ export const Route = createFileRoute("/_authenticated")({ staticData: { sitemap:
       if (signedOutTarget(isLive()) === "/") throw redirect({ to: "/" });
       throw redirect({ to: "/auth", search: { redirect: location.href } });
     }
-    // Pre-launch: only students who bought a course (or staff) may enter the workspace.
-    if (!isLive()) {
+    // Optional pre-launch lock: only students who bought a course (or staff) may enter.
+    if (!isLive() && !WORKSPACE_OPEN_BEFORE_LAUNCH) {
       const [{ count }, { data: staff }, { data: exception }] = await Promise.all([
         supabase.from("course_purchases").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.rpc("is_staff", { _user_id: user.id }),
