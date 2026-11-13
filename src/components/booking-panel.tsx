@@ -48,8 +48,6 @@ export function SlotPicker() {
   const [busy, setBusy] = useState(false);
   const [details, setDetails] = useState<DetailsState>({ practiceOnly: false, collegeId: null, actualInterviewAt: null, callLetterPath: null });
   const taken = (id: string) => data.bookings.some((b) => b.slot_id === id && b.status !== "cancelled");
-  // A slot that is open right now with room left and enough time to run the interview.
-  const openNow = allSlots.find((s) => Date.parse(s.starts_at) <= Date.now() && Date.parse(s.ends_at) > Date.now() && s.remaining > 0 && !taken(s.id));
   const future = allSlots.filter((s) => Date.parse(s.starts_at) > Date.now());
   const dates = [...new Set(future.map((s) => new Date(s.starts_at).toDateString()))];
   const periods = [{ id: "all", label: "Any time", from: 0, to: 24 }, { id: "morning", label: "Morning", from: 6, to: 12 }, { id: "afternoon", label: "Afternoon", from: 12, to: 18 }, { id: "evening", label: "Evening", from: 18, to: 24 }, { id: "night", label: "Night", from: 0, to: 6 }];
@@ -58,18 +56,18 @@ export function SlotPicker() {
     const start = new Date(s.starts_at);
     return (!date || start.toDateString() === date) && start.getHours() >= activePeriod.from && start.getHours() < activePeriod.to;
   });
-  const selectedSlot = now ? openNow : visible.find((s) => s.id === selected);
+  const selectedSlot = now ? null : visible.find((s) => s.id === selected);
+  const ready = now || Boolean(selectedSlot);
   function resetFilters() { setDate(null); setPeriod("all"); setSelected(null); }
   function pick(id: string) { setNow(false); setSelected(id); }
   async function book() {
-    if (!selectedSlot || !interviewDetailsReady(details)) return;
+    if (!ready || !interviewDetailsReady(details)) return;
     setBusy(true);
+    const detailArgs = { _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath };
     // Generated RPC argument types omit SQL nullability; practice deliberately uses null fields.
-    const { data: bookingId, error } = await supabase.rpc("book_interview_with_details", { _slot_id: selectedSlot.id, _practice: details.practiceOnly, _college: details.collegeId, _actual_at: details.actualInterviewAt ? new Date(details.actualInterviewAt).toISOString() : null, _letter: details.callLetterPath } as never);
-    if (!error && now && bookingId) {
-      const { error: nowError } = await supabase.rpc("mark_booking_start_now", { _booking_id: bookingId as string });
-      if (nowError) toast.error(nowError.message);
-    }
+    const { data: bookingId, error } = now
+      ? await supabase.rpc("book_interview_now", detailArgs as never)
+      : await supabase.rpc("book_interview_with_details", { _slot_id: selectedSlot!.id, ...detailArgs } as never);
     setBusy(false);
     if (error) return toast.error(error.message);
     await qc.invalidateQueries({ queryKey: ["bookings"] });
@@ -80,8 +78,8 @@ export function SlotPicker() {
   return <section className="insight-panel min-w-0 border-y">
     <div className="flex items-start justify-between gap-3"><div><h2 className="text-xl font-bold">Available times</h2><p className="mt-1 text-xs text-muted-foreground">{Intl.DateTimeFormat().resolvedOptions().timeZone} · One credit per interview</p></div><Button size="sm" variant="ghost" disabled={!date && period === "all"} onClick={resetFilters}>Reset</Button></div>
     <div className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border p-4 ${now ? "border-primary bg-secondary" : "bg-secondary/40"}`}>
-      <div><p className="font-semibold">Take the interview now</p><p className="text-xs text-muted-foreground">{openNow ? "No scheduling needed — book and start straight away." : "No interview is open right now. Pick a time below."}</p></div>
-      <Button variant={now ? "default" : "outline"} aria-pressed={now} disabled={!openNow} onClick={() => { setNow(true); setSelected(null); }}>{now ? "Selected" : "Start now"}</Button>
+      <div><p className="font-semibold">Take the interview now</p><p className="text-xs text-muted-foreground">No scheduling needed — available any time. Book and start straight away.</p></div>
+      <Button variant={now ? "default" : "outline"} aria-pressed={now} onClick={() => { setNow(true); setSelected(null); }}>{now ? "Selected" : "Start now"}</Button>
     </div>
     <div role="group" aria-label="Filter by date" className="mt-4 flex gap-2 overflow-x-auto pb-2">
       <Button size="sm" variant={date === null ? "default" : "outline"} aria-pressed={date === null} className="shrink-0" onClick={() => { setDate(null); setSelected(null); }}>All dates</Button>
@@ -94,7 +92,7 @@ export function SlotPicker() {
       {visible.slice(0, 300).map((s) => <Button key={s.id} variant={!now && selected === s.id ? "default" : "outline"} aria-pressed={!now && selected === s.id} disabled={s.remaining < 1 || taken(s.id)} onClick={() => pick(s.id)} className="h-auto shrink-0 justify-between gap-3 whitespace-normal px-4 py-3 text-left"><span>{new Date(s.starts_at).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })}<span className="block font-semibold">{new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – {new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span></span><span className="shrink-0 text-xs">{s.remaining} left</span></Button>)}
       {visible.length > 300 && <p className="py-3 text-center text-xs text-muted-foreground">Showing the first 300 — choose a date or time to see more.</p>}
     </div>
-    {selectedSlot && <div className="mt-4"><InterviewDetailsForm userId={data.userId} value={details} onChange={setDetails} /></div>}
-    <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><p className="min-w-0 text-xs text-muted-foreground">{now ? "Starting now" : selectedSlot ? new Date(selectedSlot.starts_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "No slot selected"}</p><Button className="shrink-0" onClick={book} disabled={!selectedSlot || !interviewDetailsReady(details) || busy}>{busy ? "Booking…" : now ? "Book and start interview" : "Confirm booking"}</Button></div>
+    {ready && <div className="mt-4"><InterviewDetailsForm userId={data.userId} value={details} onChange={setDetails} /></div>}
+    <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><p className="min-w-0 text-xs text-muted-foreground">{now ? "Starting now" : selectedSlot ? new Date(selectedSlot.starts_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "No slot selected"}</p><Button className="shrink-0" onClick={book} disabled={!ready || !interviewDetailsReady(details) || busy}>{busy ? "Booking…" : now ? "Book and start interview" : "Confirm booking"}</Button></div>
   </section>;
 }

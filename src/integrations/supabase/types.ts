@@ -1652,6 +1652,15 @@ export type Database = {
           likes: number
         }[]
       }
+      book_interview_now: {
+        Args: {
+          _actual_at: string
+          _college: string
+          _letter: string
+          _practice: boolean
+        }
+        Returns: string
+      }
       book_interview_slot: { Args: { _slot_id: string }; Returns: string }
       book_interview_with_details: {
         Args: {
