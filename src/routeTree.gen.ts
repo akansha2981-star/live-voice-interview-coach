@@ -55,6 +55,7 @@ import { Route as AuthenticatedInterviewIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedInterviewCheckRouteImport } from './routes/_authenticated/interview.check'
 import { Route as AuthenticatedPrepSectionRouteImport } from './routes/_authenticated/prep.$section'
 import { Route as AuthenticatedReportIdRouteImport } from './routes/_authenticated/report.$id'
+import { Route as AuthenticatedPrepReadIdRouteImport } from './routes/_authenticated/prep.read.$id'
 import { Route as ApiPublicJobsEmailAlertsRouteImport } from './routes/api/public/jobs/email-alerts'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -292,6 +293,11 @@ const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
   path: '/report/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPrepReadIdRoute = AuthenticatedPrepReadIdRouteImport.update({
+  id: '/prep/read/$id',
+  path: '/prep/read/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicJobsEmailAlertsRoute =
   ApiPublicJobsEmailAlertsRouteImport.update({
     id: '/api/public/jobs/email-alerts',
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
   '/gk/': typeof AuthenticatedGkIndexRoute
+  '/prep/read/$id': typeof AuthenticatedPrepReadIdRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -399,6 +406,7 @@ export interface FileRoutesByTo {
   '/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/report/$id': typeof AuthenticatedReportIdRoute
   '/gk': typeof AuthenticatedGkIndexRoute
+  '/prep/read/$id': typeof AuthenticatedPrepReadIdRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/_authenticated/prep/$section': typeof AuthenticatedPrepSectionRoute
   '/_authenticated/report/$id': typeof AuthenticatedReportIdRoute
   '/_authenticated/gk/': typeof AuthenticatedGkIndexRoute
+  '/_authenticated/prep/read/$id': typeof AuthenticatedPrepReadIdRoute
   '/api/public/jobs/email-alerts': typeof ApiPublicJobsEmailAlertsRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -501,6 +510,7 @@ export interface FileRouteTypes {
     | '/prep/$section'
     | '/report/$id'
     | '/gk/'
+    | '/prep/read/$id'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/prep/$section'
     | '/report/$id'
     | '/gk'
+    | '/prep/read/$id'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   id:
@@ -599,6 +610,7 @@ export interface FileRouteTypes {
     | '/_authenticated/prep/$section'
     | '/_authenticated/report/$id'
     | '/_authenticated/gk/'
+    | '/_authenticated/prep/read/$id'
     | '/api/public/jobs/email-alerts'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
@@ -940,6 +952,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/prep/read/$id': {
+      id: '/_authenticated/prep/read/$id'
+      path: '/prep/read/$id'
+      fullPath: '/prep/read/$id'
+      preLoaderRoute: typeof AuthenticatedPrepReadIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/jobs/email-alerts': {
       id: '/api/public/jobs/email-alerts'
       path: '/api/public/jobs/email-alerts'
@@ -973,6 +992,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPrepSectionRoute: typeof AuthenticatedPrepSectionRoute
   AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
   AuthenticatedGkIndexRoute: typeof AuthenticatedGkIndexRoute
+  AuthenticatedPrepReadIdRoute: typeof AuthenticatedPrepReadIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -991,6 +1011,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPrepSectionRoute: AuthenticatedPrepSectionRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
   AuthenticatedGkIndexRoute: AuthenticatedGkIndexRoute,
+  AuthenticatedPrepReadIdRoute: AuthenticatedPrepReadIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

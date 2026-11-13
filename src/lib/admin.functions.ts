@@ -7,7 +7,9 @@ export const downloadResource = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { id: string }) => z.object({ id: z.string().uuid() }).parse(i))
   .handler(async ({ data, context }) => {
-    // RLS: students can only see published resources; staff see all.
+    // Staff only: students read prep material inside the secure dashboard reader and never get a file.
+    const { data: staff } = await context.supabase.rpc("is_staff", { _user_id: context.userId });
+    if (!staff) throw new Error("Documents can only be read inside the dashboard.");
     const { data: res } = await context.supabase.from("resources").select("id, title, pdf_path").eq("id", data.id).maybeSingle();
     if (!res?.pdf_path) throw new Error("This resource has no PDF yet.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

@@ -30,7 +30,7 @@ const NAV_GROUPS = [
   { title: "Interviews", items: [{ to: "/admin/interviews", label: "Interview manager" }, { to: "/admin/slots", label: "Slots & schedule" }, { to: "/admin/credits", label: "Interview credits" }, { to: "/admin/reports", label: "Reports & exports" }] },
   { title: "Courses & payments", items: [{ to: "/admin/courses", label: "Courses" }, { to: "/admin/purchases", label: "Course purchases" }, { to: "/admin/prebookings", label: "Prebookings" }, { to: "/admin/finance", label: "Finance & costing" }] },
   { title: "AI & career tools", items: [{ to: "/admin/colleges", label: "Colleges" }, { to: "/admin/training", label: "AI training" }, { to: "/admin/resumes", label: "Resume analyzer" }, { to: "/admin/sop-reviews", label: "SOP reviews" }] },
-  { title: "Content & resources", items: [{ to: "/admin/resources", label: "Prep material" }, { to: "/admin/gk", label: "GK management" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource downloads" }, { to: "/admin/documents", label: "Student documents" }] },
+  { title: "Content & resources", items: [{ to: "/admin/resources", label: "Prep material" }, { to: "/admin/gk", label: "GK management" }, { to: "/admin/announcements", label: "Announcements" }, { to: "/admin/downloads", label: "Resource opens" }, { to: "/admin/documents", label: "Student documents" }] },
   { title: "Administration", items: [{ to: "/admin/emails", label: "Email notifications" }, { to: "/admin/settings", label: "Settings" }, { to: "/admin/audit", label: "Audit logs" }] },
 ];
 

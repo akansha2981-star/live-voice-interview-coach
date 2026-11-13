@@ -1246,6 +1246,85 @@ export type Database = {
           },
         ]
       }
+      resource_highlights: {
+        Row: {
+          color: string
+          created_at: string
+          h: number
+          id: string
+          label: string
+          page: number
+          resource_id: string
+          user_id: string
+          w: number
+          x: number
+          y: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          h: number
+          id?: string
+          label?: string
+          page: number
+          resource_id: string
+          user_id: string
+          w: number
+          x: number
+          y: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          h?: number
+          id?: string
+          label?: string
+          page?: number
+          resource_id?: string
+          user_id?: string
+          w?: number
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_highlights_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resource_notes: {
+        Row: {
+          body: string
+          resource_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          resource_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          resource_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_notes_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           attachments: Json
@@ -1583,6 +1662,10 @@ export type Database = {
           _slot_id: string
         }
         Returns: string
+      }
+      can_annotate_resource: {
+        Args: { _resource_id: string; _user_id: string }
+        Returns: boolean
       }
       can_operate: { Args: { _user_id: string }; Returns: boolean }
       can_read_finance: { Args: { _user_id: string }; Returns: boolean }

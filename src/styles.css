@@ -920,3 +920,49 @@ a:hover .career-arrow { transform: translateX(5px); }
   .course-parallax-layer { translate: none; }
   .course-scroll-reveal { opacity: 1; transform: none; }
 }
+
+/* Secure prep-material reader */
+.secure-reader, .secure-reader .reader-scroll { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.secure-reader textarea, .secure-reader input { -webkit-user-select: text; user-select: text; }
+.reader-shell { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: var(--card); box-shadow: var(--student-shadow); }
+.reader-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--student-focus); }
+.reader-group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.reader-count { font-size: 12px; color: var(--muted-foreground); white-space: nowrap; }
+.reader-count strong { color: var(--foreground); }
+.reader-swatch { border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; background: var(--card); transition: border-color 160ms, box-shadow 160ms; }
+.reader-swatch::before { content: ""; width: 9px; height: 9px; border-radius: 999px; background: var(--swatch); }
+.reader-swatch.is-active { border-color: var(--swatch); box-shadow: 0 0 0 2px color-mix(in oklab, var(--swatch) 25%, transparent); }
+.reader-swatch-amber, .reader-mark-amber, .reader-mark-item-amber { --swatch: var(--accent); }
+.reader-swatch-sky, .reader-mark-sky, .reader-mark-item-sky { --swatch: var(--sky); }
+.reader-swatch-rose, .reader-mark-rose, .reader-mark-item-rose { --swatch: var(--destructive); }
+.reader-scroll { position: relative; height: calc(100dvh - 14rem); min-height: 460px; overflow: auto; overscroll-behavior: contain; background: var(--muted); padding: 16px; }
+.reader-pages { display: grid; justify-items: center; gap: 16px; width: max-content; min-width: 100%; transition: filter 200ms; }
+.reader-veiled { filter: blur(22px) grayscale(1); }
+.reader-veil-note { position: sticky; bottom: 24px; margin: -60px auto 0; width: max-content; padding: 8px 16px; border-radius: 999px; background: var(--foreground); color: var(--background); font-size: 13px; font-weight: 700; }
+.reader-page { position: relative; background: var(--card); box-shadow: 0 2px 14px -6px oklch(0.28 0.05 245 / 0.35); }
+.reader-canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
+.reader-overlay { position: absolute; inset: 0; }
+.reader-overlay.is-marking { cursor: crosshair; touch-action: none; }
+.reader-mark { position: absolute; border-radius: 3px; background: color-mix(in oklab, var(--swatch) 32%, transparent); mix-blend-mode: multiply; border-bottom: 2px solid var(--swatch); pointer-events: none; transition: box-shadow 200ms; }
+.reader-mark.is-focused { animation: reader-pulse 1.2s ease-out 2; }
+.reader-mark-draft { --swatch: var(--primary); background: color-mix(in oklab, var(--primary) 18%, transparent); border: 1px dashed var(--primary); }
+@keyframes reader-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--swatch) 70%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+.reader-page-no { position: absolute; right: 8px; bottom: 6px; font-size: 10px; font-weight: 700; color: var(--muted-foreground); }
+.reader-state { display: grid; justify-items: center; align-content: center; gap: 10px; min-height: 360px; text-align: center; }
+.reader-spinner { width: 34px; height: 34px; border-radius: 999px; border: 3px solid var(--border); border-top-color: var(--primary); animation: reader-spin 900ms linear infinite; }
+@keyframes reader-spin { to { transform: rotate(360deg); } }
+.reader-progress { width: 220px; height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.reader-progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--sky)); transition: width 240ms; }
+.reader-side { min-width: 0; align-self: start; border: 1px solid var(--border); border-radius: 10px; background: var(--card); box-shadow: var(--student-shadow); }
+@media (min-width: 1024px) { .reader-side { position: sticky; top: 16px; max-height: calc(100dvh - 9rem); overflow: auto; } }
+.reader-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
+.reader-tabs button { padding: 12px; font-size: 13px; font-weight: 700; color: var(--muted-foreground); border-bottom: 2px solid transparent; transition: color 160ms, border-color 160ms; }
+.reader-tabs button.is-active { color: var(--primary); border-bottom-color: var(--primary); }
+.reader-badge { margin-left: 4px; border-radius: 999px; padding: 1px 7px; font-size: 11px; background: var(--secondary); color: var(--foreground); }
+.reader-mark-item { border: 1px solid var(--border); border-left: 3px solid var(--swatch); border-radius: 8px; padding: 10px; background: color-mix(in oklab, var(--swatch) 6%, var(--card)); }
+@media (max-width: 1023px) { .reader-scroll { height: 68dvh; min-height: 380px; padding: 10px; } }
+@media (prefers-reduced-motion: reduce) { .reader-mark.is-focused, .reader-spinner { animation: none; } }
+@media print {
+  body:has(.secure-reader) > * { display: none !important; }
+  body:has(.secure-reader)::before { content: "Printing MBA Compass prep material is not allowed."; display: block; padding: 40px; font-size: 18px; }
+}
