@@ -225,6 +225,13 @@
       "when": 1793190563049,
       "tag": "0031_resume_report_email_feedback_only",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1794586054555,
+      "tag": "0032_restrict_banner_reads",
+      "breakpoints": true
     }
   ]
 }

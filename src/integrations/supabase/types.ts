@@ -1586,6 +1586,10 @@ export type Database = {
       }
       can_operate: { Args: { _user_id: string }; Returns: boolean }
       can_read_finance: { Args: { _user_id: string }; Returns: boolean }
+      can_read_resource_banner: {
+        Args: { _path: string; _user_id: string }
+        Returns: boolean
+      }
       can_support: { Args: { _user_id: string }; Returns: boolean }
       can_view_feed: { Args: { _user_id: string }; Returns: boolean }
       cancel_interview_booking: {
