@@ -64,10 +64,17 @@ function ReaderPage() {
   const [focusMark, setFocusMark] = useState<string | null>(null);
   const [panel, setPanel] = useState<"notes" | "marks">("notes");
 
+  const autoFit = useRef(true);
   const fitWidth = useCallback(() => {
     const w = scroller.current?.clientWidth; const first = sizes[0];
-    if (w && first) setZoom(clampZoom((w - 32) / first.w));
+    if (w && first) { autoFit.current = true; setZoom(clampZoom((w - 32) / first.w)); }
   }, [sizes]);
+  const zoomBy = (d: number) => { autoFit.current = false; setZoom((z) => clampZoom(z + d)); };
+  useEffect(() => {
+    const el = scroller.current; if (!el || !sizes.length) return;
+    const ro = new ResizeObserver(() => { if (autoFit.current) fitWidth(); });
+    ro.observe(el); return () => ro.disconnect();
+  }, [sizes.length, fitWidth]);
   const onPages = useCallback((s: { w: number; h: number }[]) => setSizes(s), []);
   useEffect(() => { if (sizes.length) fitWidth(); }, [sizes.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -161,9 +168,9 @@ function ReaderPage() {
             <Button size="sm" variant="ghost" disabled={!pages || page >= pages} onClick={() => reader.current?.goTo(page + 1)} aria-label="Next page">›</Button>
           </div>
           <div className="reader-group">
-            <Button size="sm" variant="ghost" onClick={() => setZoom((z) => clampZoom(z - ZOOM_STEP))} aria-label="Zoom out">−</Button>
+            <Button size="sm" variant="ghost" onClick={() => zoomBy(-ZOOM_STEP)} aria-label="Zoom out">−</Button>
             <span className="reader-count w-12 text-center">{Math.round(zoom * 100)}%</span>
-            <Button size="sm" variant="ghost" onClick={() => setZoom((z) => clampZoom(z + ZOOM_STEP))} aria-label="Zoom in">+</Button>
+            <Button size="sm" variant="ghost" onClick={() => zoomBy(ZOOM_STEP)} aria-label="Zoom in">+</Button>
             <Button size="sm" variant="outline" onClick={fitWidth}>Fit width</Button>
           </div>
           <div className="reader-group">
